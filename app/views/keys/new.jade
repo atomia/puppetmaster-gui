@@ -1,0 +1,13 @@
+extends ../layout
+block content
+  .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
+    h1.page-header Add new SSH key
+    form(method="post")
+      .form-group
+        label(for="keyTitle") Title
+        input#keyTitle.form-control(type="text", placeholder="mykey", name="keyTitle")
+      .form-group
+        label(for="keyContent") Key
+        textarea#keyContent.form-control(name="keyContent")
+
+      button.btn.btn-default#newServerButton(type="submit") Add key

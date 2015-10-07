@@ -1,0 +1,20 @@
+extends ../layout
+block content
+  .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
+    h1.page-header SSH keys
+    form(action="/keys/new")
+      button.btn.btn-default#newKeyButton(type="submit") Add key
+    table.table.table-striped
+      thead
+        tr
+          th Title
+          th Key
+          th Actions
+      tbody
+        each row in keys
+          tr
+            td= row.name
+            td
+              textarea(style="width:100%;")= row.content
+            td
+              button.btn.btn-danger.btn-xs Remove

@@ -1,0 +1,100 @@
+nav.navbar.navbar-inverse.navbar-fixed-top
+  .container-fluid
+    .navbar-header
+      button.navbar-toggle.collapsed(type="button", data-toggle="collapse", data-target="#navbar", aria-expanded="false", aria-controls="navbar")
+        span.sr-only Toggle navigation
+        span.icon-bar
+        span.icon-bar
+        span.icon-bar
+      a.navbar-brand(href="/") Atomia Installation
+    #navbar.navbar-collapse.collapse
+      ul.nav.navbar-nav.navbar-right
+        li
+          a(href="#") Dashboard
+        li
+          a(href="#") Monitoring
+        li
+          a(href="#") Documentation
+.container-fluid
+  .row
+    .col-sm-3.col-md-2.sidebar
+      ul.nav.nav-sidebar
+        li.nav-header Installation process
+        li
+          a(href="/wizard")
+            span#menuitem <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> 1. Information (Readme!)
+        li
+          a(href="/wizard/puppet") <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> 2. Install Puppetmaster
+        li
+          a(href="/keys") 3. Add SSH keys
+        li
+          a(href="/wizard/monitoring") 4. Setup monitoring
+        li
+          a(href="/keys") 5. Setup Active Directory
+        li
+          a(href="/keys") 6. Setup the Atomia Database
+        li
+          a(href="/keys") 7. Configure Atomia applications
+        li
+          a(href="/keys") 8. Install Atomia Action Trail
+        li
+          a(href="/keys") 9. Install Atomia Identity
+        li
+          a(href="/keys") 10. Install Atomia Billing APIs
+        li
+          a(href="/keys") 11. Install Atomia Admin Panel
+        li
+          a(href="/keys") 12. Install Atomia Automation Server
+        li
+          a(href="/keys") 13. Install Atomia Control Panels
+        li
+          a(href="/keys") 14. Install Atomia Store
+        li
+          a(href="/keys") 15. Install GlusterFS
+        li
+          a(href="/keys") 16. Install Load balancers
+        li
+          a(href="/keys") 17. Install Atomia Domainreg
+        li
+          a(href="/keys") 17.1. Configure registries/registrars
+        li
+          a(href="/keys") 18. Install Atomia DNS
+        li
+          a(href="/keys") 18.1. Install Name servers
+        li
+          a(href="/keys") 19. Install Atomia Filesystem agent
+        li
+          a(href="/keys") 20. Install Awstats
+        li
+          a(href="/keys") 21. Install Daggre
+        li
+          a(href="/keys") 22. Install Cronserver
+        li
+          a(href="/keys") 23. Install Installatron
+        li
+          a(href="/keys") 24. Install Restatemachine
+        li
+          a(href="/keys") 24. Configure Apache cluster
+        li
+          a(href="/keys") 24.1 Add cluster node
+        li
+          a(href="/keys") 25. Configure IIS cluster
+        li
+          a(href="/keys") 25.1 Add cluster node
+        li
+          a(href="/keys") 26. Configure Mail cluster
+        li
+          a(href="/keys") 26.1 Add cluster node
+        li.nav-header Settings
+          li#menuitem
+            a(href="/keys")
+              span#menuitem SSH keys
+        li.nav-header Application servers
+        li#menuitem
+          span#menuitem No servers installed yet
+
+
+      ul.nav.nav-sidebar
+        li.nav-header Utility servers
+        li#menuitem
+          span#menuitem No servers installed yet

@@ -1,0 +1,20 @@
+extends ../layout
+block content
+  .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
+    h1.page-header Setup monitoring
+    p In order to make sure that all services deployed are operating correctly we strongly suggest that you deploy a monitoring solution. Atomia can automatically deploy Nagios for you, which is what we will do now! If you would like to skip this step just click the skip button below.
+    h2 Configure monitoring
+    p For most roles that you add to a server there are some configurable variables that you can change, if a a change is required it will be shown.
+
+    each c in config
+      .form-group
+        label(for='#{c.name}')
+          =c.name
+        &nbsp;<i>(#{c.doc})</i>
+        input.form-control(id="#{c.name}", class="#{c.required} configVariables", type="text", value="#{c.value}", name="#{c.name}")
+    input(type="hidden", id="moduleName", value="#{moduleName}")
+
+
+    h2 Add monitoring server
+    p Requires a base installed Ubuntu 14.04 server
+    include ../servers/add_server.jade

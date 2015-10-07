@@ -1,0 +1,7 @@
+{
+  "database" : {
+      "user": "root",
+      "password": "dbpassword",
+      "database": "hiera"
+    }
+}
