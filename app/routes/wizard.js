@@ -89,31 +89,52 @@ function getConfiguration (namespace, callback) {
     var child = exec(command);
     child.stdout.on('data', function(data) {
       var sData = data.split("\n");
+      var a = 0;
       for(var i = 0;i <= sData.length; i++)
       {
         if(typeof(sData[i]) != 'undefined' && sData[i] != '')
         {
           var siData = sData[i].split(" ");
-          var data = {};
-          data.required = "notrequired";
-          if(typeof(siData[1]) == 'undefined' || siData[1] == "")
-          {
-            siData[1] = "";
-            data.required = "required";
+          var hieraVar = "atomia::" + namespace.replace('/','::',namespace) + "::" + siData;
+          var inputData = siData;
+          database.query("SELECT * FROM configuration WHERE var = '" + hieraVar + "'", (function(inputData) { return function(err, rows, field){
+            a++;
+            if(err)
+              throw err;
+              
+            var data = {};
+            data.required = "notrequired";
+            if(typeof(inputData[1]) == 'undefined' || inputData[1] == "")
+            {
+              inputData[1] = "";
+              data.required = "required";
+            }
+            command = 'sh ' + __dirname + '/../scripts/get_variable_documentation.sh ' + namespace + " " + inputData[0];
+            doc = execSync.exec(command);
+            command2 = 'sh ' + __dirname + '/../scripts/get_variable_validation.sh ' + namespace + " " + inputData[0];
+            validation = execSync.exec(command2);
+            if(rows.length > 0)
+            {
+              data.value =  rows[0].val;
+              data.doc = doc.stdout;
+              data.validation = validation.stdout;
+              data.name = inputData[0];
+              variables[inputData[0]] = data;
+            }
+            else {
+              data.value = inputData[1];
+              data.doc = doc.stdout;
+              data.validation = validation.stdout;
+              data.name = inputData[0];
+              variables[inputData[0]] = data;
+            }
+            if(a == sData.length -1)
+                callback(variables);
           }
-          command = 'sh ' + __dirname + '/../scripts/get_variable_documentation.sh ' + namespace + " " + siData[0];
-          doc = execSync.exec(command);
-          command2 = 'sh ' + __dirname + '/../scripts/get_variable_validation.sh ' + namespace + " " + siData[0];
-          console.log(command);
-          validation = execSync.exec(command2);
-          data.value = siData[1];
-          data.doc = doc.stdout;
-          data.validation = validation.stdout;
-          data.name = siData[0];
-          variables[siData[0]] = data;
+        })(inputData));
         }
       }
-      callback(variables);
+
     });
     child.stderr.on('data', function(data) {
       console.log(data);
