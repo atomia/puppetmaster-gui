@@ -1,0 +1,15 @@
+extends ../layout
+block content
+  .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
+    h1.page-header Basic configuration
+
+    each c in config
+      .form-group
+        label(for='#{c.name}')
+          =c.name
+        &nbsp;<i>(#{c.doc})</i>
+        input.form-control(id="#{c.name}", class="#{c.required} configVariables", type="text", value="#{c.value}", name="#{c.name}", onChange='validateConfigField("#{c.name}")')
+        input(type="hidden", id="#{c.name}_validation", value="#{c.validation}")
+        input(type="hidden", id="moduleName", value="#{moduleName}")
+
+        input(type="hidden", id="serverRole", value="nagios_server")

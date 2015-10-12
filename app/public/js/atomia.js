@@ -4,6 +4,7 @@ $(document).ready(function(){
   // Register listeners
   var newServerButton = document.getElementById('newServerButton');
   var installPuppetButton = document.getElementById('installPuppet');
+  var serverHostname = document.getElementById('serverHostname');
 
   if(newServerButton)
   {
@@ -18,11 +19,33 @@ $(document).ready(function(){
       installPuppetMaster();
     }, false);
   }
+
+  if(serverHostname)
+  {
+    serverHostname.addEventListener('change', function() {
+      var hostname = $(this).val();
+      $('input[type=text], textarea').each(
+          function(index){
+              var input = $(this);
+              if (input.val().indexOf("$fqdn") >= 0)
+              {
+                console.log("found");
+                fqdn = input.val().replace("$fqdn",hostname);
+                input.val(fqdn);
+
+              }
+
+              //input.attr('id');
+          }
+      );
+    }, false);
+  }
+
 });
 
 function addServer () {
 
-  if(!validateConfigForm())
+  if($('input[type="text"].configVariables').size() != 0 && !validateConfigForm())
     return false;
 
   $('#serverAlertWarning').hide();
@@ -30,8 +53,8 @@ function addServer () {
   var username = $('#serverUsername').val();
   var password = $('#serverPassword').val();
   var serverKey = $('#serverKey').val();
-
-  var postData = { serverHostname : hostname, serverUsername : username, serverPassword: password, serverKey: serverKey };
+  var serverRole = $('#serverRole').val();
+  var postData = { serverHostname : hostname, serverUsername : username, serverPassword: password, serverKey: serverKey, serverRole: serverRole };
 
   $.post("/servers/new", postData, function(data) {
     if(typeof data.ok != 'undefined')
@@ -69,6 +92,11 @@ function installPuppetMaster() {
 
 function validateConfigForm() {
   var data = [];
+
+  if($('input[type="text"].invalid').size() > 0) {
+    alert("One or more variables does not pass validation, please adjust the marked fields");
+    return false;
+  }
   $('input[type="text"].required').each(function() {
     if(typeof (this) != 'undefined')
     {
@@ -107,8 +135,20 @@ function validateConfigForm() {
     url: '/config'
   });
   console.log(data);
-  return false;
+  return true;
 };
+
+function validateConfigField(field) {
+  $("#" + field).removeClass("invalid");
+  var subject = $("#" + field).val();
+console.log(subject);
+
+  var field_val = new RegExp($("#" + field + "_validation").val().replace(/(\r\n|\n|\r)/gm,"").trim(),"g");
+  console.log(field_val);
+  if(!field_val.test(subject))
+    $("#" + field).addClass("invalid");
+
+}
 
 function updateProgressBar(barId, progress) {
   $(barId).css( "width", progress );
@@ -122,6 +162,7 @@ function updateConsole(consoleId, data) {
 }
 socket.on('server', function (data) {
   console.log(data);
+  $("#serverConsole").show();
   if(typeof data.status != 'undefined' && typeof $('#serverProgressbar') != 'undefined'){
       updateProgressBar('#serverProgressbar', data.progress);
   }
@@ -134,6 +175,14 @@ socket.on('server', function (data) {
       $("#serverAlertWarning").html("Error: Could not bootstrap the server, please check the log below and try again!");
       $("#serverAlertWarning").show();
       updateProgressBar('#serverProgressbar', "100%");
+    }
+    if(data.done == "ok")
+    {
+      updateProgressBar('#serverProgressbar', "100%");
+      $("#serverAlertSuccess").html("All done! The server was added succesfully!");
+      $("#serverAlertSuccess").show();
+      $("#nextStep").show();
+
     }
   }
 });

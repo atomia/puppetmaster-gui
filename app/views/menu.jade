@@ -24,13 +24,33 @@ nav.navbar.navbar-inverse.navbar-fixed-top
           a(href="/wizard")
             span#menuitem <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> 1. Information (Readme!)
         li
-          a(href="/wizard/puppet") <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> 2. Install Puppetmaster
+          a(href="/wizard/puppet")
+            !=menuStatus["nagios_server"]
+            |  2. Install Puppetmaster
         li
           a(href="/keys") 3. Add SSH keys
         li
-          a(href="/wizard/monitoring") 4. Setup monitoring
+          a(href="/wizard/basic") 4. Basic configuration
+        li
+          a(href="/wizard/monitoring")
+            !=menuStatus["nagios_server"]
+            |  4. Setup monitoring
+        li
+          a(href="/wizard/domainreg")
+            !=menuStatus["domainreg"]
+            |  17. Install Atomia Domainreg
+        li
+          a(href="/wizard/atomiadns")
+            !=menuStatus["atomiadns"]
+            |  18. Install Atomia DNS
+        li
+          a(href="/keys") 18.1. Install Name servers
+        li
+          a(href="/keys") 5. Install internal mail server
         li
           a(href="/keys") 5. Setup Active Directory
+        li
+          a(href="/keys") 15. Install GlusterFS
         li
           a(href="/keys") 6. Setup the Atomia Database
         li
@@ -50,17 +70,7 @@ nav.navbar.navbar-inverse.navbar-fixed-top
         li
           a(href="/keys") 14. Install Atomia Store
         li
-          a(href="/keys") 15. Install GlusterFS
-        li
           a(href="/keys") 16. Install Load balancers
-        li
-          a(href="/keys") 17. Install Atomia Domainreg
-        li
-          a(href="/keys") 17.1. Configure registries/registrars
-        li
-          a(href="/keys") 18. Install Atomia DNS
-        li
-          a(href="/keys") 18.1. Install Name servers
         li
           a(href="/keys") 19. Install Atomia Filesystem agent
         li

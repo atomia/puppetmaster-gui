@@ -13,9 +13,44 @@ router.get('/puppet', function(req, res, next) {
       res.render('wizard/puppet');
 });
 
+router.get('/basic', function(req, res, next) {
+  basicConfig = {};
+
+  basicConfig["atomia_domain"] = {
+    "name" : "atomia_domain",
+    "required" : "required",
+    "value" : "",
+    "doc" : "The domain name where all your Atomia applications will be placed. For example writing atomia.com in the box below will mean that your applications will be accessible at hcp.atomia.com, billing.atomia.com etc. Please make sure that you have a valid wildcard SSL certificate for the domain name you choose as the Atomia frontend applications are served over SSL"
+  }
+
+  res.render('wizard/basic', { config: basicConfig, moduleName: "config" });
+
+});
+
+router.get('/domainreg', function(req, res, next) {
+  getConfiguration('domainreg', function(config){
+    moduleName = "atomia::domainreg";
+    database.query("SELECT * FROM ssh_keys", function(err, rows, field){
+      if(err)
+        throw err;
+        res.render('wizard/domainreg', { keys: rows, config: config, moduleName: moduleName });
+    })
+  });
+});
+
+router.get('/atomiadns', function(req, res, next) {
+  getConfiguration('atomiadns', function(config){
+    moduleName = "atomia::atomiadns";
+    database.query("SELECT * FROM ssh_keys", function(err, rows, field){
+      if(err)
+        throw err;
+        res.render('wizard/atomiadns', { keys: rows, config: config, moduleName: moduleName });
+    })
+  });
+});
+
 router.get('/monitoring', function(req, res, next) {
   getConfiguration('nagios/server', function(config){
-    console.log(config);
     moduleName = "atomia::nagios::server";
     database.query("SELECT * FROM ssh_keys", function(err, rows, field){
       if(err)
@@ -68,8 +103,12 @@ function getConfiguration (namespace, callback) {
           }
           command = 'sh ' + __dirname + '/../scripts/get_variable_documentation.sh ' + namespace + " " + siData[0];
           doc = execSync.exec(command);
+          command2 = 'sh ' + __dirname + '/../scripts/get_variable_validation.sh ' + namespace + " " + siData[0];
+          console.log(command);
+          validation = execSync.exec(command2);
           data.value = siData[1];
           data.doc = doc.stdout;
+          data.validation = validation.stdout;
           data.name = siData[0];
           variables[siData[0]] = data;
         }

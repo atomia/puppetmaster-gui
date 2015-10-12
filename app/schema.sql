@@ -29,8 +29,9 @@ CREATE TABLE `configuration` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `var` varchar(255) DEFAULT NULL,
   `val` varchar(255) DEFAULT NULL,
-  `env` varchar(255) DEFAULT NULL
-  PRIMARY KEY (`id`)
+  `env` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY (`var`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 # SELECT var, val FROM servers JOIN configuration ON fk_server = servers.id WHERE servers.hostname='%{fqdn}'

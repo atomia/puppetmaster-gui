@@ -23,6 +23,9 @@ var wizard = require('./routes/wizard');
 var config = require('./routes/config');
 var roles = require('./routes/roles')
 
+
+var middleWareMenu = require('./middleware/menu');
+
 nconf.file({ file: 'config.json'});
 
 dbConf = (nconf.get('database'));
@@ -46,6 +49,10 @@ app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+
+// Middleware
+app.use(middleWareMenu.handler);
+
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

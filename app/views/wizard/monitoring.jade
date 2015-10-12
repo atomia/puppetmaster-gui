@@ -6,15 +6,12 @@ block content
     h2 Configure monitoring
     p For most roles that you add to a server there are some configurable variables that you can change, if a a change is required it will be shown.
 
-    each c in config
-      .form-group
-        label(for='#{c.name}')
-          =c.name
-        &nbsp;<i>(#{c.doc})</i>
-        input.form-control(id="#{c.name}", class="#{c.required} configVariables", type="text", value="#{c.value}", name="#{c.name}")
-    input(type="hidden", id="moduleName", value="#{moduleName}")
-
-
-    h2 Add monitoring server
-    p Requires a base installed Ubuntu 14.04 server
-    include ../servers/add_server.jade
+    include config_form.jade
+    input(type="hidden", id="serverRole", value="nagios_server")
+    
+    if !menuStatus["nagios_server"]
+      h2 Add monitoring server
+      p Requires a base installed Ubuntu 14.04 server
+      include ../servers/add_server.jade
+    else
+      | You already have a Monitoring server installed. Good job! If you would like to change the configuration you can do so above.

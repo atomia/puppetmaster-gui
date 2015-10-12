@@ -1,0 +1,20 @@
+extends ../layout
+block content
+  .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
+    h1.page-header Install Atomia domainreg
+    p Atomia domainreg is ...
+
+    if !menuStatus["domainreg"]
+      h2 Add the Atomia Domainreg server
+      p Requires a base installed Ubuntu 14.04 server
+      include ../servers/add_server.jade
+    else
+      | You already have an Atomia domainreg server installed. Good job! If you would like to change the configuration you can do so above.
+
+    h2 Configure Atomia Domainreg
+    p For most roles that you add to a server there are some configurable variables that you can change, if a a change is required it will be shown.
+
+    include config_form.jade
+    input(type="hidden", id="serverRole", value="domainreg")
+
+    include ../servers/add_server_status.jade
