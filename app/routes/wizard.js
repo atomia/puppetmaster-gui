@@ -101,7 +101,7 @@ function getConfiguration (namespace, callback) {
             a++;
             if(err)
               throw err;
-              
+
             var data = {};
             data.required = "notrequired";
             if(typeof(inputData[1]) == 'undefined' || inputData[1] == "")
@@ -113,6 +113,20 @@ function getConfiguration (namespace, callback) {
             doc = execSync.exec(command);
             command2 = 'sh ' + __dirname + '/../scripts/get_variable_validation.sh ' + namespace + " " + inputData[0];
             validation = execSync.exec(command2);
+            command3 = 'sh ' + __dirname + '/../scripts/get_variable_options.sh ' + namespace + " " + inputData[0];
+            options = execSync.exec(command3).stdout.split(',');
+            if(options.length > 0){
+              data.options = [];
+              for(var b = 0;b <= options.length; b++){
+                data.options[b] = options[b];
+                if(options[b] == 'advanced')
+                  data.advanced = 'true';
+              }
+            }
+            else {
+              data.options = "";
+            }
+            console.log(options);
             if(rows.length > 0)
             {
               data.value =  rows[0].val;

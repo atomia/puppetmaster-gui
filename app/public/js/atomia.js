@@ -5,6 +5,21 @@ $(document).ready(function(){
   var newServerButton = document.getElementById('newServerButton');
   var installPuppetButton = document.getElementById('installPuppet');
   var serverHostname = document.getElementById('serverHostname');
+  var toggleAdvanced = document.getElementById('toggleAdvanced');
+
+  if(toggleAdvanced)
+  {
+    toggleAdvanced.addEventListener('click', function() {
+      $("#advanced_options").toggle(400, function() {
+        if($("#advanced_options").is(":visible")){
+          $("#toggleAdvanced").html("Hide advanced configuration options");
+        } else {
+          $("#toggleAdvanced").html("Show advanced configuration options");
+        }
+      });
+
+    }, false);
+  }
 
   if(newServerButton)
   {
