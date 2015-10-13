@@ -3,6 +3,7 @@ var router = express.Router();
 var sys = require('sys');
 var exec = require('child_process').exec;
 var execSync = require('execSync');
+var fs = require('fs');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -121,12 +122,24 @@ function getConfiguration (namespace, callback) {
                 data.options[b] = options[b];
                 if(options[b] == 'advanced')
                   data.advanced = 'true';
+                else if(typeof options[b] != 'undefined' && options[b].split("=")[0] == 'default_file'){
+                  try
+                  {
+                  var content = fs.readFileSync("/etc/puppet/modules/atomia/files/" + namespace + "/" + options[b].split("=")[1])
+                  inputData[1] = content;
+                  data.textArea = 'true';
+                  }
+                  catch (e)
+                  {
+                    console.log("File missing " + options[b].split("=")[1]);
+                  }
+                }
               }
             }
             else {
               data.options = "";
             }
-            console.log(options);
+
             if(rows.length > 0)
             {
               data.value =  rows[0].val;

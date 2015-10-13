@@ -21,7 +21,11 @@ div#advanced_options(style="display: none;")
         - var extraClass = ""
         if c.validation == "%password"
           - extraClass = "password";
-        input.form-control(id="#{c.name}", class="#{c.required} configVariables #{extraClass}", type="text", value="#{c.value}", name="#{c.name}", onChange='validateConfigField("#{c.name}")')
+        if c.textArea
+          textarea.form-control(id="#{c.name}", class="#{c.required} configVariables #{extraClass}", name="#{c.name}")
+            | #{c.value}
+        else
+          input.form-control(id="#{c.name}", class="#{c.required} configVariables #{extraClass}", type="text", value="#{c.value}", name="#{c.name}", onChange='validateConfigField("#{c.name}")')
         if c.validation == "%password"
           button.btn.btn-xs.btn-info#generatePassword(type="submit",onClick="generatePasswordForm('#{c.name}');return false;") Generate new password
 
