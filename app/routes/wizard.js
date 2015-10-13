@@ -131,14 +131,14 @@ function getConfiguration (namespace, callback) {
             {
               data.value =  rows[0].val;
               data.doc = doc.stdout;
-              data.validation = validation.stdout;
+              data.validation = validation.stdout.trim();
               data.name = inputData[0];
               variables[inputData[0]] = data;
             }
             else {
               data.value = inputData[1];
               data.doc = doc.stdout;
-              data.validation = validation.stdout;
+              data.validation = validation.stdout.trim();
               data.name = inputData[0];
               variables[inputData[0]] = data;
             }

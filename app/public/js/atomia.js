@@ -7,6 +7,13 @@ $(document).ready(function(){
   var serverHostname = document.getElementById('serverHostname');
   var toggleAdvanced = document.getElementById('toggleAdvanced');
 
+  $('.password').each(
+    function (index)
+    {
+      if($(this).val() == "")
+        generatePasswordForm($(this).attr('id'));
+    }
+  );
   if(toggleAdvanced)
   {
     toggleAdvanced.addEventListener('click', function() {
@@ -156,13 +163,32 @@ function validateConfigForm() {
 function validateConfigField(field) {
   $("#" + field).removeClass("invalid");
   var subject = $("#" + field).val();
-console.log(subject);
+  var field_val = "";
+  if($("#" + field + "_validation").val() == "%password")
+  {
 
-  var field_val = new RegExp($("#" + field + "_validation").val().replace(/(\r\n|\n|\r)/gm,"").trim(),"g");
-  console.log(field_val);
+      field_val = new RegExp('[a-zA-Z0-9z!@#$%^&*()+<>]{8,}',"g");
+  }
+  else {
+    field_val = new RegExp($("#" + field + "_validation").val().replace(/(\r\n|\n|\r)/gm,"").trim(),"g");
+  }
+
   if(!field_val.test(subject))
     $("#" + field).addClass("invalid");
 
+}
+
+function generatePasswordForm(field) {
+  var length = 12;
+  var chars = "abcdefghijklmnopqrstuvwxyz!@#$%^&*()+<>ABCDEFGHIJKLMNOP1234567890";
+  var pass = "";
+  for (var x = 0; x < length; x++) {
+    var i = Math.floor(Math.random() * chars.length);
+    pass += chars.charAt(i);
+  }
+
+  $("#" + field).val(pass);
+  validateConfigField(field);
 }
 
 function updateProgressBar(barId, progress) {

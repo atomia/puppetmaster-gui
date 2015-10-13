@@ -18,6 +18,12 @@ div#advanced_options(style="display: none;")
         label(for='#{c.name}')
           =c.name
         &nbsp;<i>(#{c.doc})</i>
-        input.form-control(id="#{c.name}", class="#{c.required} configVariables", type="text", value="#{c.value}", name="#{c.name}", onChange='validateConfigField("#{c.name}")')
+        - var extraClass = ""
+        if c.validation == "%password"
+          - extraClass = "password";
+        input.form-control(id="#{c.name}", class="#{c.required} configVariables #{extraClass}", type="text", value="#{c.value}", name="#{c.name}", onChange='validateConfigField("#{c.name}")')
+        if c.validation == "%password"
+          button.btn.btn-xs.btn-info#generatePassword(type="submit",onClick="generatePasswordForm('#{c.name}');return false;") Generate new password
+
         input(type="hidden", id="#{c.name}_validation", value="#{c.validation}")
         input(type="hidden", id="moduleName", value="#{moduleName}")
