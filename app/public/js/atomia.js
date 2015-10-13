@@ -11,7 +11,10 @@ $(document).ready(function(){
     function (index)
     {
       if($(this).val() == "")
+      {
         generatePasswordForm($(this).attr('id'));
+      }
+      $(this).removeClass("required");
     }
   );
   if(toggleAdvanced)
@@ -166,8 +169,11 @@ function validateConfigField(field) {
   var field_val = "";
   if($("#" + field + "_validation").val() == "%password")
   {
-
       field_val = new RegExp('[a-zA-Z0-9z!@#$%^&*()+<>]{8,}',"g");
+  }
+  else if($("#" + field + "_validation").val() == "%url")
+  {
+      field_val = new RegExp('^(https?:\/\/).*',"gi");
   }
   else {
     field_val = new RegExp($("#" + field + "_validation").val().replace(/(\r\n|\n|\r)/gm,"").trim(),"g");
