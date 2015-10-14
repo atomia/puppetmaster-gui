@@ -23,6 +23,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     test1.vm.network "public_network"
     test1.vm.hostname = "test1.atomia.local"
   end
+
+  config.vm.define "test2" do |test2|
+    test2.vm.box = "ubuntu/trusty64"
+
+    test2.vm.network "private_network", ip: "192.168.33.12"
+    test2.vm.network "public_network"
+    test2.vm.hostname = "test2.atomia.local"
+  end  
+
   config.ssh.insert_key = false
   config.ssh.username = "vagrant"
   config.ssh.password = "vagrant"

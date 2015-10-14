@@ -1,5 +1,5 @@
 var socket = io();
-
+var allTldProcesses = {};
 $(document).ready(function(){
   // Register listeners
   var newServerButton = document.getElementById('newServerButton');
@@ -89,7 +89,6 @@ function addServer () {
     }
   })
   .error(function(err){
-    console.log(err);
     $('#serverAlertWarning').html("Error validating server: " + err.responseText);
     $('#serverAlertWarning').show();
   });
@@ -136,6 +135,7 @@ function validateConfigForm() {
 
   moduleName = $("#moduleName").val();
   // Config is OK let's save it
+
   $('input[type="text"].configVariables').each(function() {
     if(typeof (this) != 'undefined')
     {
@@ -143,8 +143,20 @@ function validateConfigForm() {
       {
         var tmpData = {};
         var tmpName = moduleName + "::" + $('#'+this.id).attr("name");
-        tmpData.value = this.value;
-        tmpData.key = tmpName;
+        // Special cases
+        if(typeof domainregConfigured == 'undefined' && tmpName == "atomia::domainreg::domainreg_tld_config_hash")
+        {
+          tmpData.value = "";
+          $("[name='atomia::domainreg::domainreg_tld_config_hash']").each(function() {
+            name = $(this).attr('id').replace("tld_process_","");
+            tmpData.value = tmpData.value + "name: | \n" + $($this).val();
+          });
+          domainregConfigured = true;
+        }
+        else {
+          tmpData.value = this.value;
+        }
+        tmpData.key = tmpName;        
         data.push(tmpData);
       }
     }
@@ -195,6 +207,38 @@ function generatePasswordForm(field) {
 
   $("#" + field).val(pass);
   validateConfigField(field);
+}
+
+function addTLDProcess() {
+  if($("#domainreg_tld_config_hash_name").val() == "") {
+    alert("Fill in the name field to add the TLD process");
+    return;
+  }
+  // Add hidden fields with current tld process
+  var hiddenTLDFields = "<input type='hidden' class='configVariables' id='tld_process_" + $("#domainreg_tld_config_hash_name").val()  + "' name='atomia::domainreg::domainreg_tld_config_hash' value='" + $("#domainreg_tld_config_hash").val() + "' />";
+  $("#tld_processes").append(hiddenTLDFields);
+
+  // Add current tld process to list of processes
+  var listItem = "<li id='" + $("#domainreg_tld_config_hash_name").val() + "'><a href='#' onClick='loadTLDProcess(\""+$("#domainreg_tld_config_hash_name").val()+"\");return false;'>"+$("#domainreg_tld_config_hash_name").val()+"</a> <a href='#'  onClick='deleteTLDProcess(\""+$("#domainreg_tld_config_hash_name").val()+"\");return false;'>[delete]</a></li>"
+  $("#processList").append(listItem);
+
+  allTldProcesses[$("#domainreg_tld_config_hash_name").val()] =  $("#domainreg_tld_config_hash").val();
+
+  // Clear form
+  $("#domainreg_tld_config_hash_name").val("");
+  $("#domainreg_tld_config_hash").val("");
+}
+
+function loadTLDProcess(processName) {
+    $("#domainreg_tld_config_hash_name").val(processName);
+    $("#domainreg_tld_config_hash").val(allTldProcesses[processName] );
+    $("#processList li[id='"+processName+"']").remove();
+    $("#tld_processes input[id='tld_process_" + processName+ "'").remove();
+}
+
+function deleteTLDProcess(processName) {
+  $("#processList li[id='"+processName+"']").remove();
+  $("#tld_processes input[id='tld_process_" + processName+ "']").remove();
 }
 
 function updateProgressBar(barId, progress) {

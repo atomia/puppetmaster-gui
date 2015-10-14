@@ -1,15 +1,18 @@
 each c in config
   if !c.advanced
-    .form-group
-      label(for='#{c.name}')
-        =c.name
-      &nbsp;<i>(#{c.doc})</i>
-      input.form-control(id="#{c.name}", class="#{c.required} configVariables", type="text", value="#{c.value}", name="#{c.name}", onChange='validateConfigField("#{c.name}")')
-      input(type="hidden", id="#{c.name}_validation", value="#{c.validation}")
-      input(type="hidden", id="moduleName", value="#{moduleName}")
+    if c.name == 'domainreg_tld_config_hash'
+      include domainreg_tld_config_hash.jade
+    else
+      .form-group
+        label(for='#{c.name}')
+          =c.name
+        &nbsp;<i>(#{c.doc})</i>
+        input.form-control(id="#{c.name}", class="#{c.required} configVariables", type="text", value="#{c.value}", name="#{c.name}", onChange='validateConfigField("#{c.name}")')
+        input(type="hidden", id="#{c.name}_validation", value="#{c.validation}")
+        input(type="hidden", id="moduleName", value="#{moduleName}")
 
 center
-  a.btn.btn-info#toggleAdvanced(role="button", data-toggle="collapse", href="#collapseExample", aria-expanded="false", aria-controls="collapseExample")
+  a.btn.btn-default#toggleAdvanced(role="button", data-toggle="collapse", href="#collapseExample", aria-expanded="false", aria-controls="collapseExample")
     | Show advanced configuration options
 div#advanced_options(style="display: none;")
   each c in config

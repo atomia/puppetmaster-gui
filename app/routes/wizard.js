@@ -4,6 +4,7 @@ var sys = require('sys');
 var exec = require('child_process').exec;
 var execSync = require('execSync');
 var fs = require('fs');
+var yaml = require('yamljs');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -34,6 +35,7 @@ router.get('/domainreg', function(req, res, next) {
     database.query("SELECT * FROM ssh_keys", function(err, rows, field){
       if(err)
         throw err;
+        console.log(config);
         res.render('wizard/domainreg', { keys: rows, config: config, moduleName: moduleName });
     })
   });
@@ -142,7 +144,15 @@ function getConfiguration (namespace, callback) {
 
             if(rows.length > 0)
             {
+              console.log(hieraVar);
+              if(inputData[0] == 'domainreg_tld_config_hash') {
+                domainregData = yaml.parse(rows[0].val);
+                console.log(domainregData);
+                data.value = domainRegData;
+              }
+              else {
               data.value =  rows[0].val;
+              }
               data.doc = doc.stdout;
               data.validation = validation.stdout.trim();
               data.name = inputData[0];
