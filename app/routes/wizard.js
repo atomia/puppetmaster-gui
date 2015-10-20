@@ -16,18 +16,23 @@ router.get('/puppet', function(req, res, next) {
 });
 
 router.get('/basic', function(req, res, next) {
-  basicConfig = {};
-
-  basicConfig["atomia_domain"] = {
-    "name" : "atomia_domain",
-    "required" : "required",
-    "value" : "",
-    "doc" : "The domain name where all your Atomia applications will be placed. For example writing atomia.com in the box below will mean that your applications will be accessible at hcp.atomia.com, billing.atomia.com etc. Please make sure that you have a valid wildcard SSL certificate for the domain name you choose as the Atomia frontend applications are served over SSL"
-  }
-
-  res.render('wizard/basic', { config: basicConfig, moduleName: "config" });
+  getConfiguration('config', function(config){
+    res.render('wizard/basic', { config: config, moduleName: "atomia::config" });
+  });
 
 });
+
+router.get('/internaldns', function(req, res, next) {
+  getConfiguration('internaldns', function(config){
+      moduleName = "atomia::internaldns";
+      database.query("SELECT * FROM ssh_keys", function(err, rows, field){
+        if(err)
+          throw err;
+          res.render('wizard/internaldns', { keys: rows, config: config, moduleName: moduleName });
+      })
+  });
+});
+
 
 router.get('/domainreg', function(req, res, next) {
   getConfiguration('domainreg', function(config){
@@ -117,8 +122,9 @@ function getConfiguration (namespace, callback) {
         {
           var siData = sData[i].split(" ");
           var hieraVar = "atomia::" + namespace.replace('/','::',namespace) + "::" + siData;
+          console.log(hieraVar);
           var inputData = siData;
-          database.query("SELECT * FROM configuration WHERE var = '" + hieraVar + "'", (function(inputData) { return function(err, rows, field){
+          database.query("SELECT * FROM configuration WHERE var = '" + hieraVar.replace(",","") + "'", (function(inputData) { return function(err, rows, field){
             a++;
             if(err)
               throw err;

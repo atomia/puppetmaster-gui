@@ -53,17 +53,21 @@ router.post('/new', function(req, res) {
           res.send(JSON.stringify({error: 'noaccess'}));
     });
   }
-console.log(serverKeyId);
+
   if(serverKeyId != null && serverKeyId != "" && typeof(serverKeyId) != 'undefined'){
     database.query("SELECT * FROM ssh_keys WHERE id = '" + serverKeyId + "'", function(err, rows, field){
       serverKey = rows[0].content;
-      initiateConnection();
+      database.query("select * from roles JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
+        initiateConnection(rows[0]['hostname']);
+      });
     });
   }else {
-    initiateConnection();
+    database.query("select * from roles  JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
+      initiateConnection(rows[0]['hostname']);
+    });
   }
 
-  function initiateConnection()
+  function initiateConnection(puppetHostname)
   {
     // Verify that ssh works
   	var sshSession = new ssh({
@@ -106,21 +110,21 @@ console.log(serverKeyId);
             io.emit('server', { status: 'Downloading bootstrap file', progress: '25%' });
           }
     })
-    .exec('sudo ./bootstrap_linux.sh vagrant-ubuntu-trusty-64.routerc623c2.com', {
+    .exec('sudo ./bootstrap_linux.sh ' + puppetHostname, {
       out: function(stdout){
         console.log(stdout);
         io.emit('server', { consoleData: stdout });
-          progress = progress + 1;
+          progress = progress + 0.1;
           if(progress > 95)
             progress = 95;
             io.emit('server', { status: 'Runnng bootstrap script', progress: progress + "%" });
         },
       })
-      .exec('sudo service puppet stop && sudo puppet agent --test && sudo service puppet start', {
+      .exec('sudo service puppet stop && sudo puppet agent --test --waitforcert 1 && sudo service puppet start', {
         out: function(stdout){
           console.log(stdout);
           io.emit('server', { consoleData: stdout });
-            progress = progress + 1;
+            progress = progress + 0.1;
             if(progress > 95)
               progress = 95;
               io.emit('server', { status: 'Runnng bootstrap script', progress: progress + "%" });
@@ -132,8 +136,7 @@ console.log(serverKeyId);
             io.emit('server', { done: 'error' });
             return;
           }
-          signed = execSync.exec("puppet cert sign " + serverHostname);
-          console.log(signed);
+
           io.emit('server', { consoleData: "Adding server to local database" });
           database.query("INSERT INTO servers VALUES(null,'" + serverHostname + "','" + serverUsername + "','" + serverPassword + "','" + serverKeyId + "')", function(err, rows, field) {
             if(err)

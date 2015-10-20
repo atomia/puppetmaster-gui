@@ -3,6 +3,7 @@ var allTldProcesses = {};
 $(document).ready(function(){
   // Register listeners
   var newServerButton = document.getElementById('newServerButton');
+  var saveConfigurationButton = document.getElementById('saveConfigurationButton');
   var installPuppetButton = document.getElementById('installPuppet');
   var serverHostname = document.getElementById('serverHostname');
   var toggleAdvanced = document.getElementById('toggleAdvanced');
@@ -35,6 +36,13 @@ $(document).ready(function(){
   {
     newServerButton.addEventListener('click', function() {
       addServer();
+    }, false);
+  }
+
+  if(saveConfigurationButton)
+  {
+    saveConfigurationButton.addEventListener('click', function() {
+      validateConfigForm();
     }, false);
   }
 
@@ -156,7 +164,7 @@ function validateConfigForm() {
         else {
           tmpData.value = this.value;
         }
-        tmpData.key = tmpName;        
+        tmpData.key = tmpName;
         data.push(tmpData);
       }
     }

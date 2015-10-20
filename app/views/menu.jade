@@ -32,6 +32,10 @@ nav.navbar.navbar-inverse.navbar-fixed-top
         li
           a(href="/wizard/basic") 4. Basic configuration
         li
+          a(href="/wizard/internaldns")
+            !=menuStatus["internaldns"]
+            |  5. Setup Internal DNS          
+        li
           a(href="/wizard/monitoring")
             !=menuStatus["nagios_server"]
             |  4. Setup monitoring
