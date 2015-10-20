@@ -83,6 +83,17 @@ router.post('/puppet', function(req, res, next) {
     res.send(JSON.stringify({ok: "ok"}));
 });
 
+router.get('/glusterfs', function(req, res, next) {
+  getConfiguration('glusterfs', function(config){
+    moduleName = "atomia::nagios::server";
+    database.query("SELECT * FROM ssh_keys", function(err, rows, field){
+      if(err)
+        throw err;
+        res.render('wizard/glusterfs', { keys: rows, config: config, moduleName: moduleName });
+    })
+  });
+});
+
 /*
 Fetches configuraton from the Puppet module
 */

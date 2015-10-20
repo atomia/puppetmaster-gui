@@ -50,7 +50,9 @@ nav.navbar.navbar-inverse.navbar-fixed-top
         li
           a(href="/keys") 5. Setup Active Directory
         li
-          a(href="/keys") 15. Install GlusterFS
+          a(href="/wizard/glusterfs")
+            !=menuStatus["glusterfss"]
+            |  18. Install GlusterFS
         li
           a(href="/keys") 6. Setup the Atomia Database
         li

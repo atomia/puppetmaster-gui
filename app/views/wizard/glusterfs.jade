@@ -1,0 +1,19 @@
+extends ../layout
+block content
+  .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
+    h1.page-header Install GlusterFS
+    p GlusterFS is a scalable network filesystem. Using common off-the-shelf hardware, you can create large, distributed storage solutions for media streaming, data analysis, and other data- and bandwidth-intensive tasks. GlusterFS is free and open source software.
+    if !menuStatus["glusterfss"]
+      h2 Add your GlusterFS nodes
+      p You can have how many nodes you like in your cluster. We will create volumes replicated on all provided nodes
+
+    else
+      | You already have GlusterFS servers installed. Good job! If you would like to change the configuration you can do so above.
+
+    h2 Configure GlusterFS
+    p For most roles that you add to a server there are some configurable variables that you can change, if a a change is required it will be shown.
+
+    include config_form.jade
+    input(type="hidden", id="serverRole", value="domainreg")
+
+    include ../servers/add_server_status.jade
