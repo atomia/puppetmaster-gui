@@ -12,4 +12,6 @@ block content
         input(type="hidden", id="#{c.name}_validation", value="#{c.validation}")
         input(type="hidden", id="moduleName", value="#{moduleName}")
 
-        input(type="hidden", id="serverRole", value="nagios_server")
+        input(type="hidden", id="serverRole", value="basic")
+        <br/>
+        button.btn.btn-lg.btn-success#newServerButton(type="submit",onClick="return false;") Save configuration

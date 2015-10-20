@@ -65,7 +65,7 @@ router.get('/monitoring', function(req, res, next) {
 
 router.post('/puppet', function(req, res, next) {
 
-    var child = exec("repo=\"$(wget -q -O - http://public.apt.atomia.com/setup.sh.shtml | sed s/%distcode/`lsb_release -c | awk '{ print $2 }'`/g)\"; echo \"$repo\" | sh && apt-get update && apt-get install -y atomia-puppetmaster");
+    var child = exec("repo=\"$(wget -q -O - http://public.apt.atomia.com/setup.sh.shtml | sed s/%distcode/`lsb_release -c | awk '{ print $2 }'`/g)\"; echo \"$repo\" | sh && apt-get update && apt-get install -y atomia-puppetmaster && /bin/setup-puppet-atomia");
     child.stdout.on('data', function(data) {
       io.emit('server', { consoleData: data });
     });
@@ -75,6 +75,13 @@ router.post('/puppet', function(req, res, next) {
       child.kill();
     });
     child.on('close', function(code) {
+        var hostname =  execSync.exec("facter fqdn 2> /dev/null").stdout;
+        database.query("INSERT INTO servers VALUES(null,'" + hostname + "','','','')",function(err, rows, field) {
+          serverId = rows["insertId"];
+          database.query("INSERT INTO roles VALUES(null,'puppet','" + serverId + "')", function(err, rows, field) {
+          });
+        });
+
         io.emit('server', { done: 'ok' });
     });
 
