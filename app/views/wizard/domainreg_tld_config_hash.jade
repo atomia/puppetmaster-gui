@@ -7,6 +7,15 @@ label(for='#{c.name}')
 p
   | !{extraDoc}
 
+
+
+script.
+  $(document).ready(function(){
+    domainregLoad(!{JSON.stringify(c)});
+    //$("#domainreg_tld_config_hash").val("!{val}");
+  });
+
+
 label(for='processList')
   | Process list (All processes to be added, click to edit)
 ul#processList

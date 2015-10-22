@@ -3,6 +3,7 @@ var allTldProcesses = {};
 $(document).ready(function(){
   // Register listeners
   var newServerButton = document.getElementById('newServerButton');
+  var configureServerButton = document.getElementById('configureServerButton');
   var saveConfigurationButton = document.getElementById('saveConfigurationButton');
   var installPuppetButton = document.getElementById('installPuppet');
   var serverHostname = document.getElementById('serverHostname');
@@ -36,6 +37,13 @@ $(document).ready(function(){
   {
     newServerButton.addEventListener('click', function() {
       addServer();
+    }, false);
+  }
+
+  if(configureServerButton)
+  {
+    configureServerButton.addEventListener('click', function() {
+      configureServer();
     }, false);
   }
 
@@ -73,7 +81,6 @@ $(document).ready(function(){
       );
     }, false);
   }
-
 });
 
 function addServer () {
@@ -102,6 +109,30 @@ function addServer () {
   });
 
 };
+
+function configureServer() {
+  if($('input[type="text"].configVariables').size() != 0 && !validateConfigForm())
+    return false;
+
+    $('#serverAlertWarning').hide();
+    var hostname = $('#serverHostname').val();
+    var username = $('#serverUsername').val();
+    var password = $('#serverPassword').val();
+    var serverKey = $('#serverKey').val();
+    var serverRole = $('#serverRole').val();
+    var postData = { serverHostname : hostname, serverUsername : username, serverPassword: password, serverKey: serverKey, serverRole: serverRole };
+    $.post("/servers/update", postData, function(data) {
+      if(typeof data.ok != 'undefined')
+      {
+        $('#updateServerButton').hide();
+        $('#serverProgress').show();
+      }
+    })
+    .error(function(err){
+      $('#serverAlertWarning').html("Error validating server: " + err.responseText);
+      $('#serverAlertWarning').show();
+    });
+}
 
 function installPuppetMaster() {
 
@@ -144,34 +175,46 @@ function validateConfigForm() {
   moduleName = $("#moduleName").val();
   // Config is OK let's save it
 
-  $('input[type="text"].configVariables').each(function() {
+  $('.configVariables').each(function() {
+    console.log(this);
     if(typeof (this) != 'undefined')
     {
       if(this.value != "")
       {
         var tmpData = {};
         var tmpName = moduleName + "::" + $('#'+this.id).attr("name");
+        console.log(tmpName);
         // Special cases
+        tmpData.key = tmpName;
+        tmpData.value = "";
         if(typeof domainregConfigured == 'undefined' && tmpName == "atomia::domainreg::domainreg_tld_config_hash")
         {
-          tmpData.value = "";
-          $("[name='atomia::domainreg::domainreg_tld_config_hash']").each(function() {
+          tmpData.value = new Object();
+          $("[name='domainreg_tld_config_hash']").each(function() {
             name = $(this).attr('id').replace("tld_process_","");
-            tmpData.value = tmpData.value + "name: | \n" + $($this).val();
+            console.log("Name: " + name);
+            if(name != "domainreg_tld_config_hash") {
+
+              tmpData.value[name] = $(this).val();
+            }
+
           });
+          tmpData.value = JSON.stringify(tmpData.value);
           domainregConfigured = true;
         }
         else {
           tmpData.value = this.value;
         }
-        tmpData.key = tmpName;
-        data.push(tmpData);
+
+          data.push(tmpData);
       }
     }
   });
 
   postData = {};
   postData.configData = data;
+console.log(postData);
+
 
   $.ajax({
     type: 'POST',
@@ -189,7 +232,7 @@ function validateConfigField(field) {
   var field_val = "";
   if($("#" + field + "_validation").val() == "%password")
   {
-      field_val = new RegExp('[a-zA-Z0-9z!@#$%^&*()+<>]{8,}',"g");
+      field_val = new RegExp('[a-zA-Z0-9z!@#$%^&*()+<>]{5,}',"g");
   }
   else if($("#" + field + "_validation").val() == "%url")
   {
@@ -223,7 +266,7 @@ function addTLDProcess() {
     return;
   }
   // Add hidden fields with current tld process
-  var hiddenTLDFields = "<input type='hidden' class='configVariables' id='tld_process_" + $("#domainreg_tld_config_hash_name").val()  + "' name='atomia::domainreg::domainreg_tld_config_hash' value='" + $("#domainreg_tld_config_hash").val() + "' />";
+  var hiddenTLDFields = "<input type='hidden' class='configVariables' id='tld_process_" + $("#domainreg_tld_config_hash_name").val()  + "' name='domainreg_tld_config_hash' value='" + $("#domainreg_tld_config_hash").val() + "' />";
   $("#tld_processes").append(hiddenTLDFields);
 
   // Add current tld process to list of processes
@@ -244,6 +287,20 @@ function loadTLDProcess(processName) {
     $("#tld_processes input[id='tld_process_" + processName+ "'").remove();
 }
 
+function domainregLoad(domainRegConfig){
+  $(document).ready(function(){
+    i = 0;
+    $.each(domainRegConfig.value, function(key, value) {
+      if(i == 0)
+        $("#processList").html("");
+      i++;
+      $("#domainreg_tld_config_hash_name").val(key);
+      $("#domainreg_tld_config_hash").val(value);
+      addTLDProcess();
+    });
+
+});
+}
 function deleteTLDProcess(processName) {
   $("#processList li[id='"+processName+"']").remove();
   $("#tld_processes input[id='tld_process_" + processName+ "']").remove();

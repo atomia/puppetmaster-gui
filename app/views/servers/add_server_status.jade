@@ -7,4 +7,7 @@ p
 p
   textarea#serverConsole(style="width:100%;height:300px;display: none;")
 
-button.btn.btn-lg.btn-success#newServerButton(type="submit",onClick="return false;") Continue
+if configureOnly == true
+  button.btn.btn-lg.btn-success#configureServerButton(type="submit",onClick="return false;") Update configuration
+else
+  button.btn.btn-lg.btn-success#newServerButton(type="submit",onClick="return false;") Start provisioning

@@ -1,16 +1,33 @@
-form
-  .form-group
-    label(for="serverHostname") Server hostname
-    input#serverHostname.form-control(type="text", placeholder="myserver.com", name="serverHostname")
-  .form-group
-    label(for="serverUsername") Username
-    input#serverUsername.form-control(type="text", placeholder="root", name="serverUsername")
-  .form-group
-    label(for="serverPassword") Password
-    input#serverPassword.form-control(type="password", placeholder="", name="serverPassword")
-  .form-group
-    label(for="serverKey") SSH Key (optional)
-    select.form-control(name="serverKey",id="serverKey")
-      option(name="",value="") none
-      each row in keys
-        option(name=row.id,id=row.id,value=row.id)= row.name
+if configureOnly == true
+  form
+    .form-group
+      label(for="serverHostname") Server hostname
+      input#serverHostname.form-control(type="text", value="#{server.hostname}", name="serverHostname", readonly="readonly")
+      .form-group
+        label(for="serverUsername") Username
+        input#serverUsername.form-control(type="text", value="#{server.username}", name="serverUsername", readonly="readonly")
+      .form-group
+        label(for="serverPassword") Password
+        input#serverPassword.form-control(type="password", value="#{server.password}", name="serverPassword", readonly="readonly")
+      .form-group
+        label(for="serverKey") SSH Key (optional)
+        select.form-control(name="serverKey",id="serverKey", readonly="readonly")
+          option(name="#{server.fk_ssh_key}",value="#{server.fk_ssh_key}") #{server.ssh_key_name}
+
+else
+  form
+    .form-group
+      label(for="serverHostname") Server hostname
+      input#serverHostname.form-control(type="text", placeholder="myserver.com", name="serverHostname")
+    .form-group
+      label(for="serverUsername") Username
+      input#serverUsername.form-control(type="text", placeholder="root", name="serverUsername")
+    .form-group
+      label(for="serverPassword") Password
+      input#serverPassword.form-control(type="password", placeholder="", name="serverPassword")
+    .form-group
+      label(for="serverKey") SSH Key (optional)
+      select.form-control(name="serverKey",id="serverKey")
+        option(name="",value="") none
+        each row in keys
+          option(name=row.id,id=row.id,value=row.id)= row.name

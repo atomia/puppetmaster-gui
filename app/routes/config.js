@@ -12,10 +12,14 @@ router.post('/', function(req, res, next) {
   var configData = req.body.configData;
   console.log(req.body);
   for (var i = 0; i < configData.length; i++) {
-    database.query("INSERT INTO configuration VALUES(null,'" + configData[i].key + "','" + configData[i].value + "','null') ON DUPLICATE KEY UPDATE val = '"+ configData[i].value +"'", function(err, rows, field) {
+    var sql = "INSERT INTO configuration VALUES(null,'" + configData[i].key + "',?,'null') ON DUPLICATE KEY UPDATE val = ?";
+    var sqlData = [configData[i].value,configData[i].value];
+    sql = mysql.format(sql, sqlData);
+        console.log(sql);
+    database.query(sql, function(err, rows, field) {
         if(err)
         {
-          console.log("error saving config data!")
+          console.log("error saving config data! " + err)
         }
         return;
       });

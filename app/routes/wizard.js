@@ -35,13 +35,17 @@ router.get('/internaldns', function(req, res, next) {
 
 
 router.get('/domainreg', function(req, res, next) {
-  getConfiguration('domainreg', function(config){
-    moduleName = "atomia::domainreg";
-    database.query("SELECT * FROM ssh_keys", function(err, rows, field){
+  currentRole = "domainreg";
+  getConfiguration(currentRole, function(config){
+    moduleName = "atomia::" + currentRole;
+    database.query("SELECT * FROM ssh_keys", function(err, keyRows, field){
       if(err)
         throw err;
-        console.log(config);
-        res.render('wizard/domainreg', { keys: rows, config: config, moduleName: moduleName });
+      database.query("SELECT hostname, username, password, fk_ssh_key, ssh_keys.name as 'ssh_key_name' from servers JOIN roles ON roles.fk_server = servers.id JOIN ssh_keys ON ssh_keys.id = servers.fk_ssh_key WHERE roles.name = '"+currentRole+"'", function(err, serverRows, field){
+        if(err)
+          throw err;
+        res.render('wizard/domainreg', { keys: keyRows, config: config, moduleName: moduleName, server: serverRows[0] });
+      });
     })
   });
 });
@@ -107,7 +111,7 @@ router.get('/glusterfs', function(req, res, next) {
 });
 
 /*
-Fetches configuraton from the Puppet module
+Fetches configuraton from the Puppet module using external scripts
 */
 function getConfiguration (namespace, callback) {
     command = 'sh ' + __dirname + '/../scripts/get_variables.sh ' + namespace;
@@ -121,8 +125,7 @@ function getConfiguration (namespace, callback) {
         if(typeof(sData[i]) != 'undefined' && sData[i] != '')
         {
           var siData = sData[i].split(" ");
-          var hieraVar = "atomia::" + namespace.replace('/','::',namespace) + "::" + siData;
-          console.log(hieraVar);
+          var hieraVar = "atomia::" + namespace.replace('/','::',namespace) + "::" + siData[0];
           var inputData = siData;
           database.query("SELECT * FROM configuration WHERE var = '" + hieraVar.replace(",","") + "'", (function(inputData) { return function(err, rows, field){
             a++;
@@ -168,11 +171,9 @@ function getConfiguration (namespace, callback) {
 
             if(rows.length > 0)
             {
-              console.log(hieraVar);
               if(inputData[0] == 'domainreg_tld_config_hash') {
-                domainregData = yaml.parse(rows[0].val);
-                console.log(domainregData);
-                data.value = domainRegData;
+                domainregData = JSON.parse(rows[0].val);
+                data.value = domainregData;
               }
               else {
               data.value =  rows[0].val;

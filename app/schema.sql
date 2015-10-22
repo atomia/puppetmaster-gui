@@ -28,7 +28,7 @@ CREATE TABLE `roles` (
 CREATE TABLE `configuration` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `var` varchar(255) DEFAULT NULL,
-  `val` varchar(255) DEFAULT NULL,
+  `val` text DEFAULT NULL,
   `env` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY (`var`)

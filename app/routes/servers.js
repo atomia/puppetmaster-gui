@@ -20,6 +20,58 @@ router.get('/new', function(req, res, next) {
   })
 });
 
+router.post('/update', function(req, res) {
+  var serverHostname = req.body.serverHostname;
+  var serverUsername = req.body.serverUsername;
+  var serverPassword = req.body.serverPassword;
+  var serverKey = "";
+  var serverKeyId = req.body.serverKey;
+  var serverRole = req.body.serverRole;
+
+
+  io.emit('server', { status: 'Bootstrapping', progress: '10%' });
+
+  if(serverKeyId != null && serverKeyId != "" && typeof(serverKeyId) != 'undefined'){
+    database.query("SELECT * FROM ssh_keys WHERE id = '" + serverKeyId + "'", function(err, rows, field){
+      serverKey = rows[0].content;
+      database.query("select * from roles JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
+        startConfigure(rows[0]['hostname']);
+      });
+    });
+  }else {
+    database.query("select * from roles  JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
+      startConfigure(rows[0]['hostname']);
+    });
+  }
+
+  function startConfigure(puppetHostname)
+  {
+    sshSession = new ssh({
+      host: serverHostname,
+      user: serverUsername,
+      key: serverKey,
+      timeout: 5000
+    });
+      console.log("Updating server");
+    sshSession.on('error', function(err) {
+      sshSession.end();
+      io.emit('server', { consoleData: "Error communicating with the server: " + err });
+    });
+
+    sshSession.exec("sudo puppet agent --test --waitforcert 1", {
+      out: function(stdout){
+          console.log("Updating server " + serverHostname + " " + stdout);
+        io.emit('server', { consoleData: stdout });
+      },
+      exit: function(code) {
+        io.emit('server', { consoleData: code });
+      }
+    }).start();
+  }
+  res.status(200);
+  res.send(JSON.stringify({ok: "ok"}));
+});
+
 router.post('/new', function(req, res) {
   var serverHostname = req.body.serverHostname;
   var serverUsername = req.body.serverUsername;
@@ -120,7 +172,7 @@ router.post('/new', function(req, res) {
             io.emit('server', { status: 'Runnng bootstrap script', progress: progress + "%" });
         },
       })
-      .exec('sudo service puppet stop && sudo puppet agent --test --waitforcert 1 && sudo service puppet start', {
+      .exec('sudo service puppet stop', {
         out: function(stdout){
           console.log(stdout);
           io.emit('server', { consoleData: stdout });
@@ -138,11 +190,12 @@ router.post('/new', function(req, res) {
           }
 
           io.emit('server', { consoleData: "Adding server to local database" });
-          database.query("INSERT INTO servers VALUES(null,'" + serverHostname + "','" + serverUsername + "','" + serverPassword + "','" + serverKeyId + "')", function(err, rows, field) {
+          database.query("INSERT INTO servers VALUES(null,'" + serverHostname + "','" + serverUsername + "','" + serverPassword + "','" + serverKeyId + "') ON DUPLICATE KEY UPDATE hostname='"+serverHostname+"', username='"+serverUsername+"', password='"+serverPassword+"', fk_ssh_key='"+serverKeyId+"' ", function(err, rows, field) {
             if(err)
             {
               io.emit('server', { consoleData: "Error adding server to the database: " + err });
               io.emit('server', { done: 'error' });
+              return;
             }
               console.log(rows);
               if(serverRole != "" && typeof serverRole != 'undefined')
@@ -153,15 +206,26 @@ router.post('/new', function(req, res) {
                   {
                     io.emit('server', { consoleData: "Error adding server role to the database: " + err });
                     io.emit('server', { done: 'error' });
+
                   }
                   return;
                 });
               }
-              io.emit('server', { done: 'ok' });
-              return;
+              sshSession.exec('sudo puppet agent --test --waitforcert 1 && sudo service puppet start', {
+            		out: function(stdout){
+                  io.emit('server', { consoleData: stdout });
+                  progress = progress + 0.1;
+                  if(progress > 95)
+                    progress = 95;
+                  io.emit('server', { status: 'Runnng bootstrap script', progress: progress + "%" });
+                },
+                exit: function(code) {
+                  io.emit('server', { done: 'ok' });
+                  return;
+                }
+              });
+
           });
-          io.emit('server', { done: 'ok' });
-          return;
         }
     }).start();
 
