@@ -23,53 +23,20 @@ router.get('/basic', function(req, res, next) {
 });
 
 router.get('/internaldns', function(req, res, next) {
-  getConfiguration('internaldns', function(config){
-      moduleName = "atomia::internaldns";
-      database.query("SELECT * FROM ssh_keys", function(err, rows, field){
-        if(err)
-          throw err;
-          res.render('wizard/internaldns', { keys: rows, config: config, moduleName: moduleName });
-      })
-  });
+  setVariablesAndRender("internaldns", res);
 });
 
 
 router.get('/domainreg', function(req, res, next) {
-  currentRole = "domainreg";
-  getConfiguration(currentRole, function(config){
-    moduleName = "atomia::" + currentRole;
-    database.query("SELECT * FROM ssh_keys", function(err, keyRows, field){
-      if(err)
-        throw err;
-      database.query("SELECT hostname, username, password, fk_ssh_key, ssh_keys.name as 'ssh_key_name' from servers JOIN roles ON roles.fk_server = servers.id JOIN ssh_keys ON ssh_keys.id = servers.fk_ssh_key WHERE roles.name = '"+currentRole+"'", function(err, serverRows, field){
-        if(err)
-          throw err;
-        res.render('wizard/domainreg', { keys: keyRows, config: config, moduleName: moduleName, server: serverRows[0] });
-      });
-    })
-  });
+  setVariablesAndRender("domainreg", res);
 });
 
 router.get('/atomiadns', function(req, res, next) {
-  getConfiguration('atomiadns', function(config){
-    moduleName = "atomia::atomiadns";
-    database.query("SELECT * FROM ssh_keys", function(err, rows, field){
-      if(err)
-        throw err;
-        res.render('wizard/atomiadns', { keys: rows, config: config, moduleName: moduleName });
-    })
-  });
+  setVariablesAndRender("atomiadns", res);
 });
 
 router.get('/monitoring', function(req, res, next) {
-  getConfiguration('nagios/server', function(config){
-    moduleName = "atomia::nagios::server";
-    database.query("SELECT * FROM ssh_keys", function(err, rows, field){
-      if(err)
-        throw err;
-        res.render('wizard/monitoring', { keys: rows, config: config, moduleName: moduleName });
-    })
-  });
+  setVariablesAndRender("nagios/server", res, "nagios_server");
 });
 
 router.post('/puppet', function(req, res, next) {
@@ -110,6 +77,23 @@ router.get('/glusterfs', function(req, res, next) {
   });
 });
 
+function setVariablesAndRender(currentRole, res, role) {
+  getConfiguration(currentRole, function(config){
+    moduleName = "atomia::" + currentRole;
+    database.query("SELECT * FROM ssh_keys", function(err, keyRows, field){
+      if(err)
+        throw err;
+      dbRole = currentRole;
+      if(role)
+        dbRole = role;
+      database.query("SELECT hostname, username, password, fk_ssh_key, ssh_keys.name as 'ssh_key_name' from servers JOIN roles ON roles.fk_server = servers.id JOIN ssh_keys ON ssh_keys.id = servers.fk_ssh_key WHERE roles.name = '"+dbRole+"'", function(err, serverRows, field){
+        if(err)
+          throw err;
+        res.render('wizard/' + currentRole, { keys: keyRows, config: config, moduleName: moduleName, server: serverRows[0] });
+      });
+    })
+  });
+}
 /*
 Fetches configuraton from the Puppet module using external scripts
 */

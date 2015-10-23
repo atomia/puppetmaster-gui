@@ -73,7 +73,15 @@ $(document).ready(function(){
                 console.log("found");
                 fqdn = input.val().replace("$fqdn",hostname);
                 input.val(fqdn);
-
+              }
+              if (input.val().indexOf("$ipaddress") >= 0)
+              {
+                console.log("found");
+                // Lookpup the ip based on hostname
+                $.get("/servers/ip/" + hostname, function(data) {
+                  ipaddr = input.val().replace("$ipaddress",data[0]);
+                  input.val(ipaddr);
+                });
               }
 
               //input.attr('id');

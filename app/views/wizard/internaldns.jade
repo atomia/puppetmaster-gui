@@ -3,13 +3,14 @@ block content
   .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
     h1.page-header Install an Internal DNS server
     p The internal dns server is used to hold dns records used within the Atomia environment.
+
     if !menuStatus["internaldns"]
       h2 Add your Internal DNS server
-      include ../servers/add_server.jade
-
     else
+      -configureOnly = true
       | You already have an Internal DNS server installed. Good job! If you would like to change the configuration you can do so above.
 
+    include ../servers/add_server.jade
     h2 Configure Internal DNS
     p For most roles that you add to a server there are some configurable variables that you can change, if a a change is required it will be shown.
 

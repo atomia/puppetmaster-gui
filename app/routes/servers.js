@@ -20,6 +20,15 @@ router.get('/new', function(req, res, next) {
   })
 });
 
+router.get('/ip/:hostname', function(req, res, next) {
+  var hostname = req.params.hostname;
+  dns.resolve4(hostname, function(err, ip){
+    console.log(ip);
+    res.send(ip);
+  });
+
+});
+
 router.post('/update', function(req, res) {
   var serverHostname = req.body.serverHostname;
   var serverUsername = req.body.serverUsername;

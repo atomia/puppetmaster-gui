@@ -1,4 +1,4 @@
-extends ../layout
+extends ../../layout
 block content
   .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
     h1.page-header Setup monitoring
@@ -7,14 +7,16 @@ block content
     if !menuStatus["nagios_server"]
       h2 Add monitoring server
       p Requires a base installed Ubuntu 14.04 server
-      include ../servers/add_server.jade
     else
+      -configureOnly = true
       | You already have a Monitoring server installed. Good job! If you would like to change the configuration you can do so above.
+
+    include ../../servers/add_server.jade
 
     h2 Configure monitoring
     p For most roles that you add to a server there are some configurable variables that you can change, if a a change is required it will be shown.
 
-    include config_form.jade
+    include ../config_form.jade
     input(type="hidden", id="serverRole", value="nagios_server")
 
-    include ../servers/add_server_status.jade
+    include ../../servers/add_server_status.jade
