@@ -167,8 +167,13 @@ function getConfiguration (namespace, callback) {
               data.name = inputData[0];
               variables[inputData[0]] = data;
             }
-            else {
-              data.value = inputData[1];
+          else {
+
+              data.value = "";
+              for(b = 1; b < inputData.length; b++){
+                console.log(b);
+                data.value = data.value + inputData[b];
+                }
               data.doc = doc.stdout;
               data.validation = validation.stdout.trim();
               data.name = inputData[0];
