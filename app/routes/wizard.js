@@ -68,7 +68,7 @@ router.post('/puppet', function(req, res, next) {
 
 router.get('/glusterfs', function(req, res, next) {
   getConfiguration('glusterfs', function(config){
-    moduleName = "atomia::nagios::server";
+    moduleName = "atomia::glusterfs";
     database.query("SELECT * FROM ssh_keys", function(err, rows, field){
       if(err)
         throw err;
@@ -104,6 +104,7 @@ function getConfiguration (namespace, callback) {
     child.stdout.on('data', function(data) {
       var sData = data.split("\n");
       var a = 0;
+      database.query("SELECT * FROM configuration",  function(err, allConfig, field){
       for(var i = 0;i <= sData.length; i++)
       {
         if(typeof(sData[i]) != 'undefined' && sData[i] != '')
@@ -171,9 +172,20 @@ function getConfiguration (namespace, callback) {
 
               data.value = "";
               for(b = 1; b < inputData.length; b++){
-                console.log(b);
                 data.value = data.value + inputData[b];
-                }
+              }
+
+              // Replace special strings
+              if(data.value.indexOf("[[atomia_domain]]") > -1)
+              {
+                atomia_domain = allConfig.filter(function(v) { return v["var"] == "atomia::config::atomia_domain";});
+                data.value = data.value.replace(/\[\[atomia_domain\]\]/g,atomia_domain[0].val);
+              }
+              if(data.value.indexOf("expand_default") > -1)
+              {
+                data.value = data.value.replace(/expand_default\(\'/g,"");
+                data.value = data.value.replace(/\'\)$/g,"");
+              }
               data.doc = doc.stdout;
               data.validation = validation.stdout.trim();
               data.name = inputData[0];
@@ -185,6 +197,7 @@ function getConfiguration (namespace, callback) {
         })(inputData));
         }
       }
+    });
 
     });
     child.stderr.on('data', function(data) {

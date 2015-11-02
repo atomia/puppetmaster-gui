@@ -92,40 +92,53 @@ router.post('/new', function(req, res) {
   res.setHeader('Content-Type', 'application/json');
 	res.status(500);
 
-  // Verify that server is pingable
-  if(!ValidateIPaddress(serverHostname))
-  {
-    dns.resolve(serverHostname, 'A', function(err, addresses){
-        if(err){
-          io.emit('server', { consoleData: "Dns resolve error: " + err });
-          return;
-        }
-        var session = ping.createSession();
-        session.pingHost(addresses[0], function (error, target) {
-            if(error)
-              io.emit('server', { consoleData: "Could not ping server: " + error });
-        });
-    });
+  var arrHostnames = [];
+  if(serverHostname.indexOf(",") > -1) {
+    arrHostnames = serverHostname.split(",");
   }
   else {
-    var session = ping.createSession();
-    session.pingHost(serverHostname, function (error, target) {
-        if(error)
-          res.send(JSON.stringify({error: 'noaccess'}));
-    });
+    arrHostnames[0] = serverHostname;
   }
 
-  if(serverKeyId != null && serverKeyId != "" && typeof(serverKeyId) != 'undefined'){
-    database.query("SELECT * FROM ssh_keys WHERE id = '" + serverKeyId + "'", function(err, rows, field){
-      serverKey = rows[0].content;
-      database.query("select * from roles JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
+  for(var i = 0; i < arrHostnames.length; i++)
+  {
+    serverHostname = arrHostnames[i];
+    // Verify that server is pingable
+    if(!ValidateIPaddress(serverHostname))
+    {
+      dns.resolve(serverHostname, 'A', function(err, addresses){
+          if(err){
+            io.emit('server', { consoleData: "Dns resolve error: " + err });
+            return;
+          }
+          var session = ping.createSession();
+          session.pingHost(addresses[0], function (error, target) {
+              if(error)
+                io.emit('server', { consoleData: "Could not ping server: " + error });
+          });
+      });
+    }
+    else {
+      var session = ping.createSession();
+      session.pingHost(serverHostname, function (error, target) {
+          if(error)
+            res.send(JSON.stringify({error: 'noaccess'}));
+      });
+    }
+
+    if(serverKeyId != null && serverKeyId != "" && typeof(serverKeyId) != 'undefined'){
+      database.query("SELECT * FROM ssh_keys WHERE id = '" + serverKeyId + "'", function(err, rows, field){
+        serverKey = rows[0].content;
+        database.query("select * from roles JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
+          initiateConnection(rows[0]['hostname']);
+        });
+      });
+    }else {
+      database.query("select * from roles  JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
         initiateConnection(rows[0]['hostname']);
       });
-    });
-  }else {
-    database.query("select * from roles  JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
-      initiateConnection(rows[0]['hostname']);
-    });
+    }
+
   }
 
   function initiateConnection(puppetHostname)
@@ -222,6 +235,7 @@ router.post('/new', function(req, res) {
               }
               sshSession.exec('sudo puppet agent --test --waitforcert 1 && sudo service puppet start', {
             		out: function(stdout){
+                  console.log(stdout);
                   io.emit('server', { consoleData: stdout });
                   progress = progress + 0.1;
                   if(progress > 95)
