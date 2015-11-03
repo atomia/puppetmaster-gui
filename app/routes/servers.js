@@ -5,6 +5,7 @@ var dns = require('dns');
 var ssh  = require('simple-ssh');
 var fs = require('fs');
 var execSync = require('execSync');
+var exec = require('child_process').exec;
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -36,7 +37,6 @@ router.post('/update', function(req, res) {
   var serverKey = "";
   var serverKeyId = req.body.serverKey;
   var serverRole = req.body.serverRole;
-
 
   io.emit('server', { status: 'Bootstrapping', progress: '10%' });
 
@@ -102,41 +102,105 @@ router.post('/new', function(req, res) {
 
   for(var i = 0; i < arrHostnames.length; i++)
   {
+    console.log(serverRole);
     serverHostname = arrHostnames[i];
-    // Verify that server is pingable
-    if(!ValidateIPaddress(serverHostname))
-    {
-      dns.resolve(serverHostname, 'A', function(err, addresses){
-          if(err){
-            io.emit('server', { consoleData: "Dns resolve error: " + err });
+    if(serverRole == 'active_directory') {
+
+      // Windows
+      // Install puppet and connect to servers
+      database.query("select * from roles  JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
+        puppetMaster = "";
+        if(typeof rows[0] != 'undefined')
+          puppetMaster = rows[0]['hostname'];
+          io.emit('server', { status: 'Bootstrapping', progress: '10%' });
+      var child = exec("python " + __dirname + "/../scripts/run_winrm_command.py " + serverUsername + " " + serverPassword + " " + serverHostname + " 'Dism /online /Enable-Feature /FeatureName:NetFx3 /All;(new-object System.Net.WebClient).Downloadfile(\"https://downloads.puppetlabs.com/windows/puppet-latest.msi\", \"puppet-latest.msi\");msiexec /qn /i puppet-latest.msi PUPPET_MASTER_SERVER="+ puppetMaster + "'");
+      child.stdout.on('data', function(data) {
+        io.emit('server', { consoleData: data });
+      });
+      child.stderr.on('data', function(data) {
+        io.emit('server', { consoleData: "Error communicating with server " + data });
+        io.emit('server', { done: 'error' });
+        child.kill();
+      });
+      child.on('close', function(code) {
+
+        io.emit('server', { consoleData: "Adding server to local database" });
+        database.query("INSERT INTO servers VALUES(null,'" + serverHostname + "','" + serverUsername + "','" + serverPassword + "','" + serverKeyId + "') ON DUPLICATE KEY UPDATE hostname='"+serverHostname+"', username='"+serverUsername+"', password='"+serverPassword+"', fk_ssh_key='"+serverKeyId+"' ", function(err, rows, field) {
+          if(err)
+          {
+            io.emit('server', { consoleData: "Error adding server to the database: " + err });
+            io.emit('server', { done: 'error' });
             return;
           }
-          var session = ping.createSession();
-          session.pingHost(addresses[0], function (error, target) {
-              if(error)
-                io.emit('server', { consoleData: "Could not ping server: " + error });
-          });
-      });
-    }
-    else {
-      var session = ping.createSession();
-      session.pingHost(serverHostname, function (error, target) {
-          if(error)
-            res.send(JSON.stringify({error: 'noaccess'}));
-      });
-    }
+            if(serverRole != "" && typeof serverRole != 'undefined')
+            {
+              serverId = rows["insertId"];
+              database.query("INSERT INTO roles VALUES(null,'" + serverRole + "','" + serverId + "')", function(err, rows, field) {
+                if(err)
+                {
+                  io.emit('server', { consoleData: "Error adding server role to the database: " + err });
+                  io.emit('server', { done: 'error' });
 
-    if(serverKeyId != null && serverKeyId != "" && typeof(serverKeyId) != 'undefined'){
-      database.query("SELECT * FROM ssh_keys WHERE id = '" + serverKeyId + "'", function(err, rows, field){
-        serverKey = rows[0].content;
-        database.query("select * from roles JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
-          initiateConnection(rows[0]['hostname']);
+                }
+                var child_2 = exec("python " + __dirname + "/../scripts/run_winrm_command.py " + serverUsername + " " + serverPassword + " " + serverHostname + " 'puppet agent --test'");
+                child_2.stdout.on('data', function(data) {
+                  io.emit('server', { consoleData: data });
+                });
+                child_2.stderr.on('data', function(data) {
+                  io.emit('server', { consoleData: "Error communicating with server " + data });
+                  io.emit('server', { done: 'error' });
+                  child_2.kill();
+                });
+                child_2.on('close', function(code) {
+
+                });
+              });
+            }
+
         });
       });
-    }else {
-      database.query("select * from roles  JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
-        initiateConnection(rows[0]['hostname']);
-      });
+    });
+      // Add server to database
+
+      // Run Puppet
+    }
+    else {
+      serverHostname = arrHostnames[i];
+      // Verify that server is pingable
+      if(!ValidateIPaddress(serverHostname))
+      {
+        dns.resolve(serverHostname, 'A', function(err, addresses){
+            if(err){
+              io.emit('server', { consoleData: "Dns resolve error: " + err });
+              return;
+            }
+            var session = ping.createSession();
+            session.pingHost(addresses[0], function (error, target) {
+                if(error)
+                  io.emit('server', { consoleData: "Could not ping server: " + error });
+            });
+        });
+      }
+      else {
+        var session = ping.createSession();
+        session.pingHost(serverHostname, function (error, target) {
+            if(error)
+              res.send(JSON.stringify({error: 'noaccess'}));
+        });
+      }
+
+      if(serverKeyId != null && serverKeyId != "" && typeof(serverKeyId) != 'undefined'){
+        database.query("SELECT * FROM ssh_keys WHERE id = '" + serverKeyId + "'", function(err, rows, field){
+          serverKey = rows[0].content;
+          database.query("select * from roles JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
+            initiateConnection(rows[0]['hostname']);
+          });
+        });
+      }else {
+        database.query("select * from roles  JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
+          initiateConnection(rows[0]['hostname']);
+        });
+      }
     }
 
   }

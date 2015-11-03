@@ -39,6 +39,10 @@ router.get('/monitoring', function(req, res, next) {
   setVariablesAndRender("nagios/server", res, "nagios_server");
 });
 
+router.get('/active_directory', function(req, res, next) {
+  setVariablesAndRender("active_directory", res);
+});
+
 router.post('/puppet', function(req, res, next) {
 
     var child = exec("repo=\"$(wget -q -O - http://public.apt.atomia.com/setup.sh.shtml | sed s/%distcode/`lsb_release -c | awk '{ print $2 }'`/g)\"; echo \"$repo\" | sh && apt-get update && apt-get install -y atomia-puppetmaster && /bin/setup-puppet-atomia");
@@ -89,7 +93,13 @@ function setVariablesAndRender(currentRole, res, role) {
       database.query("SELECT hostname, username, password, fk_ssh_key, ssh_keys.name as 'ssh_key_name' from servers JOIN roles ON roles.fk_server = servers.id JOIN ssh_keys ON ssh_keys.id = servers.fk_ssh_key WHERE roles.name = '"+dbRole+"'", function(err, serverRows, field){
         if(err)
           throw err;
-        res.render('wizard/' + currentRole, { keys: keyRows, config: config, moduleName: moduleName, server: serverRows[0] });
+        database.query("select * from roles  JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
+          puppetHostname = "";
+          if(typeof rows[0] != 'undefined')
+            puppetHostname = rows[0]['hostname'];
+
+          res.render('wizard/' + currentRole, { keys: keyRows, config: config, moduleName: moduleName, server: serverRows[0], puppetMaster: puppetHostname });
+        });
       });
     })
   });
