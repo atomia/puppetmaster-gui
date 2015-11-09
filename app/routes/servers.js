@@ -104,7 +104,7 @@ router.post('/new', function(req, res) {
   {
     console.log(serverRole);
     serverHostname = arrHostnames[i];
-    if(serverRole == 'active_directory') {
+    if(serverRole == 'active_directory' || serverRole == 'active_directory_replica') {
 
       // Windows
       // Install puppet and connect to servers

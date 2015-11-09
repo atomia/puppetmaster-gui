@@ -1,0 +1,25 @@
+extends ../layout
+block content
+  .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
+    h1.page-header Setup Active Directory
+
+    if !menuStatus["active_directory_replica"]
+      h2 Add an Active Directory Replica
+      p In order to have redundancy in your Active Directory you should have at least 1 replica.
+      p Requires a base installed Windows 2012 R2 server with winrm running for remote management to be available. Besides running the command below make sure that the Windows Remote Firewall rule allows connection from the puppet server, if they are on the same subnet it should be allowed by default.
+      pre
+        | winrm quickconfig
+        | winrm set winrm/config/client/auth @{Basic="true"}
+        | winrm set winrm/config/service/auth @{Basic="true"}
+        | winrm set winrm/config/service @{AllowUnencrypted="true"}
+      include ../servers/add_server.jade
+    else
+      | You already have an Active Directory server installed. Good job! If you would like to change the configuration you can do so below.
+
+    h2 Configure Active Directory Replica
+    p All values should be pre filled from the master so no need to change any options!
+
+    include config_form.jade
+    input(type="hidden", id="serverRole", value="active_directory_replica")
+
+    include ../servers/add_server_status.jade

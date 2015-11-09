@@ -43,6 +43,10 @@ router.get('/active_directory', function(req, res, next) {
   setVariablesAndRender("active_directory", res);
 });
 
+router.get('/active_directory_replica', function(req, res, next) {
+  setVariablesAndRender("active_directory", res, "active_directory_replica");
+});
+
 router.post('/puppet', function(req, res, next) {
 
     var child = exec("repo=\"$(wget -q -O - http://public.apt.atomia.com/setup.sh.shtml | sed s/%distcode/`lsb_release -c | awk '{ print $2 }'`/g)\"; echo \"$repo\" | sh && apt-get update && apt-get install -y atomia-puppetmaster && /bin/setup-puppet-atomia");
@@ -97,7 +101,8 @@ function setVariablesAndRender(currentRole, res, role) {
           puppetHostname = "";
           if(typeof rows[0] != 'undefined')
             puppetHostname = rows[0]['hostname'];
-
+          if(role)
+            currentRole = role;
           res.render('wizard/' + currentRole, { keys: keyRows, config: config, moduleName: moduleName, server: serverRows[0], puppetMaster: puppetHostname });
         });
       });
