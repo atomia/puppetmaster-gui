@@ -11,6 +11,40 @@ router.get('/', function(req, res, next) {
       res.render('wizard/index');
 });
 
+router.get('/next_step', function(req, res, next) {
+  database.query("SELECT * FROM app_config WHERE var IN('current_step','installation_steps_default')", function(err, rows, field){
+    for(var i = 0; i <rows.length; i++)
+    {
+      if(rows[i].var == 'current_step')
+        step = rows[i].val;
+      if(rows[i].var == 'installation_steps_default')
+        installationSteps = rows[i].val;
+    }
+    nextStepId = parseInt(step) + 1;
+    nextStep = JSON.parse(installationSteps)[nextStepId];
+    res.redirect(nextStep.route);
+    database.query("UPDATE app_config SET val =" + nextStepId + " WHERE var = 'current_step'", function(err, rows, field){
+
+    });
+
+  });
+});
+
+router.get('/all_tasks', function(req, res, next) {
+  database.query("SELECT * FROM app_config WHERE var IN('current_step','installation_steps_default')", function(err, rows, field){
+    for(var i = 0; i <rows.length; i++)
+    {
+      if(rows[i].var == 'current_step')
+        step = rows[i].val;
+      if(rows[i].var == 'installation_steps_default')
+        installationSteps = rows[i].val;
+    }
+    currentStep = JSON.parse(installationSteps)[step];
+    res.render('wizard/all_tasks', {allSteps: JSON.parse(installationSteps)});
+
+  });
+});
+
 router.get('/puppet', function(req, res, next) {
       res.render('wizard/puppet');
 });
@@ -46,6 +80,12 @@ router.get('/active_directory', function(req, res, next) {
 router.get('/active_directory_replica', function(req, res, next) {
   setVariablesAndRender("active_directory", res, "active_directory_replica");
 });
+
+router.get('/windows', function(req, res, next) {
+  setVariablesAndRender("windows_base", res);
+});
+
+
 
 router.post('/puppet', function(req, res, next) {
 

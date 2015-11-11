@@ -7,12 +7,9 @@ label(for='#{c.name}')
 p
   | !{extraDoc}
 
-
-
 script.
   $(document).ready(function(){
     domainregLoad(!{JSON.stringify(c)});
-    //$("#domainreg_tld_config_hash").val("!{val}");
   });
 
 
@@ -20,15 +17,23 @@ label(for='processList')
   | Process list (All processes to be added, click to edit)
 ul#processList
   li#noProcess No processes added yet
-.form-group
 
-  label(for='domainreg_tld_config_hash_name')
-    | Name (Can be anything)
-  input.form-control(id="domainreg_tld_config_hash_name", class="", type="text", value="", name="domainreg_tld_config_hash_name")
-  label(for='domainreg_tld_config_hash')
-    | Configuration (TLD configuration based on <a href='http://documentation.atomia.com/DomainRegistration/latest/html/configexamples.html#configexamples-examples' target='#'>configuration examples</a>. One process per configuration box!)
-  textarea.form-control(id="domainreg_tld_config_hash", class="", name="domainreg_tld_config_hash", rows="20")
-  <br>
-  button.btn.btn-s.btn-info#addTLD(type="submit",onClick="addTLDProcess();return false;") Save TLD process
-  div#tld_processes
-  <br>
+form.form-horizontal
+  fieldset
+    legend Add TLD processes
+  div.row
+    div.form-group
+      label.col-lg-1.control-label(for='domainreg_tld_config_hash_name') Process Name
+      div.col-lg-4
+        input.form-control(id="domainreg_tld_config_hash_name", class="", type="text", value="", name="domainreg_tld_config_hash_name")
+        span.help-block Name (Can be anything)
+  div.row
+    div.form-group
+      label.col-lg-1.control-label(for='domainreg_tld_config_hash') TLD configuration
+      div.col-lg-4
+        textarea.form-control(id="domainreg_tld_config_hash", class="", name="domainreg_tld_config_hash", rows="15")
+        span.help-block Configuration (TLD configuration based on <a href='http://documentation.atomia.com/DomainRegistration/latest/html/configexamples.html#configexamples-examples' target='#'>configuration examples</a>. One process per configuration box!)
+        <br>
+        button.btn.btn-s.btn-info#addTLD(type="submit",onClick="addTLDProcess();return false;") Save TLD process
+        div#tld_processes
+        <br>

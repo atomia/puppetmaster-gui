@@ -30,6 +30,46 @@ router.get('/ip/:hostname', function(req, res, next) {
 
 });
 
+router.post('/generate_certificates', function(req, res) {
+	var appDomain = req.body.appDomain;
+	var login = req.body.login;
+	var order = req.body.order;
+	var billing = req.body.billing;
+	var hcp = req.body.hcp;
+
+	execSync.exec("rm -f /etc/puppet/atomiacerts/certificates/* 2> /dev/null");
+
+	var spawn = require('child_process').spawn,
+	child = spawn("ruby",['generate_certificates.rb',appDomain,login,order,billing,hcp], {cwd: "/etc/puppet/modules/atomia/files/certificates/"});
+
+	child.stdout.on('data', function (data) {
+		io.emit('server', { consoleData: "" + data});
+	});
+
+	child.stderr.on('data', function (data) {
+		io.emit('server', { consoleData: "" + data});
+	});
+
+	child.on('close', function (code) {
+		var numCerts = execSync.exec("ls /etc/puppet/atomiacerts/certificates/ | wc -l").stdout;
+		console.log(numCerts);
+		if(parseInt(numCerts) > 1)
+		{
+			io.emit('server', { error: 'The certificates was not generated!' });
+			res.status(500);
+			res.send(JSON.stringify({error: "error"}));
+		}
+		else {
+			io.emit('server', { done: 'Certificates generated sucessfully!' });
+			res.status(200);
+			res.send(JSON.stringify({ok: "ok"}));
+		}
+
+	});
+
+
+});
+
 router.post('/update', function(req, res) {
   var serverHostname = req.body.serverHostname;
   var serverUsername = req.body.serverUsername;

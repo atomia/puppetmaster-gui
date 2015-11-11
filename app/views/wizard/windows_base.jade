@@ -1,0 +1,16 @@
+extends ../layout
+block content
+	.col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
+		include status_modal.jade
+		h1.page-header Configure Atomia applications
+
+		p On this page we define some basic configuration options that is common for all Atomia Applications.
+
+
+		include config_form.jade
+
+		p
+			legend Manage internal certificates
+			p All Atomia applications use SSL certificates to ensure that the traffic that flows between them are secure. The required certificates can be generated automatically.
+			p You do not have any certificates generated, please generate some by pressing the button below
+			button.btn.btn-lg.btn-default#generateCertificatesButton(type="submit",onClick="return false;") Generate new certificates

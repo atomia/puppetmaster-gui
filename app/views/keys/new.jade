@@ -2,12 +2,20 @@ extends ../layout
 block content
   .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
     h1.page-header Add new SSH key
-    form(method="post")
-      .form-group
-        label(for="keyTitle") Title
-        input#keyTitle.form-control(type="text", placeholder="mykey", name="keyTitle")
-      .form-group
-        label(for="keyContent") Key
-        textarea#keyContent.form-control(name="keyContent")
+    form.form-horizontal(method="post")
+      fieldset
+        legend New SSH key
+        div.row
+          div.form-group
+            label.col-lg-1.control-label(for='keyTitle') Title
+            div.col-lg-4
+              input#keyTitle.form-control(type="text", placeholder="mykey", name="keyTitle")
+        div.row
+          div.form-group
+            label.col-lg-1.control-label(for='keyContent') Private Key content
+            div.col-lg-4
+              textarea#keyContent.form-control(name="keyContent")
+              span.help-block Contents of the private key to add
+
 
       button.btn.btn-default#newServerButton(type="submit") Add key

@@ -4,6 +4,7 @@ block content
     h1.page-header SSH keys
     form(action="/keys/new")
       button.btn.btn-default#newKeyButton(type="submit") Add key
+
     table.table.table-striped
       thead
         tr
@@ -18,3 +19,6 @@ block content
               textarea(style="width:100%;")= row.content
             td
               button.btn.btn-danger.btn-xs Remove
+
+    a(href='/wizard/next_step')
+      button.btn.btn-default() Continue to the next step
