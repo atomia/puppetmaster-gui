@@ -3,6 +3,7 @@ var allTldProcesses = {};
 $(document).ready(function(){
 	// Register listeners
 	var newServerButton = document.getElementById('newServerButton');
+	var startProvisioningButton = document.getElementById('startProvisioningButton');
 	var configureServerButton = document.getElementById('configureServerButton');
 	var saveConfigurationButton = document.getElementById('saveConfigurationButton');
 	var installPuppetButton = document.getElementById('installPuppet');
@@ -37,6 +38,13 @@ $(document).ready(function(){
 	{
 		newServerButton.addEventListener('click', function() {
 			addServer();
+		}, false);
+	}
+
+	if(startProvisioningButton)
+	{
+		startProvisioningButton.addEventListener('click', function() {
+			provisionServer();
 		}, false);
 	}
 
@@ -93,6 +101,28 @@ $(document).ready(function(){
 		}
 	});
 
+	function provisionServer () {
+
+		if($('input[type="text"].configVariables').size() != 0 && !validateConfigForm())
+			return false;
+
+		var hostname = $('#serverHostname').val();
+		var username = $('#serverUsername').val();
+		var password = $('#serverPassword').val();
+		var serverKey = $('#serverKey').val();
+		var serverRole = $('#serverRole').val();
+		var postData = { serverHostname : hostname, serverUsername : username, serverPassword: password, serverKey: serverKey, serverRole: serverRole };
+
+		$("#status_modal").modal('toggle');
+		$.post("/servers/new", postData, function(data) {
+			if(typeof data.ok != 'undefined')
+			{
+			}
+		}).error(function(err){
+			alert("Error when provisioning server.");
+		});
+
+	}
 	function addServer () {
 
 		if($('input[type="text"].configVariables').size() != 0 && !validateConfigForm())
@@ -184,14 +214,12 @@ $(document).ready(function(){
 	// Config is OK let's save it
 
 	$('.configVariables').each(function() {
-	console.log(this);
 	if(typeof (this) != 'undefined')
 	{
 	  if(this.value != "")
 	  {
 	    var tmpData = {};
 	    var tmpName = moduleName + "::" + $('#'+this.id).attr("name");
-	    console.log(tmpName);
 	    // Special cases
 	    tmpData.key = tmpName;
 	    tmpData.value = "";
@@ -221,16 +249,17 @@ $(document).ready(function(){
 
 	postData = {};
 	postData.configData = data;
-	console.log(postData);
 
 
 	$.ajax({
-	type: 'POST',
-	data: JSON.stringify(postData),
-	contentType: 'application/json',
-	url: '/config'
+		type: 'POST',
+		data: JSON.stringify(postData),
+		contentType: 'application/json',
+		url: '/config'
+	}).done(function() {
+
 	});
-	console.log(data);
+
 	return true;
 	};
 
@@ -328,17 +357,19 @@ $(document).ready(function(){
 		postData.hcp = $("#hcp_host").val();
 		$("#status_modal").modal('toggle');
 		$.post("/servers/generate_certificates", postData, function(data) {
-			if(typeof data.ok != 'undefined')
+			jsonData = JSON.parse(data);
+			if(typeof jsonData.ok != 'undefined')
 			{
-				//$("#status_modal").modal('toggle');
+				$("#automationserver_encryption_cert_thumb").val(jsonData.certificates.automation_encryption.replace(/(\r\n|\n|\r)/gm,""));
+				$("#billing_encryption_cert_thumb").val(jsonData.certificates.billing_encryption.replace(/(\r\n|\n|\r)/gm,""));
+				$("#root_cert_thumb").val(jsonData.certificates.root.replace(/(\r\n|\n|\r)/gm,""));
+				$("#signing_cert_thumb").val(jsonData.certificates.signing.replace(/(\r\n|\n|\r)/gm,""));
 			}
 		}).error(function(err){
 			alert("Could not generate certificates, please try again");
 		});
 
-	/*cd /etc/puppet/modules/atomia/files/certificates/
 
-ruby generate_certificates.rb yourdomain.com login order billing hcp */
 	}
 
 	function deleteTLDProcess(processName) {

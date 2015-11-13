@@ -11,7 +11,7 @@ form.form-horizontal
             div.form-group(id="div_#{c.name}")
               label.col-lg-1.control-label(for='#{c.name}')
                 =c.name
-              div.col-lg-4
+              div.col-lg-8
                 input.form-control(id="#{c.name}", class="#{c.required} configVariables", type="text", value="#{c.value}", name="#{c.name}", onChange='validateConfigField("#{c.name}")')
                 span.help-block #{c.doc}
                 input(type="hidden", id="#{c.name}_validation", value="#{c.validation}")
@@ -27,12 +27,12 @@ div#advanced_options(style="display: none;")
   each c in config
     if c.advanced && c.validation != "%hide"
       div.row
-        div.form-group
+        div.form-group(id="div_#{c.name}")
           label.col-lg-1.control-label(for='#{c.name}')
             =c.name
             if c.validation == "%password"
               button.btn.btn-xs.btn-info#generatePassword(type="submit",onClick="generatePasswordForm('#{c.name}');return false;") Generate password
-          div.col-lg-4
+          div.col-lg-8
             - var extraClass = ""
             if c.validation == "%password"
               - extraClass = "password";

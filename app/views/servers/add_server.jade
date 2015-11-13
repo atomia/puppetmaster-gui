@@ -5,25 +5,25 @@ if configureOnly == true
     div.row
       div.form-group
         label.col-lg-1.control-label(for='serverHostname') Server hostname
-        div.col-lg-4
+        div.col-lg-8
           input#serverHostname.form-control(type="text", value="#{server.hostname}", name="serverHostname", readonly="readonly")
           span.help-block Hostname or ip address to the server
     div.row
       div.form-group
         label.col-lg-1.control-label(for='serverUsername') Username
-        div.col-lg-4
+        div.col-lg-8
           input#serverUsername.form-control(type="text", value="#{server.username}", name="serverUsername", readonly="readonly")
           span.help-block Username for user with root privileges
     div.row
       div.form-group
         label.col-lg-1.control-label(for='serverPassword') Password
-        div.col-lg-4
+        div.col-lg-8
           input#serverPassword.form-control(type="password", value="#{server.password}", name="serverPassword", readonly="readonly")
           span.help-block Password for the user
     div.row
       div.form-group
         label.col-lg-1.control-label(for='serverKey') SSH Key (optional)
-        div.col-lg-4
+        div.col-lg-8
           select.form-control(name="serverKey",id="serverKey", readonly="readonly")
             option(name="#{server.fk_ssh_key}",value="#{server.fk_ssh_key}") #{server.ssh_key_name}
           span.help-block SSH key if not using password based login
@@ -32,25 +32,25 @@ else
   div.row
     div.form-group
       label.col-lg-1.control-label(for='serverHostname') Server hostname
-      div.col-lg-4
+      div.col-lg-8
         input#serverHostname.form-control(type="text", placeholder="myserver.com", name="serverHostname")
         span.help-block Hostname or ip address to the server
   div.row
     div.form-group
       label.col-lg-1.control-label(for='serverUsername') Username
-      div.col-lg-4
+      div.col-lg-8
         input#serverUsername.form-control(type="text", placeholder="root", name="serverUsername")
         span.help-block Username for user with root privileges
   div.row
     div.form-group
       label.col-lg-1.control-label(for='serverPassword') Password
-      div.col-lg-4
+      div.col-lg-8
         input#serverPassword.form-control(type="password", placeholder="", name="serverPassword")
         span.help-block Password for the user
   div.row
     div.form-group
       label.col-lg-1.control-label(for='serverKey') SSH Key (otpional)
-      div.col-lg-4
+      div.col-lg-8
         select.form-control(name="serverKey",id="serverKey")
           option(name="",value="") none
           each row in keys

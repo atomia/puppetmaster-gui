@@ -15,19 +15,16 @@ socket.on('server', function (data) {
 		}
 		scrollcount++;
 		}
-		if(typeof data.done != 'undefined' && typeof $('#serverAlertWarning') != 'undefined'){
+		if(typeof data.done != 'undefined'){
 			if(data.done == "error")
 			{
-				$("#serverAlertWarning").html("Error: Could not bootstrap the server, please check the log below and try again!");
-				$("#serverAlertWarning").show();
-				updateProgressBar('#serverProgressbar', "100%");
+				$("#alert-content").html(data.error)
+				$(".alert-danger").show();
 			}
 			if(data.done == "ok")
 			{
-				updateProgressBar('#serverProgressbar', "100%");
-				$("#serverAlertSuccess").html("All done! The server was added succesfully!");
-				$("#serverAlertSuccess").show();
-				$("#nextStep").show();
+				$("#ok-content").html(data.ok)
+				$(".alert-success").show();
 			}
 	}
 });

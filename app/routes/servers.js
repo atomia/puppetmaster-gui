@@ -52,17 +52,24 @@ router.post('/generate_certificates', function(req, res) {
 
 	child.on('close', function (code) {
 		var numCerts = execSync.exec("ls /etc/puppet/atomiacerts/certificates/ | wc -l").stdout;
-		console.log(numCerts);
-		if(parseInt(numCerts) > 1)
+		console.log(numCerts.trim());
+		if(parseInt(numCerts.trim()) < 1)
 		{
-			io.emit('server', { error: 'The certificates was not generated!' });
+			io.emit('server', { error: 'The certificates was not generated!', done: 'error' });
 			res.status(500);
 			res.send(JSON.stringify({error: "error"}));
 		}
 		else {
-			io.emit('server', { done: 'Certificates generated sucessfully!' });
+			// Get the certificate thumbprints
+			thumbprints = {}
+			thumbprints.automation_encryption = execSync.exec("/etc/puppet/modules/atomia/files/certificates/get_cert_fingerprint.sh | grep -A 1 'Automation Server Encryption:' | tail -n 1").stdout;
+			thumbprints.billing_encryption = execSync.exec("/etc/puppet/modules/atomia/files/certificates/get_cert_fingerprint.sh | grep -A 1 'Billing Encryption:' | tail -n 1").stdout;
+			thumbprints.root = execSync.exec("/etc/puppet/modules/atomia/files/certificates/get_cert_fingerprint.sh | grep -A 1 'Root cert:' | tail -n 1").stdout;
+			thumbprints.signing = execSync.exec("/etc/puppet/modules/atomia/files/certificates/get_cert_fingerprint.sh | grep -A 1 'Signing:' | tail -n 1").stdout;
+
+			io.emit('server', { ok: 'Certificates generated sucessfully!',done: 'ok'});
 			res.status(200);
-			res.send(JSON.stringify({ok: "ok"}));
+			res.send(JSON.stringify({ok: "ok", certificates: thumbprints }));
 		}
 
 	});
@@ -122,128 +129,133 @@ router.post('/update', function(req, res) {
 });
 
 router.post('/new', function(req, res) {
-  var serverHostname = req.body.serverHostname;
-  var serverUsername = req.body.serverUsername;
-  var serverPassword = req.body.serverPassword;
-  var serverKey = "";
-  var serverKeyId = req.body.serverKey;
-  var serverRole = req.body.serverRole;
+	var serverHostname = req.body.serverHostname;
+	var serverUsername = req.body.serverUsername;
+	var serverPassword = req.body.serverPassword;
+	var serverKey = "";
+	var serverKeyId = req.body.serverKey;
+	var serverRole = req.body.serverRole;
 
-  res.setHeader('Content-Type', 'application/json');
+	res.setHeader('Content-Type', 'application/json');
 	res.status(500);
 
-  var arrHostnames = [];
-  if(serverHostname.indexOf(",") > -1) {
-    arrHostnames = serverHostname.split(",");
-  }
-  else {
-    arrHostnames[0] = serverHostname;
-  }
+	var arrHostnames = [];
+	if(serverHostname.indexOf(",") > -1) {
+		arrHostnames = serverHostname.split(",");
+	}
+	else {
+		arrHostnames[0] = serverHostname;
+	}
 
-  for(var i = 0; i < arrHostnames.length; i++)
-  {
-    console.log(serverRole);
-    serverHostname = arrHostnames[i];
-    if(serverRole == 'active_directory' || serverRole == 'active_directory_replica') {
+	for(var i = 0; i < arrHostnames.length; i++)
+	{
+		serverHostname = arrHostnames[i];
+		// If we are on Windows
+		if(serverRole == 'active_directory' || serverRole == 'active_directory_replica' || serverRole == 'actiontrail') {
 
-      // Windows
-      // Install puppet and connect to servers
-      database.query("select * from roles  JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
-        puppetMaster = "";
-        if(typeof rows[0] != 'undefined')
-          puppetMaster = rows[0]['hostname'];
-          io.emit('server', { status: 'Bootstrapping', progress: '10%' });
-      var child = exec("python " + __dirname + "/../scripts/run_winrm_command.py " + serverUsername + " " + serverPassword + " " + serverHostname + " 'Dism /online /Enable-Feature /FeatureName:NetFx3 /All;(new-object System.Net.WebClient).Downloadfile(\"https://downloads.puppetlabs.com/windows/puppet-latest.msi\", \"puppet-latest.msi\");msiexec /qn /i puppet-latest.msi PUPPET_MASTER_SERVER="+ puppetMaster + "'");
-      child.stdout.on('data', function(data) {
-        io.emit('server', { consoleData: data });
-      });
-      child.stderr.on('data', function(data) {
-        io.emit('server', { consoleData: "Error communicating with server " + data });
-        io.emit('server', { done: 'error' });
-        child.kill();
-      });
-      child.on('close', function(code) {
+			// Look for PuppetMaster hostname
+			database.query("select * from roles  JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field) {
+				if(typeof rows[0] != 'undefined')
+					puppetMaster = rows[0]['hostname'];
+				else {
+					io.emit('server', { done: 'error', error: 'Could not find hostname for Puppetmaster, is it installed?' });
+					res.status(500);
+					res.send(JSON.stringify({error: "error"}));
+					return;
+				}
 
-        io.emit('server', { consoleData: "Adding server to local database" });
-        database.query("INSERT INTO servers VALUES(null,'" + serverHostname + "','" + serverUsername + "','" + serverPassword + "','" + serverKeyId + "') ON DUPLICATE KEY UPDATE hostname='"+serverHostname+"', username='"+serverUsername+"', password='"+serverPassword+"', fk_ssh_key='"+serverKeyId+"' ", function(err, rows, field) {
-          if(err)
-          {
-            io.emit('server', { consoleData: "Error adding server to the database: " + err });
-            io.emit('server', { done: 'error' });
-            return;
-          }
-            if(serverRole != "" && typeof serverRole != 'undefined')
-            {
-              serverId = rows["insertId"];
-              database.query("INSERT INTO roles VALUES(null,'" + serverRole + "','" + serverId + "')", function(err, rows, field) {
-                if(err)
-                {
-                  io.emit('server', { consoleData: "Error adding server role to the database: " + err });
-                  io.emit('server', { done: 'error' });
+				// Download the latest version of puppet and connect it to our PuppetMaster
+				var child_puppet_install = exec("python " + __dirname + "/../scripts/run_winrm_command.py " + serverUsername + " " + serverPassword + " " + serverHostname + " 'Dism /online /Enable-Feature /FeatureName:NetFx3 /All;(new-object System.Net.WebClient).Downloadfile(\"https://downloads.puppetlabs.com/windows/puppet-latest.msi\", \"puppet-latest.msi\");msiexec /qn /i puppet-latest.msi PUPPET_MASTER_SERVER="+ puppetMaster + "'");
 
-                }
-                var child_2 = exec("python " + __dirname + "/../scripts/run_winrm_command.py " + serverUsername + " " + serverPassword + " " + serverHostname + " 'puppet agent --test'");
-                child_2.stdout.on('data', function(data) {
-                  io.emit('server', { consoleData: data });
-                });
-                child_2.stderr.on('data', function(data) {
-                  io.emit('server', { consoleData: "Error communicating with server " + data });
-                  io.emit('server', { done: 'error' });
-                  child_2.kill();
-                });
-                child_2.on('close', function(code) {
+				child_puppet_install.stdout.on('data', function(data) {
+					io.emit('server', { consoleData: "" + data });
+				});
 
-                });
-              });
-            }
+				child_puppet_install.stderr.on('data', function(data) {
+					io.emit('server', { consoleData: 'stderr: ' + data });
+					io.emit('server', { done: 'error', error: 'Could not run winrm command, is winrm setup to allow connections?' });
+					res.status(500);
+					res.send(JSON.stringify({error: "error"}));
+					return;
+				});
 
-        });
-      });
-    });
-      // Add server to database
+				child_puppet_install.on('close', function(code) {
+					io.emit('server', { consoleData: "Adding server to local database" });
+					database.query("INSERT INTO servers VALUES(null,'" + serverHostname + "','" + serverUsername + "','" + serverPassword + "','" + serverKeyId + "') ON DUPLICATE KEY UPDATE hostname='"+serverHostname+"', username='"+serverUsername+"', password='"+serverPassword+"', fk_ssh_key='"+serverKeyId+"' ", function(err, rows, field) {
+						if(err)
+						{
+							io.emit('server', { done: 'error', error: 'Could not add the server to the database: ' + err });
+							res.status(500);
+							res.send(JSON.stringify({error: "error"}));
+						}
 
-      // Run Puppet
-    }
-    else {
-      serverHostname = arrHostnames[i];
-      // Verify that server is pingable
-      if(!ValidateIPaddress(serverHostname))
-      {
-        dns.resolve(serverHostname, 'A', function(err, addresses){
-            if(err){
-              io.emit('server', { consoleData: "Dns resolve error: " + err });
-              return;
-            }
-            var session = ping.createSession();
-            session.pingHost(addresses[0], function (error, target) {
-                if(error)
-                  io.emit('server', { consoleData: "Could not ping server: " + error });
-            });
-        });
-      }
-      else {
-        var session = ping.createSession();
-        session.pingHost(serverHostname, function (error, target) {
-            if(error)
-              res.send(JSON.stringify({error: 'noaccess'}));
-        });
-      }
+						serverId = rows["insertId"];
+						database.query("INSERT INTO roles VALUES(null,'" + serverRole + "','" + serverId + "')", function(err, rows, field) {
+							if(err)
+							{
+								io.emit('server', { done: 'error', error: 'Could not add the server role to the database: ' + err });
+								res.status(500);
+								res.send(JSON.stringify({error: "error"}));
+							}
 
-      if(serverKeyId != null && serverKeyId != "" && typeof(serverKeyId) != 'undefined'){
-        database.query("SELECT * FROM ssh_keys WHERE id = '" + serverKeyId + "'", function(err, rows, field){
-          serverKey = rows[0].content;
-          database.query("select * from roles JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
-            initiateConnection(rows[0]['hostname']);
-          });
-        });
-      }else {
-        database.query("select * from roles  JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
-          initiateConnection(rows[0]['hostname']);
-        });
-      }
-    }
+							// Finally run puppet on the client
+							var child_run_puppet = exec("python " + __dirname + "/../scripts/run_winrm_command.py " + serverUsername + " " + serverPassword + " " + serverHostname + " 'puppet agent --test'");
+							child_run_puppet.stdout.on('data', function(data) {
+  								io.emit('server', { consoleData: "" + data });
+							});
 
-  }
+							child_run_puppet.stderr.on('data', function(data) {
+								io.emit('server', { consoleData: 'stderr: ' + data });
+							});
+
+							child_run_puppet.on('close', function(code) {
+
+							});
+					  });
+					});
+				});
+			});
+		}
+		else {
+		  serverHostname = arrHostnames[i];
+		  // Verify that server is pingable
+		  if(!ValidateIPaddress(serverHostname))
+		  {
+		    dns.resolve(serverHostname, 'A', function(err, addresses){
+		        if(err){
+		          io.emit('server', { consoleData: "Dns resolve error: " + err });
+		          return;
+		        }
+		        var session = ping.createSession();
+		        session.pingHost(addresses[0], function (error, target) {
+		            if(error)
+		              io.emit('server', { consoleData: "Could not ping server: " + error });
+		        });
+		    });
+		  }
+		  else {
+		    var session = ping.createSession();
+		    session.pingHost(serverHostname, function (error, target) {
+		        if(error)
+		          res.send(JSON.stringify({error: 'noaccess'}));
+		    });
+		  }
+
+		  if(serverKeyId != null && serverKeyId != "" && typeof(serverKeyId) != 'undefined'){
+		    database.query("SELECT * FROM ssh_keys WHERE id = '" + serverKeyId + "'", function(err, rows, field){
+		      serverKey = rows[0].content;
+		      database.query("select * from roles JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
+		        initiateConnection(rows[0]['hostname']);
+		      });
+		    });
+		  }else {
+		    database.query("select * from roles  JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
+		      initiateConnection(rows[0]['hostname']);
+		    });
+		  }
+		}
+	}
+
 
   function initiateConnection(puppetHostname)
   {

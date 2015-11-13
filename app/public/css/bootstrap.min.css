@@ -7739,3 +7739,10 @@ label {
   border-radius: 4px;
   cursor: pointer;
 }
+
+
+.col-centered{
+    float: none;
+    margin: 0 auto;
+	width: 900px;
+}

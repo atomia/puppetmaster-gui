@@ -1,0 +1,40 @@
+extends ../layout
+block content
+	//.col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
+
+	.col-lg-1.col-centered
+		include status_modal.jade
+		h1.page-header Install Atomia public applications
+		
+		p This will install all customer facing applications of Atomia which includes:
+		ul
+			li Atomia Hosting Control Panel
+			li Atomia Billing Customer Panel
+			li Atomia Identity
+			li Atomia Store
+
+		legend Requirements
+		p 
+			| Requires a base installed Windows 2012 R2 server with winrm running for remote management to be available. Besides running the command below make sure that the Windows Remote Firewall rule allows connection from the puppet server, if they are on the same subnet it should be allowed by default.
+
+		pre
+			| winrm quickconfig
+			| winrm set winrm/config/client/auth @{Basic="true"}
+			| winrm set winrm/config/service/auth @{Basic="true"}
+			| winrm set winrm/config/service @{AllowUnencrypted="true"}
+
+		if !menuStatus["internaldns"]
+
+		else
+			-configureOnly = true
+			| You already have an Internal DNS server installed. Good job! If you would like to change the configuration you can do so above.
+
+		include ../servers/add_server.jade
+
+		include config_form.jade
+		input(type="hidden", id="serverRole", value="atomia_public_apps")
+
+		legend Done configuring?
+		button.btn.btn-lg.btn-success#startProvisioningButton(type="submit",onClick="return false;") Start Provisioning
+
+		//include ../servers/add_server_status.jade

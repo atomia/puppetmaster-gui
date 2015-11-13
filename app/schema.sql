@@ -57,17 +57,7 @@ INSERT INTO app_config VALUES(null,'installation_steps_default','[
   {"name": "Install AtomiaDNS","route" : "/wizard/atomiadns"},
   {"name": "Install Nameservers","route" : "/wizard/atomiadns"},
   {"name": "Configure Atomia applications","route" : "/wizard/windows"},
-  {"name": "Install Atomia ActionTrail", "route" : "/wizard/actiontrail"}
+  {"name": "Install internal Atomia applications", "route" : "/wizard/internal_apps"},
+  {"name": "Install public Atomia applications", "route" : "/wizard/public_apps"},
+
 ]');
-
-# SELECT var, val FROM servers JOIN configuration ON fk_server = servers.id WHERE servers.hostname='%{fqdn}'
-#pg_user=`grep -i PostgreSQL /etc/passwd | cut -d : -f 1`
-#if [ -z "$pg_user" ]; then
-#        echo "unable to find postgresql user, defaulting to postgres"
-#        pg_user="postgres"
-#fi
-
-#sudo="sudo -u $pg_user"
-#psql="$sudo psql"
-
-#$psql -c "CREATE DATABASE hieradata WITH OWNER puppetdb ENCODING 'UTF8'"

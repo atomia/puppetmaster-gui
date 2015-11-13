@@ -85,7 +85,13 @@ router.get('/windows', function(req, res, next) {
   setVariablesAndRender("windows_base", res);
 });
 
+router.get('/internal_apps', function(req, res, next) {
+  setVariablesAndRender("internal_apps", res);
+});
 
+router.get('/public_apps', function(req, res, next) {
+  setVariablesAndRender("public_apps", res);
+});
 
 router.post('/puppet', function(req, res, next) {
 
