@@ -75,5 +75,5 @@ INSERT INTO app_config VALUES(null,'installation_steps_default','[
 	{"name": "Install Customer MySQL server", "route" : "/wizard/mysql"},
 	{"name": "Install Customer PostgreSQL server", "route" : "/wizard/postgresql"},
 	{"name": "Install Customer MSSQL server", "route" : "/wizard/mssql"},
-	{"name": "Installation complete!", "route" : "/wizard/done"},
+	{"name": "Installation complete!", "route" : "/wizard/done"}
 ]');

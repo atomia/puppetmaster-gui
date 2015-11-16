@@ -1,6 +1,6 @@
 {
   "database" : {
-      "user": "root",
+      "user": "puppetgui",
       "password": "ker45tar",
       "database": "hiera"
     }

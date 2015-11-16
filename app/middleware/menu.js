@@ -8,7 +8,7 @@ module.exports = {
     rolesPretty["internaldns"] = {"prettyName" : "Internal DNS server"};
     rolesPretty["domainreg"] = {"prettyName" : "Domainreg"};
     rolesPretty["glusterfs"] = {"prettyName" : "GlusterFS"};
-    rolesPretty["nagios_server"] = {"prettyName" : "Nagios"}; 
+    rolesPretty["nagios_server"] = {"prettyName" : "Nagios"};
 
     allRoles = [];
     database.query("SELECT * FROM roles JOIN servers ON roles.fk_server = servers.id GROUP by roles.name ORDER BY servers.id", function(err, rows, field){
@@ -33,7 +33,9 @@ module.exports = {
               installationSteps = rows[i].val;
 
           }
-          currentStep = JSON.parse(installationSteps)[step];
+		  currentStep = 0;
+		  if( installationSteps != '')
+          	currentStep = JSON.parse(installationSteps)[step];
           res.locals = {
             menuStatus: allRoles,
             installationSteps: installationSteps,
