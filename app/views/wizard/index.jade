@@ -1,266 +1,266 @@
 extends ../layout
 block content
-  .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
-    h1.page-header Installation Readme
+	.col-lg-1.col-centered
+		h1.page-header Installation Readme
 
-    p Welcome to the installation application of the Atomia Platform. Before we get started there are a couple of decisions that need to be made on your part. The installation is done in a step by step process, please follow it in sequence to ensure that your environment is setup according to current best practices.
+		p Welcome to the installation application of the Atomia Platform. Before we get started there are a couple of decisions that need to be made on your part. The installation is done in a step by step process, please follow it in sequence to ensure that your environment is setup according to current best practices.
 
-    h2 Requirements
-    p The first step in doing a successful installation of Atomia is already done, you have installed this installation application :) Good job!. The next steps are not quite as easy but necessary none the less.
+		h2 Requirements
+		p The first step in doing a successful installation of Atomia is already done, you have installed this installation application :) Good job!. The next steps are not quite as easy but necessary none the less.
 
-    h3 Servers
-    p Naturally you will need a couple of servers where we can deploy the services needed to make the Atomia Platform work. This guide assumes that you are installing a full scale production environment which isolates most services on separate servers. You can of course choose if you provision the machines described below before you start or do it as you go. The following basic requirements need to be in place for each server you provision:
+		h3 Servers
+		p Naturally you will need a couple of servers where we can deploy the services needed to make the Atomia Platform work. This guide assumes that you are installing a full scale production environment which isolates most services on separate servers. You can of course choose if you provision the machines described below before you start or do it as you go. The following basic requirements need to be in place for each server you provision:
 
-    ul
-      li Basic installation of required Operating System
-      li Server should be able to connect to Puppetmaster (and the installation service if these are on different servers)
-      li Server should be able to connect to the internet
-      li The server hostname should be resolvable
+		ul
+			li Basic installation of required Operating System
+			li Server should be able to connect to Puppetmaster (and the installation service if these are on different servers)
+			li Server should be able to connect to the internet
+			li The server hostname should be resolvable
 
-    table.table.table-striped
-      thead
-        tr
-          th Service
-          th Operating System
-          th VCPUs
-          th RAM (GB)
-          th Disk size (GB)
-          th Suggested hostname
-      tbody
-        tr
-          td Puppetmaster
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 2
-          td.ram 4
-          td.disk 50
-          td puppetmaster.mydomain.com
-        tr
-          td Atomia Database
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 4
-          td.ram 16
-          td.disk 1000
-          td atdb01.mydomain.com
-        tr
-          td Domain Controller 1
-          td Windows Server 2012 R2
-          td.cpu 2
-          td.ram 4
-          td.disk 50
-          td dc01.mydomain.com
-        tr
-          td Domain Controller 2
-          td Windows Server 2012 R2
-          td.cpu 2
-          td.ram 4
-          td.disk 50
-          td dc02.mydomain.com
-        tr
-          td Atomia Identity
-          td Windows Server 2012 R2
-          td.cpu 2
-          td.ram 4
-          td.disk 100
-          td identity.mydomain.com
-        tr
-          td Atomia Automation Server
-          td Windows Server 2012 R2
-          td.cpu 2
-          td.ram 4
-          td.disk 100
-          td automationserver.mydomain.com
-        tr
-          td Atomia GUI
-          td Windows Server 2012 R2
-          td.cpu 2
-          td.ram 4
-          td.disk 100
-          td gui.mydomain.com
-        tr
-          td Atomia Admin & Billing API
-          td Windows Server 2012 R2
-          td.cpu 4
-          td.ram 8
-          td.disk 100
-          td billing.mydomain.com
-        tr
-          td Atomia DNS master
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 1
-          td.ram 1
-          td.disk 20
-          td atdns.mydomain.com
-        tr
-          td Nameserver 1
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 1
-          td.ram 1
-          td.disk 15
-          td ns01.mydomain.com
-        tr
-          td Nameserver 2
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 1
-          td.ram 1
-          td.disk 15
-          td ns02.mydomain.com
-        tr
-          td Atomia Domain registration
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 2
-          td.ram 4
-          td.disk 20
-          td domainreg.mydomain.com
-        tr
-          td Storage GlusterFS
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 2
-          td.ram 4
-          td.disk 10000
-          td gluster01.mydomain.com
-        tr
-          td Storage GlusterFS
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 2
-          td.ram 4
-          td.disk 10000
-          td gluster02.mydomain.com
-        tr
-          td Atomia Filesystem agent
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 1
-          td.ram 1
-          td.disk 15
-          td fsagent.mydomain.com
-        tr
-          td Installatron
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 1
-          td.ram 2
-          td.disk 15
-          td installatron.mydomain.com
-        tr
-          td Statistics processing
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 2
-          td.ram 2
-          td.disk 20
-          td stats.mydomain.com
-        tr
-          td Cron jobs
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 1
-          td.ram 1
-          td.disk 15
-          td cron.mydomain.com
-        tr
-          td Restatemachine
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 1
-          td.ram 1
-          td.disk 15
-          td restate.mydomain.com
-        tr
-          td Webmail
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 4
-          td.ram 2
-          td.disk 15
-          td Webmail.mydomain.com
-        tr
-          td FTP server 1
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 2
-          td.ram 2
-          td.disk 15
-          td ftp01.mydomain.com
-        tr
-          td FTP server 2
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 2
-          td.ram 2
-          td.disk 15
-          td ftp02.mydomain.com
-        tr
-          td Apache cluster node 1
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 2
-          td.ram 4
-          td.disk 15
-          td apache01.mydomain.com
-        tr
-          td Apache cluster node 2
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 2
-          td.ram 4
-          td.disk 15
-          td apache02.mydomain.com
-        tr
-          td IIS cluster node 1
-          td Windows Server 2012 R2
-          td.cpu 2
-          td.ram 4
-          td.disk 50
-          td iis01.mydomain.com
-        tr
-          td IIS cluster node 2
-          td Windows Server 2012 R2
-          td.cpu 2
-          td.ram 4
-          td.disk 50
-          td iis02.mydomain.com
-        tr
-          td Mail server cluster node 1
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 2
-          td.ram 4
-          td.disk 15
-          td mail01.mydomain.com
-        tr
-          td Mail server cluster node 2
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 2
-          td.ram 4
-          td.disk 15
-          td mail02.mydomain.com
-        tr
-          td Customer MSSQL server
-          td Windows Server 2012 R2
-          td.cpu 4
-          td.ram 16
-          td.disk 500
-          td mssql01.mydomain.com
-        tr
-          td Customer MySQL server
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 4
-          td.ram 16
-          td.disk 500
-          td mysql01.mydomain.com
-        tr
-          td Customer PostgreSQL server
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 4
-          td.ram 16
-          td.disk 500
-          td pg01.mydomain.com
-        tr
-          td Loadbalancer 1
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 2
-          td.ram 2
-          td.disk 15
-          td lb01.mydomain.com
-        tr
-          td Loadbalancer 2
-          td Ubuntu 14.04 (Trusty)
-          td.cpu 2
-          td.ram 2
-          td.disk 15
-          td lb02.mydomain.com
+			table.table.table-striped
+				thead
+					tr
+						th Service
+						th Operating System
+						th VCPUs
+						th RAM (GB)
+						th Disk size (GB)
+						th Suggested hostname
+				tbody
+					tr
+						td Puppetmaster
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 2
+						td.ram 4
+						td.disk 50
+						td puppetmaster.mydomain.com
+					tr
+						td Internal DNS resolver
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 1
+						td.ram 1
+						td.disk 10
+						td internaldns.mydomain.com
+					tr
+						td Nagios server
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 1
+						td.ram 1
+						td.disk 20
+						td nagios.mydomain.com													
+					tr
+						td Atomia Database
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 4
+						td.ram 16
+						td.disk 1000
+						td atdb01.mydomain.com
+					tr
+						td Domain Controller 1
+						td Windows Server 2012 R2
+						td.cpu 2
+						td.ram 4
+						td.disk 50
+						td dc01.mydomain.com
+					tr
+						td Domain Controller 2
+						td Windows Server 2012 R2
+						td.cpu 2
+						td.ram 4
+						td.disk 50
+						td dc02.mydomain.com
+					tr
+						td Atomia Domain registration
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 2
+						td.ram 4
+						td.disk 20
+						td domainreg.mydomain.com
+					tr
+						td Storage GlusterFS
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 2
+						td.ram 4
+						td.disk 10000
+						td gluster01.mydomain.com
+					tr
+						td Storage GlusterFS
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 2
+						td.ram 4
+						td.disk 10000
+						td gluster02.mydomain.com												
+					tr
+						td Atomia Internal Applications
+						td Windows Server 2012 R2
+						td.cpu 4
+						td.ram 4
+						td.disk 100
+						td internal.mydomain.com
+					tr
+						td Atomia public Applications
+						td Windows Server 2012 R2
+						td.cpu 4
+						td.ram 4
+						td.disk 100
+						td public.mydomain.com
+					tr
+						td Atomia DNS master
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 1
+						td.ram 1
+						td.disk 20
+						td atdns.mydomain.com
+					tr
+						td Nameserver 1
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 1
+						td.ram 1
+						td.disk 15
+						td ns01.mydomain.com
+					tr
+						td Nameserver 2
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 1
+						td.ram 1
+						td.disk 15
+						td ns02.mydomain.com
+					tr
+						td Atomia Filesystem agent
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 1
+						td.ram 1
+						td.disk 15
+						td fsagent.mydomain.com
+					tr
+						td Installatron
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 1
+						td.ram 2
+						td.disk 15
+						td installatron.mydomain.com
+					tr
+						td Statistics processing
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 2
+						td.ram 2
+						td.disk 20
+						td stats.mydomain.com
+					tr
+						td Cron jobs
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 1
+						td.ram 1
+						td.disk 15
+						td cron.mydomain.com
+					tr
+						td Restatemachine
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 1
+						td.ram 1
+						td.disk 15
+						td restate.mydomain.com
+					tr
+						td Webmail
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 4
+						td.ram 2
+						td.disk 15
+						td Webmail.mydomain.com
+					tr
+						td FTP server 1
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 2
+						td.ram 2
+						td.disk 15
+						td ftp01.mydomain.com
+					tr
+						td FTP server 2
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 2
+						td.ram 2
+						td.disk 15
+						td ftp02.mydomain.com
+					tr
+						td Apache cluster node 1
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 2
+						td.ram 4
+						td.disk 15
+						td apache01.mydomain.com
+					tr
+						td Apache cluster node 2
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 2
+						td.ram 4
+						td.disk 15
+						td apache02.mydomain.com
+					tr
+						td IIS cluster node 1
+						td Windows Server 2012 R2
+						td.cpu 2
+						td.ram 4
+						td.disk 50
+						td iis01.mydomain.com
+					tr
+						td IIS cluster node 2
+						td Windows Server 2012 R2
+						td.cpu 2
+						td.ram 4
+						td.disk 50
+						td iis02.mydomain.com
+					tr
+						td Mail server cluster node 1
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 2
+						td.ram 4
+						td.disk 15
+						td mail01.mydomain.com
+					tr
+						td Mail server cluster node 2
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 2
+						td.ram 4
+						td.disk 15
+						td mail02.mydomain.com
+					tr
+						td Customer MSSQL server
+						td Windows Server 2012 R2
+						td.cpu 4
+						td.ram 16
+						td.disk 500
+						td mssql01.mydomain.com
+					tr
+						td Customer MySQL server
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 4
+						td.ram 16
+						td.disk 500
+						td mysql01.mydomain.com
+					tr
+						td Customer PostgreSQL server
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 4
+						td.ram 16
+						td.disk 500
+						td pg01.mydomain.com
+					tr
+						td Loadbalancer 1
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 2
+						td.ram 2
+						td.disk 15
+						td lb01.mydomain.com
+					tr
+						td Loadbalancer 2
+						td Ubuntu 14.04 (Trusty)
+						td.cpu 2
+						td.ram 2
+						td.disk 15
+						td lb02.mydomain.com
 
-    h3 SSL Certificate
-    p All publically reachable Atomia applications use SSL therefore you need a wildcard certificate for your choosen domain name.
+		h3 SSL Certificate
+		p All publically reachable Atomia applications use SSL therefore you need a wildcard certificate for your choosen domain name.
 
-    p Now let's procees with the next step!
-      a(href="wizard/next_step") Install the Puppetmaster
+		p Now let's procees with the next step!
+			a(href="wizard/next_step") Install the Puppetmaster
