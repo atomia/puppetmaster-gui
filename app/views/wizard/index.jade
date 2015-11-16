@@ -5,10 +5,10 @@ block content
 
 		p Welcome to the installation application of the Atomia Platform. Before we get started there are a couple of decisions that need to be made on your part. The installation is done in a step by step process, please follow it in sequence to ensure that your environment is setup according to current best practices.
 
-		h2 Requirements
+		legend Requirements
 		p The first step in doing a successful installation of Atomia is already done, you have installed this installation application :) Good job!. The next steps are not quite as easy but necessary none the less.
 
-		h3 Servers
+		legend Servers
 		p Naturally you will need a couple of servers where we can deploy the services needed to make the Atomia Platform work. This guide assumes that you are installing a full scale production environment which isolates most services on separate servers. You can of course choose if you provision the machines described below before you start or do it as you go. The following basic requirements need to be in place for each server you provision:
 
 		ul
@@ -259,8 +259,9 @@ block content
 						td.disk 15
 						td lb02.mydomain.com
 
-		h3 SSL Certificate
+		legend SSL Certificate
 		p All publically reachable Atomia applications use SSL therefore you need a wildcard certificate for your choosen domain name.
 
-		p Now let's procees with the next step!
+		legend Next step 
+		p When you are done with the above it is time to proceed to the next step: 
 			a(href="wizard/next_step") Install the Puppetmaster

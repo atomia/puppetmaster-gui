@@ -95,29 +95,33 @@ router.get('/public_apps', function(req, res, next) {
 
 router.post('/puppet', function(req, res, next) {
 
-    var child = exec("repo=\"$(wget -q -O - http://public.apt.atomia.com/setup.sh.shtml | sed s/%distcode/`lsb_release -c | awk '{ print $2 }'`/g)\"; echo \"$repo\" | sh && apt-get update && apt-get install -y atomia-puppetmaster && /bin/setup-puppet-atomia");
-    child.stdout.on('data', function(data) {
-      io.emit('server', { consoleData: data });
-    });
-    child.stderr.on('data', function(data) {
-      io.emit('server', { consoleData: "Error communicating with server " + data });
-      io.emit('server', { done: 'error' });
-      child.kill();
-    });
-    child.on('close', function(code) {
-        var hostname =  execSync.exec("facter fqdn 2> /dev/null").stdout;
-        database.query("INSERT INTO servers VALUES(null,'" + hostname + "','','','')",function(err, rows, field) {
-          serverId = rows["insertId"];
-          database.query("INSERT INTO roles VALUES(null,'puppet','" + serverId + "')", function(err, rows, field) {
-          });
-        });
+	var hasError = false;
+	var child = exec("puppet=\"$(wget -q -O - https://raw.githubusercontent.com/atomia/puppet-atomia/master/setup-puppet-atomia)\"; echo \"$puppet\" |  sh");
 
-        io.emit('server', { done: 'ok' });
-    });
+	child.stdout.on('data', function(data) {
+		io.emit('server', { consoleData: data });
+	});
 
-    res.setHeader('Content-Type', 'application/json');
-  	res.status(200);
-    res.send(JSON.stringify({ok: "ok"}));
+	child.stderr.on('data', function(data) {
+		io.emit('server', { consoleData: 'stderr: ' + data });
+	});
+	child.on('close', function(code) {
+		if(!hasError)
+		{
+			var hostname =  execSync.exec("facter fqdn 2> /dev/null").stdout;
+				database.query("INSERT INTO servers VALUES(null,'" + hostname + "','','','')",function(err, rows, field) {
+					serverId = rows["insertId"];
+					database.query("INSERT INTO roles VALUES(null,'puppet','" + serverId + "')", function(err, rows, field) {
+						io.emit('server', { done: 'ok', error: 'Puppetmaster installed sucessfully!' });
+						res.status(200);
+						res.send(JSON.stringify({ok: "ok"}));
+						database.query("UPDATE app_config SET val = 2 WHERE var = 'current_step';", function(err, rows, field) {
+
+						});
+					});
+				});
+		}
+	});
 });
 
 router.get('/glusterfs', function(req, res, next) {

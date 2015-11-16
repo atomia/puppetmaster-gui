@@ -46,8 +46,8 @@ INSERT INTO app_config VALUES(null, 'current_step',0);
 
 INSERT INTO app_config VALUES(null,'installation_steps_default','[
 	{"name": "Pre requirements","route" : "/wizard"},
+	{"name": "Install Puppet Master","route" : "/wizard/puppet"},	
 	{"name": "Add SSH keys","route" : "/keys"},
-	{"name": "Install Puppet Master","route" : "/wizard/puppet"},
 	{"name": "Initial configuration","route" : "/wizard/basic"},
 	{"name": "Setup internal DNS","route" : "/wizard/internaldns"},
 	{"name": "Setup monitoring","route" : "/wizard/nagios_server"},

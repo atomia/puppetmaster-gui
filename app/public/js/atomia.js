@@ -173,22 +173,17 @@ $(document).ready(function(){
 	}
 
 	function installPuppetMaster() {
+		$("#status_modal").modal('toggle');
 
-	var postData = {};
-	$.post("/wizard/puppet", postData, function(data) {
-
-	if(typeof data.ok != 'undefined')
-	{
-	  $('#installPuppet').hide();
-	  $('#serverProgress').show();
-	  $('#serverConsole').show();
-	}
-	})
-	.error(function(err){
-	console.log(err);
-	$('#serverAlertWarning').html("Error validating server: " + err.responseText);
-	$('#serverAlertWarning').show();
-	});
+		var postData = {};
+		$.post("/wizard/puppet", postData, function(data) {
+			if(typeof data.ok != 'undefined')
+			{
+			}
+			})
+			.error(function(err){
+				alert("Error when provisioning server.");
+		});
 	};
 
 	function validateConfigForm() {
