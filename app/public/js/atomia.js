@@ -7,9 +7,9 @@ $(document).ready(function(){
 	var configureServerButton = document.getElementById('configureServerButton');
 	var saveConfigurationButton = document.getElementById('saveConfigurationButton');
 	var installPuppetButton = document.getElementById('installPuppet');
-	var serverHostname = document.getElementById('serverHostname');
 	var toggleAdvanced = document.getElementById('toggleAdvanced');
 	var generateCertificatesButton = document.getElementById('generateCertificatesButton');
+	var validateServerButton = document.getElementById('validateServer');
 
 	$('.password').each(
 		function (index)
@@ -58,7 +58,7 @@ $(document).ready(function(){
 	if(saveConfigurationButton)
 	{
 		saveConfigurationButton.addEventListener('click', function() {
-			validateConfigForm();
+			validateConfigForm(true);
 		}, false);
 	}
 
@@ -76,10 +76,21 @@ $(document).ready(function(){
 		}, false);
 	}
 
-	if(serverHostname)
+	if(validateServerButton)
 	{
-		serverHostname.addEventListener('change', function() {
-			var hostname = $(this).val();
+		validateServerButton.addEventListener('click', function() {
+			clearConsole();
+			validateServer();
+		}, false);
+	}
+
+	});
+
+	function replaceVars()
+	{
+
+			var hostname = $("#serverHostname").val();
+			console.log(hostname);
 			$('input[type=text], textarea').each(
 				function(index){
 					var input = $(this);
@@ -91,15 +102,52 @@ $(document).ready(function(){
 					if (input.val().indexOf("$ipaddress") >= 0)
 					{
 						$.get("/servers/ip/" + hostname, function(data) {
+							console.log(data);
 						  ipaddr = input.val().replace("$ipaddress",data[0]);
 						  input.val(ipaddr);
 						});
 				  }
 				}
 			);
-			}, false);
+
 		}
-	});
+
+	// Perform some basic checks to ensure the server is working and is ready for provisioning
+	function validateServer() {
+		var hostname = $("#serverHostname").val();
+		var username = $("#serverUsername").val();
+		var password = $("#serverPassword").val();
+		var privateKey = $("#serverKey").val();
+
+		$("#status_modal").modal('toggle');
+
+		// Can we login with SSH?
+		loginWithSSH(hostname, username, password, privateKey, function(status){
+			jStatus = JSON.parse(status);
+
+			if(jStatus.ok)
+			{
+				$("#configure_server").show();
+				$("#validateServer").hide();
+				$(".alert-success").html("Server validated sucessfully! Proceed with configuration.");
+				$(".alert-success").show();
+				$(".alert-danger").hide();
+				replaceVars();
+			}
+		})
+
+	}
+
+	function loginWithSSH(hostname, username, password, serverKey, callback) {
+		var postData = { serverHostname : hostname, serverUsername : username, serverPassword: password, serverKey: serverKey };
+		$.post("/servers/validate/ssh", postData, function(data) {
+			callback(data);
+		}).error(function(err){
+			$(".alert-danger").html("Server validated failed! Fix the problems reported before proceeding.");
+			$(".alert-danger").show();
+			$(".alert-success").hide();
+		});
+	}
 
 	function provisionServer () {
 
@@ -115,11 +163,25 @@ $(document).ready(function(){
 
 		$("#status_modal").modal('toggle');
 		$.post("/servers/new", postData, function(data) {
+			console.log(data.ok);
 			if(typeof data.ok != 'undefined')
 			{
+				$("#configure_server").show();
+				$("#validateServer").hide();
+				$(".alert-success").html("<span class='glyphicon glyphicon-thumbs-up' aria-hidden='true'></span> Provisioning finished sucessfully!");
+				$(".alert-success").show();
+				$(".alert-danger").hide();
 			}
 		}).error(function(err){
-			alert("Error when provisioning server.");
+			console.log(err);
+			if(typeof err.responseJSON != 'undefined')
+				errorMsg = err.responseJSON.error;
+			else
+				errorMsg = "Unknown error :("
+
+			$(".alert-danger").html("Provisioning failed: " + errorMsg);
+			$(".alert-danger").show();
+			$(".alert-success").hide();
 		});
 
 	}
@@ -186,7 +248,7 @@ $(document).ready(function(){
 		});
 	};
 
-	function validateConfigForm() {
+	function validateConfigForm(forwardOnComplete) {
 	var data = [];
 
 	if($('input[type="text"].invalid').size() > 0) {
@@ -223,7 +285,6 @@ $(document).ready(function(){
 	      tmpData.value = new Object();
 	      $("[name='domainreg_tld_config_hash']").each(function() {
 	        name = $(this).attr('id').replace("tld_process_","");
-	        console.log("Name: " + name);
 	        if(name != "domainreg_tld_config_hash") {
 
 	          tmpData.value[name] = $(this).val();
@@ -252,35 +313,43 @@ $(document).ready(function(){
 		contentType: 'application/json',
 		url: '/config'
 	}).done(function() {
-
+		if(forwardOnComplete){
+			if (confirm('Configuration updated, would you like to proceed to the next installation step?')) {
+			    window.location.replace("/wizard/next_step");
+			}
+		}
 	});
 
 	return true;
 	};
 
 	function validateConfigField(field) {
-	$("#" + field).removeClass("invalid");
-	$("#div_" + field).removeClass("has-error");
-	var subject = $("#" + field).val();
-	var field_val = "";
-	if($("#" + field + "_validation").val() == "%password")
-	{
-	  field_val = new RegExp('[a-zA-Z0-9z!@#$%^&*()+<>]{5,}',"g");
-	}
-	else if($("#" + field + "_validation").val() == "%url")
-	{
-	  field_val = new RegExp('^(https?:\/\/).*',"gi");
-	}
-	else {
-	field_val = new RegExp($("#" + field + "_validation").val().replace(/(\r\n|\n|\r)/gm,"").trim(),"g");
-	}
+		$("#" + field).removeClass("invalid");
+		$("#div_" + field).removeClass("has-error");
+		var subject = $("#" + field).val();
+		var field_val = "";
 
-	if(!field_val.test(subject)){
-	$("#" + field).addClass("invalid");
-	$("#div_" + field).addClass("has-error");
+		// Stored regular expressions
+		if($("#" + field + "_validation").val() == "%password")
+		{
+			field_val = new RegExp('[a-zA-Z0-9z!@#$%^&*()+<>]{5,}',"g");
+		}
+		else if($("#" + field + "_validation").val() == "%url")
+		{
+  			field_val = new RegExp('^(https?:\/\/).*',"gi");
+		}
+		else if($("#" + field + "_validation").val() == "%hostname")
+		{
+			field_val = new RegExp(' ^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$',"g");
+		}
+		else {
+			field_val = new RegExp($("#" + field + "_validation").val().replace(/(\r\n|\n|\r)/gm,"").trim(),"g");
+		}
 
-
-	}
+		if(!field_val.test(subject)){
+			$("#" + field).addClass("invalid");
+			$("#div_" + field).addClass("has-error");
+		}
 
 	}
 
@@ -382,30 +451,22 @@ $(document).ready(function(){
 	},1,function(){});
 
 	}
-	/*
-	socket.on('server', function (data) {
-	console.log(data);
-	$("#serverConsole").show();
-	if(typeof data.status != 'undefined' && typeof $('#serverProgressbar') != 'undefined'){
-	  updateProgressBar('#serverProgressbar', data.progress);
-	}
-	if(typeof data.consoleData != 'undefined' && typeof $('#serverConsole') != 'undefined'){
-	  updateConsole('#serverConsole', data.consoleData);
-	}
-	if(typeof data.done != 'undefined' && typeof $('#serverAlertWarning') != 'undefined'){
-	if(data.done == "error")
-	{
-	  $("#serverAlertWarning").html("Error: Could not bootstrap the server, please check the log below and try again!");
-	  $("#serverAlertWarning").show();
-	  updateProgressBar('#serverProgressbar', "100%");
-	}
-	if(data.done == "ok")
-	{
-	  updateProgressBar('#serverProgressbar', "100%");
-	  $("#serverAlertSuccess").html("All done! The server was added succesfully!");
-	  $("#serverAlertSuccess").show();
-	  $("#nextStep").show();
 
+	function clearConsole() {
+		$("#serverConsole").html("");
+		$("#alert-success").hide();
+		$("#alert-danger").hide();
+		$("#alert-succes").html("");
+		$("#alert-danger").html("");
 	}
-	}
-	}); */
+
+	$(document).ready(function() {
+  $(".modal").on("hidden.bs.modal", function() {
+	  console.log("modal hidden");
+	  $("#serverConsole").html("");
+	  $(".alert-success").hide();
+	  $(".alert-danger").hide();
+	  $(".alert-succes").html("");
+	  $(".alert-danger").html("");
+  });
+});

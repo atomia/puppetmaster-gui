@@ -1,20 +1,46 @@
 extends ../layout
 block content
-  .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
-    h1.page-header Install an Internal DNS server
-    p The internal dns server is used to hold dns records used within the Atomia environment.
+	.col-lg-1.col-centered
+		include status_modal.jade
+		h1.page-header Internal DNS server
+		p The internal dns server is used to hold dns records used within the Atomia environment. 
+		
+		span Software installed:
+			ul
+				li Bind9 (DNS server)
+				
+		span Firewall table (incoming traffic):
+		table.table.table-striped
+			thead
+				tr
+					th Port
+					th Protocol
+					th Source
+			tbody
+				tr
+					td 8140
+					td TCP
+					td PuppetMaster			
+				tr
+					td 53
+					td UDP
+					td Atomia*
+				tr
+					td 53
+					td TCP
+					td Atomia*
+		
+		p  <i>*Atomia = All servers in the environment</i>	
 
-    if !menuStatus["internaldns"]
-      h2 Add your Internal DNS server
-    else
-      -configureOnly = true
-      | You already have an Internal DNS server installed. Good job! If you would like to change the configuration you can do so above.
-
-    include ../servers/add_server.jade
-    h2 Configure Internal DNS
-    p For most roles that you add to a server there are some configurable variables that you can change, if a a change is required it will be shown.
-
-    include config_form.jade
-    input(type="hidden", id="serverRole", value="internaldns")
-
-    include ../servers/add_server_status.jade
+		if !allRolesSimple["internaldns"]
+			include ../servers/add_server.jade
+			-displayConfigure = "none"
+			include ../servers/configure_server.jade
+		else
+			-configureOnly = true
+			-displayConfigure = "block"
+			include ../servers/configure_server.jade
+			include ../servers/add_server.jade
+		
+		
+		input(type="hidden", id="serverRole", value="internaldns")

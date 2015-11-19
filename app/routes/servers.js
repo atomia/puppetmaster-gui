@@ -7,12 +7,12 @@ var fs = require('fs');
 var execSync = require('execSync');
 var exec = require('child_process').exec;
 
-/* GET users listing. */
+
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 
-/* GET users listing. */
+
 router.get('/new', function(req, res, next) {
   database.query("SELECT * FROM ssh_keys", function(err, rows, field){
     if(err)
@@ -77,6 +77,55 @@ router.post('/generate_certificates', function(req, res) {
 
 });
 
+/* Validates that SSH is working on a server */
+router.post('/validate/ssh', function(req, res) {
+	var serverHostname = req.body.serverHostname;
+    var serverUsername = req.body.serverUsername;
+    var serverPassword = req.body.serverPassword;
+    var serverKey = "";
+    var serverKeyId = req.body.serverKey;
+    var serverRole = req.body.serverRole;
+
+	if(serverKeyId != null && serverKeyId != "" && typeof(serverKeyId) != 'undefined'){
+		getKeyFromId(serverKeyId, function(key){
+			serverKey = key;
+			tryLogin();
+		});
+	}else {
+		tryLogin();
+	}
+
+	function tryLogin(){
+		io.emit('server', { consoleData: "\nVerifying SSH connectivity..." });
+		sshSession = new ssh({
+		  host: serverHostname,
+		  user: serverUsername,
+		  password: serverPassword,
+		  key: serverKey,
+		  timeout: 5000
+		});
+
+		sshSession.on('error', function(err) {
+		  sshSession.end();
+		  returnError(res, "\nServer validation failed: Could not connect to the server via SSH!");
+		});
+
+		sshSession.exec("echo '\nThis is a test command from Atomia!\n'", {
+	      out: function(stdout){
+	        io.emit('server', { consoleData: stdout });
+	      },
+	      exit: function(code) {
+	        io.emit('server', { consoleData: "\nCommand completed with status code: " + code });
+			if(code == 0)
+				returnOk(res, "SSH login verified sucessfully");
+			else
+				returnError(res, "Server validation failed: Could not execute remot SSH command");
+	      }
+	    }).start();
+	}
+});
+
+
 router.post('/update', function(req, res) {
   var serverHostname = req.body.serverHostname;
   var serverUsername = req.body.serverUsername;
@@ -128,6 +177,7 @@ router.post('/update', function(req, res) {
   res.send(JSON.stringify({ok: "ok"}));
 });
 
+/* Provision a new server */
 router.post('/new', function(req, res) {
 	var serverHostname = req.body.serverHostname;
 	var serverUsername = req.body.serverUsername;
@@ -217,162 +267,157 @@ router.post('/new', function(req, res) {
 			});
 		}
 		else {
-		  serverHostname = arrHostnames[i];
-		  // Verify that server is pingable
-		  if(!ValidateIPaddress(serverHostname))
-		  {
-		    dns.resolve(serverHostname, 'A', function(err, addresses){
-		        if(err){
-		          io.emit('server', { consoleData: "Dns resolve error: " + err });
-		          return;
-		        }
-		        var session = ping.createSession();
-		        session.pingHost(addresses[0], function (error, target) {
-		            if(error)
-		              io.emit('server', { consoleData: "Could not ping server: " + error });
-		        });
-		    });
-		  }
-		  else {
-		    var session = ping.createSession();
-		    session.pingHost(serverHostname, function (error, target) {
-		        if(error)
-		          res.send(JSON.stringify({error: 'noaccess'}));
-		    });
-		  }
+		  	serverHostname = arrHostnames[i];
+			if(serverKeyId != null && serverKeyId != "" && typeof(serverKeyId) != 'undefined'){
+				getKeyFromId(serverKeyId, function(key){
+					serverKey = key;
+					gotKey();
+				});
+			}else {
+				gotKey();
+			}
 
-		  if(serverKeyId != null && serverKeyId != "" && typeof(serverKeyId) != 'undefined'){
-		    database.query("SELECT * FROM ssh_keys WHERE id = '" + serverKeyId + "'", function(err, rows, field){
-		      serverKey = rows[0].content;
-		      database.query("select * from roles JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
-		        initiateConnection(rows[0]['hostname']);
-		      });
-		    });
-		  }else {
-		    database.query("select * from roles  JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
-		      initiateConnection(rows[0]['hostname']);
-		    });
-		  }
+			function gotKey() {
+				getPuppetHostname(function(puppet){
+					var sshSession = new ssh({
+				  		host: serverHostname,
+				  		user: serverUsername,
+						password: serverPassword,
+				      	key: serverKey,
+				  		timeout: 5000
+				  	});
+
+					sshSession.on('error', function(err) {
+						returnError(res, "Error communicating with the server: " + err);
+					});
+
+					setupPuppet(sshSession,puppet, res, function(result) {
+						if(result == 0){
+							// Puppet is installed and connected lets add the server to local database and assign a role
+							io.emit('server', { consoleData: "Adding server to local database" });
+							addServerToDatabase(serverHostname, serverUsername, serverPassword, serverKeyId, serverRole, function (result) {
+								if(result == 0)
+								{
+									io.emit('server', { consoleData: "Server added to the database, proceeding with provisioning." });
+									// Server is added to the database we can now do a puppet run
+									var sshSession = new ssh({
+										host: serverHostname,
+										user: serverUsername,
+										password: serverPassword,
+										key: serverKey,
+										timeout: 5000
+									});
+									doPuppetRun(sshSession, function(result){
+										if(result == 0)
+										{
+											returnOk(res, "Server provisioned sucessfully!");
+										}
+										else {
+											returnError(res, "Error while provisioning. Server might not work fully, please try to run provisioning again");
+										}
+									});
+
+								}
+								else {
+									returnError(res, "Failed to add server to the database!");
+								}
+							});
+						}
+						else {
+							returnError(res, "Puppet setup failed");
+						}
+					});
+				});
+			}
+
 		}
+	}
+});
+
+	/* Setup puppet on a server with given ssh session */
+	function setupPuppet(ssh, puppet, res, callback) {
+		console.log("setting up Puppet");
+
+		ssh.exec("wget --no-check-certificate https://raw.github.com/atomia/puppet-atomia/master/files/bootstrap_linux.sh && chmod +x bootstrap_linux.sh && sudo ./bootstrap_linux.sh " + puppet + "", {
+			out: function(stdout){
+				io.emit('server', { consoleData: stdout });
+			},
+			err: function(stderr) {
+				io.emit('server', { consoleData: stderr });
+			},
+			exit: function(code) {
+				io.emit('server', { consoleData: "Command exited with status: " + code + "\n" });
+				callback(code);
+			}
+		}).start();
+	}
+
+	function addServerToDatabase(serverHostname, serverUsername, serverPassword, serverKeyId, serverRole, callback) {
+		database.query("INSERT INTO servers VALUES(null,'" + serverHostname + "','" + serverUsername + "','" + serverPassword + "','" + serverKeyId + "') ON DUPLICATE KEY UPDATE hostname='"+serverHostname+"', username='"+serverUsername+"', password='"+serverPassword+"', fk_ssh_key='"+serverKeyId+"' ", function(err, rows, field) {
+			if(err)
+				callback(1);
+
+			if(serverRole != "" && typeof serverRole != 'undefined')
+			{
+				serverId = rows["insertId"];
+				database.query("INSERT INTO roles VALUES(null,'" + serverRole + "','" + serverId + "')", function(err, rows, field) {
+				if(err)
+					callback(1);
+
+				callback(0);
+				});
+			}
+		});
+	}
+
+	function doPuppetRun(ssh, callback) {
+		ssh.exec("sudo puppet agent --test --waitforcert 1", {
+			out: function(stdout){
+				io.emit('server', { consoleData: stdout });
+			},
+			err: function(stderr) {
+				io.emit('server', { consoleData: stderr });
+			},
+			exit: function(code) {
+				io.emit('server', { consoleData: "Command exited with status: " + code + "\n" });
+				callback(code);
+			}
+		}).start();
+
 	}
 
 
-  function initiateConnection(puppetHostname)
-  {
-    // Verify that ssh works
-  	var sshSession = new ssh({
-  		host: serverHostname,
-  		user: serverUsername,
-      key: serverKey,
-  		timeout: 5000
-  	});
 
-    scpKey = "";
-    if(serverKey != "")
-      scpKey = "-i " + serverKey
+/* Helper functions */
+function returnOk(res, message){
+	io.emit('server', { consoleData: "\n" + message });
+	res.status(200);
+    res.send(JSON.stringify({ok: message}));
+}
 
-    scpPassword = ""
-    if(serverPassword != "")
-      scpPassword = "-p " + serverPassword
+function returnError(res, message){
+	io.emit('server', { consoleData:  "\n" + message });
+	res.status(500);
+    res.send(JSON.stringify({error: message}));
+}
 
-  	sshSession.on('error', function(err) {
-      sshSession.end();
-      io.emit('server', { consoleData: "Error communicating with the server: " + err });
-  	});
+function getPuppetHostname(callback){
+	database.query("select * from roles JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
+	  callback(rows[0]['hostname']);
+	});
+}
 
-    progress = 25;
-  	sshSession.exec("lsb_release -a 2> /dev/null | grep Distributor | cut -d ':' -f 2 | tr -d '[[:space:]]'", {
-  		out: function(stdout){
-  			if(stdout != 'Ubuntu')
-  			{
-  				  io.emit('server', { consoleData: "The server has an unsupported Operating System!" });
-  				return;
-  			}
-  			else
-  			{
-          io.emit('server', { status: 'Bootstrapping', progress: '10%' });
-        }
-      }
-    })
-		.exec("wget --no-check-certificate https://raw.github.com/atomia/puppet-atomia/master/files/bootstrap_linux.sh && chmod +x bootstrap_linux.sh", {
-          out: function(stdout){
-            console.log(stdout);
-            io.emit('server', { status: 'Downloading bootstrap file', progress: '25%' });
-          }
-    })
-    .exec('sudo ./bootstrap_linux.sh ' + puppetHostname, {
-      out: function(stdout){
-        console.log(stdout);
-        io.emit('server', { consoleData: stdout });
-          progress = progress + 0.1;
-          if(progress > 95)
-            progress = 95;
-            io.emit('server', { status: 'Runnng bootstrap script', progress: progress + "%" });
-        },
-      })
-      .exec('sudo service puppet stop', {
-        out: function(stdout){
-          console.log(stdout);
-          io.emit('server', { consoleData: stdout });
-            progress = progress + 0.1;
-            if(progress > 95)
-              progress = 95;
-              io.emit('server', { status: 'Runnng bootstrap script', progress: progress + "%" });
-        },
-        exit: function(code) {
-          console.log("CODE " + code);
-          if(code != 0)
-          {
-            io.emit('server', { done: 'error' });
-            return;
-          }
-
-          io.emit('server', { consoleData: "Adding server to local database" });
-          database.query("INSERT INTO servers VALUES(null,'" + serverHostname + "','" + serverUsername + "','" + serverPassword + "','" + serverKeyId + "') ON DUPLICATE KEY UPDATE hostname='"+serverHostname+"', username='"+serverUsername+"', password='"+serverPassword+"', fk_ssh_key='"+serverKeyId+"' ", function(err, rows, field) {
-            if(err)
-            {
-              io.emit('server', { consoleData: "Error adding server to the database: " + err });
-              io.emit('server', { done: 'error' });
-              return;
-            }
-              console.log(rows);
-              if(serverRole != "" && typeof serverRole != 'undefined')
-              {
-                serverId = rows["insertId"];
-                database.query("INSERT INTO roles VALUES(null,'" + serverRole + "','" + serverId + "')", function(err, rows, field) {
-                  if(err)
-                  {
-                    io.emit('server', { consoleData: "Error adding server role to the database: " + err });
-                    io.emit('server', { done: 'error' });
-
-                  }
-                  return;
-                });
-              }
-              sshSession.exec('sudo puppet agent --test --waitforcert 1 && sudo service puppet start', {
-            		out: function(stdout){
-                  console.log(stdout);
-                  io.emit('server', { consoleData: stdout });
-                  progress = progress + 0.1;
-                  if(progress > 95)
-                    progress = 95;
-                  io.emit('server', { status: 'Runnng bootstrap script', progress: progress + "%" });
-                },
-                exit: function(code) {
-                  io.emit('server', { done: 'ok' });
-                  return;
-                }
-              });
-
-          });
-        }
-    }).start();
-
-  }
-  	res.status(200);
-    res.send(JSON.stringify({ok: "ok"}));
-
-});
+function getKeyFromId(serverKeyId, callback) {
+		database.query("SELECT * FROM ssh_keys WHERE id = '" + serverKeyId + "'", function(err, rows, field){
+			if(typeof rows[0].content != 'undefined')
+			{
+				callback(rows[0].content);
+			}
+			else {
+				callback(null);
+			}
+		});
+};
 
 function ValidateIPaddress(ipaddress)
 {

@@ -1,17 +1,10 @@
 extends ../layout
 block content
-  .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
-    h1.page-header Basic configuration
+	.col-lg-1.col-centered
+		h1.page-header Basic configuration
 
-    each c in config
-      .form-group
-        label(for='#{c.name}')
-          =c.name
-        &nbsp;<i>(#{c.doc})</i>
-        input.form-control(id="#{c.name}", class="#{c.required} configVariables", type="text", value="#{c.value}", name="#{c.name}", onChange='validateConfigField("#{c.name}")')
-        input(type="hidden", id="#{c.name}_validation", value="#{c.validation}")
-        input(type="hidden", id="moduleName", value="#{moduleName}")
+		include config_form.jade
 
-        input(type="hidden", id="serverRole", value="basic")
-        <br/>
-    button.btn.btn-lg.btn-success#saveConfigurationButton(type="submit",onClick="return false;") Save configuration
+		input(type="hidden", id="serverRole", value="basic")
+		<br/>
+		button.btn.btn-lg.btn-success#saveConfigurationButton(type="submit",onClick="return false;") Save configuration

@@ -11,6 +11,7 @@ module.exports = {
     rolesPretty["nagios_server"] = {"prettyName" : "Nagios"};
 
     allRoles = [];
+	allRolesSimple = [];
     database.query("SELECT * FROM roles JOIN servers ON roles.fk_server = servers.id GROUP by roles.name ORDER BY servers.id", function(err, rows, field){
       if(err)
         throw err;
@@ -21,6 +22,7 @@ module.exports = {
               rolesPretty[rows[i].name]['url'] = rows[i].name;
               rolesPretty[rows[i].name]['hostname'] = rows[i].hostname;
               allRoles[a] = rolesPretty[rows[i].name];
+			  allRolesSimple[rows[i].name] = "installed";
               a++;
             }
         }
@@ -36,6 +38,7 @@ module.exports = {
 		  currentStep = 0;
 		  if( installationSteps != '')
           	currentStep = JSON.parse(installationSteps)[step];
+		console.log(allRolesSimple);
           res.locals = {
             menuStatus: allRoles,
             installationSteps: installationSteps,
