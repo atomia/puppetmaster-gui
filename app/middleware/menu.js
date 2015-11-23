@@ -38,7 +38,8 @@ module.exports = {
 		  currentStep = 0;
 		  if( installationSteps != '')
           	currentStep = JSON.parse(installationSteps)[step];
-		console.log(allRolesSimple);
+
+			console.log(currentStep);
           res.locals = {
             menuStatus: allRoles,
             installationSteps: installationSteps,

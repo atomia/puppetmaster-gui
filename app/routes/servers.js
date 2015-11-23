@@ -6,12 +6,25 @@ var ssh  = require('simple-ssh');
 var fs = require('fs');
 var execSync = require('execSync');
 var exec = require('child_process').exec;
-
+var puppetDB = require('../lib/puppetdb.js');
 
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 
+router.get('/status/:hostname', function(req, res, next) {
+	var hostname = req.params.hostname;
+	puppetDB.getReports(hostname, function(reports){
+		res.render('servers/status', {reports: reports, hostname: hostname});
+	});
+});
+
+router.get('/status/events/:hash', function(req, res, next) {
+	var hash = req.params.hash;
+	puppetDB.getEvents(hash, function(events){
+		res.render('servers/events', {events: events});
+	});
+});
 
 router.get('/new', function(req, res, next) {
   database.query("SELECT * FROM ssh_keys", function(err, rows, field){

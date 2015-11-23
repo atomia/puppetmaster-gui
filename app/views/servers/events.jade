@@ -1,0 +1,34 @@
+extends ../layout
+block content
+	.col-lg-1.col-centered
+		h1 Provisioning report 
+		legend
+			| Finished at: 
+			=events[events.length -1].timestamp
+			
+		each e in events		
+			.list-group
+			-style=""
+			if e.status != 'success'
+				-style="border:5px solid #ffbac9";
+
+			div.list-group-item( style="#{style}")
+			
+				if e.status == 'success'
+					img(src="/img/icon_success_pink.png", style="float:right;width:32px;z-index:100;")
+				
+				h4.list-group-item-heading
+					if e['resource-type'] == 'File'
+						span.glyphicon.glyphicon-file(aria-hidden="true")
+					if e['resource-type'] == 'Exec'
+						span.glyphicon.glyphicon-cog(aria-hidden="true")
+					if e['resource-type'] == 'Nagios_host' || e['resource-type'] == 'Nagios_service'
+						img(src="/img/nagios_server-icon.png", style="width:24px;")
+					=e['resource-title']
+					
+				p.list-group-item-text
+					=e['message']
+				//p.list-group-item-text
+					//=e['resource-type']
+					
+			

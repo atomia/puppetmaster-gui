@@ -1,20 +1,20 @@
 extends ../layout
 block content
 	.col-lg-1.col-centered
-		-myRole = 'internaldns'
+		-myRole = 'nagios_server'
 		include status_modal.jade
-		h1.page-header Internal DNS server
+		h1.page-header Monitoring server
 			if allRolesSimple[myRole]
 				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
 		if currentStep.route == path && allRolesSimple[myRole]
 			h3 Installation complete!
 			p
 				button.btn.btn-lg.btn-success(type="submit",onClick="window.location.href = '/wizard/next_step';") Next Step
-		p The internal dns server is used to hold dns records used within the Atomia environment. 
+		p Monitor is an important part of any environment in order to ensure that all services are functioning properly. We will now deploy a Nagios server which will manage the monitoring for us. Every server created during the installation process will automatically be connected to the monitoring server and have relevant checks added.
 		
 		span Software installed:
 			ul
-				li Bind9 (DNS server)
+				li Nagios 4 (Community)
 				
 		span Firewall table (incoming traffic):
 		table.table.table-striped
@@ -29,15 +29,12 @@ block content
 					td TCP
 					td PuppetMaster			
 				tr
-					td 53
-					td UDP
-					td Atomia*
-				tr
-					td 53
+					td 80
 					td TCP
-					td Atomia*
+					td Admin*
+
 		
-		p  <i>*Atomia = All servers in the environment</i>	
+		p  <i>*Admin = Limit access to administrators IP-addresses if needed according to your policy, otherwise open to the world</i>	
 
 		if !allRolesSimple[myRole]
 			include ../servers/add_server.jade

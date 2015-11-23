@@ -57,7 +57,7 @@ router.get('/basic', function(req, res, next) {
 });
 
 router.get('/internaldns', function(req, res, next) {
-  setVariablesAndRender("internaldns", res);
+  setVariablesAndRender("internaldns", res, null, req);
 });
 
 
@@ -69,8 +69,8 @@ router.get('/atomiadns', function(req, res, next) {
   setVariablesAndRender("atomiadns", res);
 });
 
-router.get('/monitoring', function(req, res, next) {
-  setVariablesAndRender("nagios/server", res, "nagios_server");
+router.get('/nagios_server', function(req, res, next) {
+  setVariablesAndRender("nagios/server", res, "nagios_server", req);
 });
 
 router.get('/active_directory', function(req, res, next) {
@@ -135,7 +135,7 @@ router.get('/glusterfs', function(req, res, next) {
   });
 });
 
-function setVariablesAndRender(currentRole, res, role) {
+function setVariablesAndRender(currentRole, res, role, req) {
   getConfiguration(currentRole, function(config){
     moduleName = "atomia::" + currentRole;
     database.query("SELECT * FROM ssh_keys", function(err, keyRows, field){
@@ -153,7 +153,7 @@ function setVariablesAndRender(currentRole, res, role) {
             puppetHostname = rows[0]['hostname'];
           if(role)
             currentRole = role;
-          res.render('wizard/' + currentRole, { keys: keyRows, config: config, moduleName: moduleName, server: serverRows[0], puppetMaster: puppetHostname });
+          res.render('wizard/' + currentRole, { keys: keyRows, config: config, moduleName: moduleName, server: serverRows[0], puppetMaster: puppetHostname, path:req.originalUrl });
         });
       });
     })
