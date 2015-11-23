@@ -6,7 +6,12 @@ block content
 		h1.page-header Monitoring server
 			if allRolesSimple[myRole]
 				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
-		if currentStep.route == path && allRolesSimple[myRole]
+		if reportStatus != ""
+			p 
+				a(href="/servers/status/events/#{latestReport.hash}")
+					| Latest provisioning run: #{reportStatus}
+	
+		if currentStep.route == path && allRolesSimple[myRole] && reportStatus == "successful"
 			h3 Installation complete!
 			p
 				button.btn.btn-lg.btn-success(type="submit",onClick="window.location.href = '/wizard/next_step';") Next Step
@@ -36,7 +41,7 @@ block content
 		
 		p  <i>*Admin = Limit access to administrators IP-addresses if needed according to your policy, otherwise open to the world</i>	
 
-		if !allRolesSimple[myRole]
+		if !allRolesSimple[myRole] && reportStatus == "successful"
 			include ../servers/add_server.jade
 			-displayConfigure = "none"
 			include ../servers/configure_server.jade

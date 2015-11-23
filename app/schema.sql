@@ -10,6 +10,9 @@ CREATE TABLE servers (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
+ALTER TABLE `servers`
+ADD UNIQUE INDEX `ix_hostname` (`hostname`);
+
 CREATE TABLE `ssh_keys` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
@@ -46,7 +49,7 @@ INSERT INTO app_config VALUES(null, 'current_step',0);
 
 INSERT INTO app_config VALUES(null,'installation_steps_default','[
 	{"name": "Pre requirements","route" : "/wizard"},
-	{"name": "Install Puppet Master","route" : "/wizard/puppet"},	
+	{"name": "Install Puppet Master","route" : "/wizard/puppet"},
 	{"name": "Add SSH keys","route" : "/keys"},
 	{"name": "Initial configuration","route" : "/wizard/basic"},
 	{"name": "Setup internal DNS","route" : "/wizard/internaldns"},

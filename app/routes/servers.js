@@ -321,7 +321,7 @@ router.post('/new', function(req, res) {
 										timeout: 5000
 									});
 									doPuppetRun(sshSession, function(result){
-										if(result == 0)
+										if(result == 0 || result == 2)
 										{
 											returnOk(res, "Server provisioned sucessfully!");
 										}

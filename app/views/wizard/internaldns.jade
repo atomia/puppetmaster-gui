@@ -6,6 +6,10 @@ block content
 		h1.page-header Internal DNS server
 			if allRolesSimple[myRole]
 				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
+		if reportStatus != ""
+			p 
+				a(href="/servers/status/events/#{latestReport.hash}")
+					| Latest provisioning run: #{reportStatus}
 		if currentStep.route == path && allRolesSimple[myRole]
 			h3 Installation complete!
 			p

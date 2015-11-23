@@ -5,6 +5,7 @@ var exec = require('child_process').exec;
 var execSync = require('execSync');
 var fs = require('fs');
 var yaml = require('yamljs');
+var puppetDB = require('../lib/puppetdb.js');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -135,9 +136,9 @@ router.get('/glusterfs', function(req, res, next) {
   });
 });
 
-function setVariablesAndRender(currentRole, res, role, req) {
+function setVariablesAndRender(currentRole, res, role, req, hostname) {
   getConfiguration(currentRole, function(config){
-    moduleName = "atomia::" + currentRole;
+    moduleName = "atomia::" + currentRole.replace("/","::");
     database.query("SELECT * FROM ssh_keys", function(err, keyRows, field){
       if(err)
         throw err;
@@ -153,7 +154,16 @@ function setVariablesAndRender(currentRole, res, role, req) {
             puppetHostname = rows[0]['hostname'];
           if(role)
             currentRole = role;
-          res.render('wizard/' + currentRole, { keys: keyRows, config: config, moduleName: moduleName, server: serverRows[0], puppetMaster: puppetHostname, path:req.originalUrl });
+		puppetDB.getReports(serverRows[0].hostname, function(reports){
+
+			if(reports.length > 0)
+				reportStatus = reports[0].status
+			else
+				reportStatus = ""
+
+			res.render('wizard/' + currentRole, { latestReport: reports[0], reportStatus: reportStatus, keys: keyRows, config: config, moduleName: moduleName, server: serverRows[0], puppetMaster: puppetHostname, path:req.originalUrl });
+
+		});
         });
       });
     })
