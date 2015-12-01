@@ -7,7 +7,9 @@ form.form-horizontal
 				label.col-lg-2.control-label(for='serverHostname') Server hostname
 				div.col-lg-8
 					input#serverHostname.form-control(type="text", value="#{server.hostname}", name="serverHostname", readonly="readonly")
+					button.btn.btn-xs.btn-info#updateServerHostnameButton(onClick="return(false);") Update hostname
 					span.help-block Hostname or ip address to the server
+					
 		div.row
 			div.form-group
 				label.col-lg-2.control-label(for='serverUsername') Username

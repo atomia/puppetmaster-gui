@@ -10,7 +10,9 @@ $(document).ready(function(){
 	var toggleAdvanced = document.getElementById('toggleAdvanced');
 	var generateCertificatesButton = document.getElementById('generateCertificatesButton');
 	var validateServerButton = document.getElementById('validateServer');
-
+	var deleteServerButton = document.getElementsByClassName('deleteServerButton');
+	var updateServerHostnameButton = document.getElementById('updateServerHostnameButton');
+	
 	$('.password').each(
 		function (index)
 		{
@@ -84,6 +86,23 @@ $(document).ready(function(){
 		}, false);
 	}
 
+	if(deleteServerButton)
+	{
+		for (var i=0, max=deleteServerButton.length; i < max; i++) {
+			deleteServerButton[i].addEventListener('click', function() {
+				deleteServer($(this).attr('rel'));
+			}, false);
+		}
+	}
+
+	if(updateServerHostnameButton)
+	{
+		updateServerHostnameButton.addEventListener('click', function() {
+			updateHostname();
+		}, false);		
+	}
+
+
 	});
 
 	function replaceVars()
@@ -121,21 +140,52 @@ $(document).ready(function(){
 
 		$("#status_modal").modal('toggle');
 
-		// Can we login with SSH?
-		loginWithSSH(hostname, username, password, privateKey, function(status){
-			jStatus = JSON.parse(status);
+		var r = $("#serverRole").val();
+		if(r == "active_directory") {
+			testWinRM(hostname, username, password, function(status){
+				jStatus = JSON.parse(status);
+				scrollBottom();
+				if(jStatus.ok)
+				{
+					$("#configure_server").show();
+					$("#validateServer").hide();
+					$(".alert-success").html("Server validated sucessfully! Proceed with configuration.");
+					$(".alert-success").show();
+					$(".alert-danger").hide();
+					replaceVars();
+				}
+			});
+		}
+		else {
+			// Can we login with SSH?
+			loginWithSSH(hostname, username, password, privateKey, function(status){
+				scrollBottom();
+				jStatus = JSON.parse(status);
 
-			if(jStatus.ok)
-			{
-				$("#configure_server").show();
-				$("#validateServer").hide();
-				$(".alert-success").html("Server validated sucessfully! Proceed with configuration.");
-				$(".alert-success").show();
-				$(".alert-danger").hide();
-				replaceVars();
-			}
-		})
+				if(jStatus.ok)
+				{
+					$("#configure_server").show();
+					$("#validateServer").hide();
+					$(".alert-success").html("Server validated sucessfully! Proceed with configuration.");
+					$(".alert-success").show();
+					$(".alert-danger").hide();
+					replaceVars();
+				}
+			})
 
+		}
+
+	}
+
+	function testWinRM(hostname, username, password, callback) {
+		var postData = { serverHostname : hostname, serverUsername : username, serverPassword: password };
+		$.post("/servers/validate/windows", postData, function(data) {
+			callback(data);
+		}).error(function(err){
+			$(".alert-danger").html("Server validated failed! Fix the problems reported before proceeding.");
+			$(".alert-danger").show();
+			$(".alert-success").hide();
+		});
 	}
 
 	function loginWithSSH(hostname, username, password, serverKey, callback) {
@@ -231,6 +281,32 @@ $(document).ready(function(){
 		}).error(function(err){
 			$('#serverAlertWarning').html("Error validating server: " + err.responseText);
 			$('#serverAlertWarning').show();
+		});
+	}
+
+	function deleteServer(element, hostname) {
+
+		$.ajax({
+			url: '/servers/' + hostname,
+			type: 'DELETE',
+			success: function(result) {
+				location.reload();
+			}
+		});
+
+	}
+
+	function updateHostname(){
+		var hostname = $('#serverHostname').val();
+		var username = $('#serverUsername').val();
+		var password = $('#serverPassword').val();
+
+		var postData = { serverHostname : hostname.replace(/(\r\n|\n|\r)/gm,""), serverUsername : username, serverPassword: password};
+
+		$.post("/servers/update_hostname", postData, function(data) {
+			$("#serverHostname").val(JSON.parse(data).ok);
+		}).error(function(err){
+			console.log(err.responseText);
 		});
 	}
 
@@ -340,7 +416,7 @@ $(document).ready(function(){
 		}
 		else if($("#" + field + "_validation").val() == "%hostname")
 		{
-			field_val = new RegExp(' ^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$',"g");
+			field_val = new RegExp('^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$',"g");
 		}
 		else {
 			field_val = new RegExp($("#" + field + "_validation").val().replace(/(\r\n|\n|\r)/gm,"").trim(),"g");
@@ -470,3 +546,9 @@ $(document).ready(function(){
 	  $(".alert-danger").html("");
   });
 });
+
+function scrollBottom() {
+	$("#serverConsole").animate({
+		scrollTop:$("#serverConsole")[0].scrollHeight - $("#serverConsole").height()
+	},1,function(){});
+}

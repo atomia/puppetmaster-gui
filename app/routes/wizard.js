@@ -61,13 +61,17 @@ router.get('/internaldns', function(req, res, next) {
   setVariablesAndRender("internaldns", res, null, req);
 });
 
+router.get('/atomia_database', function(req, res, next) {
+  setVariablesAndRender("atomia_database", res, null, req);
+});
+
 
 router.get('/domainreg', function(req, res, next) {
-  setVariablesAndRender("domainreg", res);
+  setVariablesAndRender("domainreg", res, null, req);
 });
 
 router.get('/atomiadns', function(req, res, next) {
-  setVariablesAndRender("atomiadns", res);
+  setVariablesAndRender("atomiadns", res, null, req);
 });
 
 router.get('/nagios_server', function(req, res, next) {
@@ -75,23 +79,23 @@ router.get('/nagios_server', function(req, res, next) {
 });
 
 router.get('/active_directory', function(req, res, next) {
-  setVariablesAndRender("active_directory", res);
+  setVariablesAndRender("active_directory", res, null, req);
 });
 
 router.get('/active_directory_replica', function(req, res, next) {
-  setVariablesAndRender("active_directory", res, "active_directory_replica");
+  setVariablesAndRender("active_directory", res, "active_directory_replica", req);
 });
 
 router.get('/windows', function(req, res, next) {
-  setVariablesAndRender("windows_base", res);
+  setVariablesAndRender("windows_base", res, null, req);
 });
 
 router.get('/internal_apps', function(req, res, next) {
-  setVariablesAndRender("internal_apps", res);
+  setVariablesAndRender("internal_apps", res, null, req);
 });
 
 router.get('/public_apps', function(req, res, next) {
-  setVariablesAndRender("public_apps", res);
+  setVariablesAndRender("public_apps", res, null, req);
 });
 
 router.post('/puppet', function(req, res, next) {
@@ -145,7 +149,7 @@ function setVariablesAndRender(currentRole, res, role, req, hostname) {
       dbRole = currentRole;
       if(role)
         dbRole = role;
-      database.query("SELECT hostname, username, password, fk_ssh_key, ssh_keys.name as 'ssh_key_name' from servers JOIN roles ON roles.fk_server = servers.id JOIN ssh_keys ON ssh_keys.id = servers.fk_ssh_key WHERE roles.name = '"+dbRole+"'", function(err, serverRows, field){
+	  database.query("SELECT hostname, username, password, fk_ssh_key, ssh_keys.name as 'ssh_key_name' from servers JOIN roles ON roles.fk_server = servers.id LEFT JOIN ssh_keys ON ssh_keys.id = servers.fk_ssh_key WHERE roles.name = '"+dbRole+"'", function(err, serverRows, field){
         if(err)
           throw err;
         database.query("select * from roles  JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
@@ -154,13 +158,19 @@ function setVariablesAndRender(currentRole, res, role, req, hostname) {
             puppetHostname = rows[0]['hostname'];
           if(role)
             currentRole = role;
-		puppetDB.getReports(serverRows[0].hostname, function(reports){
+			if(typeof serverRows[0] != 'undefined')
+				serverHostname = serverRows[0].hostname;
+			else
+				serverHostname = "";
+				
+		puppetDB.getReports(serverHostname, function(reports){
 
 			if(reports.length > 0)
 				reportStatus = reports[0].status
 			else
 				reportStatus = ""
 
+				console.log("RENDER");
 			res.render('wizard/' + currentRole, { latestReport: reports[0], reportStatus: reportStatus, keys: keyRows, config: config, moduleName: moduleName, server: serverRows[0], puppetMaster: puppetHostname, path:req.originalUrl });
 
 		});

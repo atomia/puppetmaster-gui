@@ -2,11 +2,16 @@
 
 var currentReportStep = 0;
 exports.getReports = function (hostname, callback) {
-	if( hostname != 'undefined'){
-	var q = "/v3/reports?query=" + encodeURIComponent('["=", "certname", "' + hostname + '"]');
-	puppetDbRequest(q, null, function(result) {
-		getRunStatus(JSON.parse(result), callback);
-	});
+
+
+	if( hostname != 'undefined' && hostname.length > 0 ){
+		var q = "/v3/reports?query=" + encodeURIComponent('["=", "certname", "' + hostname + '"]');
+		puppetDbRequest(q, null, function(result) {
+			getRunStatus(JSON.parse(result), callback);
+		});
+	}
+	else {
+		callback([]);
 	}
 }
 
@@ -38,8 +43,10 @@ function isReportReady(reportSize, result,callback){
 }
 function getRunStatus(report, callback){
 	parsedReport = [];
+	if(report.length <= 1)
+		callback([]);
 	for(var i = 0; i < report.length -1; i++) {
-		console.log(report.hash);
+		console.log("foo");
 		var q = "/v3/events?query=" + encodeURIComponent('["and", ["=", "status", "failure"],["=", "report", "'+report[i].hash+'"]]');
 		args = {
 			'report' : report,

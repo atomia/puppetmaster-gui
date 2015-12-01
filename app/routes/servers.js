@@ -34,12 +34,54 @@ router.get('/new', function(req, res, next) {
   })
 });
 
+
 router.get('/ip/:hostname', function(req, res, next) {
   var hostname = req.params.hostname;
   dns.resolve4(hostname, function(err, ip){
-    console.log(ip);
     res.send(ip);
   });
+
+});
+
+router.delete('/:hostname', function(req, res, next) {
+	var hostname = req.params.hostname;
+	database.query("DELETE servers FROM servers JOIN roles ON servers.id = roles.fk_server WHERE servers.hostname = '" + hostname + "'", function(err, rows, field){
+		if(err){
+			res.send(JSON.stringify({error: "could not delete from database"}));
+		}
+			res.send(JSON.stringify({error: "ok"}));
+
+	})
+});
+
+router.post('/update_hostname', function(req, res, next) {
+	var serverHostname = req.body.serverHostname;
+    var serverUsername = req.body.serverUsername;
+    var serverPassword = req.body.serverPassword;
+
+	var newHostname = "";
+	var newHostnameExec = exec("python " + __dirname + "/../scripts/run_winrm_command.py " + serverUsername + " " + serverPassword + " " + serverHostname + " 'facter fqdn 2> nul' 'cmd'");
+
+	newHostnameExec.stdout.on('data', function(data) {
+		console.log(data);
+		newHostname = newHostname + data;
+	});
+
+	newHostnameExec.on('close', function (code) {
+		newHostname = newHostname.replace(/(\r\n|\n|\r)/gm, "");
+		if(newHostname != ""){
+			database.query("UPDATE servers SET hostname = '"+newHostname.toLowerCase()+"' WHERE hostname = '"+serverHostname+"'", function(err, rows, field) {
+				if(err)
+				{
+					res.send(JSON.stringify({error: "could not update hostname"}));
+				}
+				else {
+					res.send(JSON.stringify({ok: newHostname.toLowerCase()}));
+				}
+			});
+		}
+	});
+
 
 });
 
@@ -138,6 +180,41 @@ router.post('/validate/ssh', function(req, res) {
 	}
 });
 
+/* Validates that WinRM is working on a server */
+router.post('/validate/windows', function(req, res) {
+	var serverHostname = req.body.serverHostname;
+    var serverUsername = req.body.serverUsername;
+    var serverPassword = req.body.serverPassword;
+
+
+	var tryWinRM = exec("python " + __dirname + "/../scripts/run_winrm_command.py " + serverUsername + " " + serverPassword + " " + serverHostname + "ls false");
+
+	tryWinRM.stdout.on('data', function(data) {
+		io.emit('server', { consoleData: "" + data });
+	});
+
+	tryWinRM.stderr.on('data', function(data) {
+		io.emit('server', { consoleData: 'stderr: ' + data });
+		io.emit('server', { done: 'error', error: 'Could not run winrm command, is winrm setup to allow connections?' });
+		res.status(500);
+		res.send(JSON.stringify({error: "error"}));
+	});
+
+	tryWinRM.on('close', function(code) {
+		if(code == 0){
+			io.emit('server', { consoleData: 'WinRM validation successfull!' });
+			res.status(200);
+			res.send(JSON.stringify({ok: "Validation sucessfull!"}));
+		}
+		else {
+			io.emit('server', { consoleData: 'stderr: ' + data });
+			io.emit('server', { done: 'error', error: 'Could not run winrm command, is winrm setup to allow connections?' });
+			res.status(500);
+			res.send(JSON.stringify({error: "error"}));
+		}
+	});
+});
+
 
 router.post('/update', function(req, res) {
   var serverHostname = req.body.serverHostname;
@@ -228,7 +305,8 @@ router.post('/new', function(req, res) {
 				}
 
 				// Download the latest version of puppet and connect it to our PuppetMaster
-				var child_puppet_install = exec("python " + __dirname + "/../scripts/run_winrm_command.py " + serverUsername + " " + serverPassword + " " + serverHostname + " 'Dism /online /Enable-Feature /FeatureName:NetFx3 /All;(new-object System.Net.WebClient).Downloadfile(\"https://downloads.puppetlabs.com/windows/puppet-latest.msi\", \"puppet-latest.msi\");msiexec /qn /i puppet-latest.msi PUPPET_MASTER_SERVER="+ puppetMaster + "'");
+
+				var child_puppet_install = exec("python " + __dirname + "/../scripts/run_winrm_command.py " + serverUsername + " " + serverPassword + " " + serverHostname + " 'Dism /online /Enable-Feature /FeatureName:NetFx3 /All;(new-object System.Net.WebClient).Downloadfile(\"https://downloads.puppetlabs.com/windows/puppet-latest.msi\", \"puppet-latest.msi\");msiexec /qn /i puppet-latest.msi PUPPET_MASTER_SERVER="+ puppetMaster + "' 'false'");
 
 				child_puppet_install.stdout.on('data', function(data) {
 					io.emit('server', { consoleData: "" + data });
@@ -243,7 +321,7 @@ router.post('/new', function(req, res) {
 				});
 
 				child_puppet_install.on('close', function(code) {
-					io.emit('server', { consoleData: "Adding server to local database" });
+					io.emit('server', { consoleData: "Adding server to local database..." });
 					database.query("INSERT INTO servers VALUES(null,'" + serverHostname + "','" + serverUsername + "','" + serverPassword + "','" + serverKeyId + "') ON DUPLICATE KEY UPDATE hostname='"+serverHostname+"', username='"+serverUsername+"', password='"+serverPassword+"', fk_ssh_key='"+serverKeyId+"' ", function(err, rows, field) {
 						if(err)
 						{
@@ -262,7 +340,9 @@ router.post('/new', function(req, res) {
 							}
 
 							// Finally run puppet on the client
-							var child_run_puppet = exec("python " + __dirname + "/../scripts/run_winrm_command.py " + serverUsername + " " + serverPassword + " " + serverHostname + " 'puppet agent --test'");
+							console.log("running puppet");
+							console.log("python " + __dirname + "/../scripts/run_winrm_command.py " + serverUsername + " " + serverPassword + " " + serverHostname + " 'agent --test' '%programfiles(x86)%\\Puppet Labs\\Puppet\\bin\\puppet.bat'");
+							var child_run_puppet = exec("python " + __dirname + "/../scripts/run_winrm_command.py " + serverUsername + " " + serverPassword + " " + serverHostname + " 'agent --test' 'c:\\Program Files (x86)\\Puppet Labs\\Puppet\\bin\\puppet.bat'");
 							child_run_puppet.stdout.on('data', function(data) {
   								io.emit('server', { consoleData: "" + data });
 							});
@@ -272,7 +352,9 @@ router.post('/new', function(req, res) {
 							});
 
 							child_run_puppet.on('close', function(code) {
-
+								console.log(code);
+								res.status(200);
+								res.send(JSON.stringify({ok: "ok"}));
 							});
 					  });
 					});
