@@ -56,7 +56,7 @@ INSERT INTO app_config VALUES(null,'installation_steps_default','[
 	{"name": "Setup monitoring","route" : "/wizard/nagios_server"},
 	{"name": "Install Atomia database","route" : "/wizard/atomia_database"},
 	{"name": "Setup Active Directory","route" : "/wizard/active_directory"},
-	{"name": "Add an Active Directoyr replica","route" : "/wizard/active_directory_replica"},
+	{"name": "Add an Active Directory replica","route" : "/wizard/active_directory_replica"},
 	{"name": "Install Atomia Domainreg","route" : "/wizard/domainreg"},
 	{"name": "Configure shared storage","route" : "/wizard/glusterfs"},
 	{"name": "Install internal Atomia applications", "route" : "/wizard/internal_apps"},

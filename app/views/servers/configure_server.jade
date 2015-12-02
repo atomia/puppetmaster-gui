@@ -39,7 +39,7 @@ div#configure_server(style="display:"+displayConfigure+"")
 								- extraClass = "password";
 							if c.textArea
 								textarea.form-control(id="#{c.name}", class="#{c.required} configVariables #{extraClass}", name="#{c.name}")
-								| #{c.value}
+									| #{c.value}
 							else
 								input.form-control(id="#{c.name}", class="#{c.required} configVariables #{extraClass}", type="text", value="#{c.value}", name="#{c.name}", onChange='validateConfigField("#{c.name}")')
 							span.help-block #{c.doc}

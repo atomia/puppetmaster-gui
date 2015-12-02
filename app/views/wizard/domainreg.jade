@@ -1,24 +1,55 @@
 extends ../layout
 block content
-  .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
-    h1.page-header Install Atomia domainreg
-    p Atomia Domain Registration is a system for registrars that manages the connections to different registrys and handles domain registration and management.
-      Atomia Domain Registration provides an API which maps TLD and registry specific details into a coherent and easy to use set of methods.
-    p Documentation can be found at <a href="http://documentation.atomia.com/DomainRegistration/latest/html/index.html" target="#">http://documentation.atomia.com/DomainRegistration/latest/html/index.html</a>
-
-    if !menuStatus["domainreg"]
-      h2 Add the Atomia Domainreg server
-      p Requires a base installed Ubuntu 14.04 server
-    else
-      -configureOnly = true
-      | You already have an Atomia domainreg server installed. Good job! If you would like to change the configuration you can do so below.
-      
-    include ../servers/add_server.jade
-
-    h2 Configure Atomia Domainreg
-    p For most roles that you add to a server there are some configurable variables that you can change, if a a change is required it will be shown.
-
-    include config_form.jade
-    input(type="hidden", id="serverRole", value="domainreg")
-
-    include ../servers/add_server_status.jade
+	.col-lg-1.col-centered
+		-myRole = 'domainreg'
+		include status_modal.jade
+		h1.page-header Atomia Domainreg
+			if allRolesSimple[myRole]  && reportStatus == "successful"
+				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
+		if reportStatus != ""
+			p 
+				a(href="/servers/status/events/#{latestReport.hash}")
+					| Latest provisioning run: #{reportStatus}
+		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
+			h3 Installation complete!
+			p
+				button.btn.btn-lg.btn-success(type="submit",onClick="window.location.href = '/wizard/next_step';") Next Step
+		p Requires a base installed Windows 2012 R2 server with winrm running for remote management to be available. Besides running the command below make sure that the Windows Remote Firewall rule allows connection from the puppet server, if they are on the same subnet it should be allowed by default.
+		pre
+			| winrm quickconfig
+			| winrm set winrm/config/client/auth @{Basic="true"}
+			| winrm set winrm/config/service/auth @{Basic="true"}
+			| winrm set winrm/config/service @{AllowUnencrypted="true"}
+		
+		span Software installed:
+			ul
+				li Active Directory
+				
+		span Firewall table (incoming traffic):
+		table.table.table-striped
+			thead
+				tr
+					th Port
+					th Protocol
+					th type
+					th Source
+			tbody
+				include firewall/global.jade
+				include firewall/active_directory.jade
+		p 
+			| Allow complete access between all Active directory servers. Alternatively limit traffic as described at https://msdn.microsoft.com/en-us/library/bb727063.aspx
+				
+		p
+			=reportStatus
+		if ( allRolesSimple[myRole] != "installed" )
+			include ../servers/add_server.jade
+			-displayConfigure = "none"
+			include ../servers/configure_server.jade
+		else
+			-configureOnly = true
+			-displayConfigure = "block"
+			include ../servers/configure_server.jade
+			include ../servers/add_server.jade
+		
+		
+		input(type="hidden", id="serverRole", value="#{myRole}")

@@ -15,9 +15,11 @@ def main(argv):
 		elif command_path == "cmd":
 			r = s.run_cmd(command)
 		else:
-			r = s.run_cmd("c:\\windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -Command '" + command + "'")
+			r = s.run_ps(command)
 		if r.status_code != 0:
 			print r.std_err
+		print command_path + " " + command
+		print r.std_err
 		print r.std_out
 	except():
 		print sys.exc_info()[0]

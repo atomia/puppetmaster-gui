@@ -1,6 +1,7 @@
 var socket = io();
 var allTldProcesses = {};
 $(document).ready(function(){
+	replaceVarsOnLoad();
 	// Register listeners
 	var newServerButton = document.getElementById('newServerButton');
 	var startProvisioningButton = document.getElementById('startProvisioningButton');
@@ -130,6 +131,24 @@ $(document).ready(function(){
 			);
 
 		}
+		
+	function replaceVarsOnLoad() {
+		$('input[type=text], textarea').each(
+			function(index){
+				var input = $(this);
+				if (input.val().indexOf("$puppet_host") >= 0) {
+					$.get('/servers/facter/fqdn', function(data) {
+						input.val(JSON.parse(data).ok.replace(/(\r\n|\n|\r)/gm,""));
+					});
+				}
+				if (input.val().indexOf("$puppet_ip") >= 0) {
+					$.get('/servers/facter/ipaddress_eth0', function(data) {
+						input.val(JSON.parse(data).ok.replace(/(\r\n|\n|\r)/gm,""));
+					});
+				}				
+			}
+		);		
+	}
 
 	// Perform some basic checks to ensure the server is working and is ready for provisioning
 	function validateServer() {
@@ -141,7 +160,7 @@ $(document).ready(function(){
 		$("#status_modal").modal('toggle');
 
 		var r = $("#serverRole").val();
-		if(r == "active_directory") {
+		if(r == "active_directory" || r == "active_directory_replica") {
 			testWinRM(hostname, username, password, function(status){
 				jStatus = JSON.parse(status);
 				scrollBottom();
