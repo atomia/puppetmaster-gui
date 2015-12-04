@@ -8,6 +8,7 @@ module.exports = {
     rolesPretty["internaldns"] = {"prettyName" : "Internal DNS server"};
     rolesPretty["domainreg"] = {"prettyName" : "Domainreg"};
     rolesPretty["glusterfs"] = {"prettyName" : "GlusterFS"};
+		rolesPretty["glusterfs_replica"] = {"prettyName" : "GlusterFS replica"};
     rolesPretty["nagios_server"] = {"prettyName" : "Nagios"};
 
     allRoles = [];

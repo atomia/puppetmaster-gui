@@ -14,16 +14,12 @@ block content
 			h3 Installation complete!
 			p
 				button.btn.btn-lg.btn-success(type="submit",onClick="window.location.href = '/wizard/next_step';") Next Step
-		p Requires a base installed Windows 2012 R2 server with winrm running for remote management to be available. Besides running the command below make sure that the Windows Remote Firewall rule allows connection from the puppet server, if they are on the same subnet it should be allowed by default.
-		pre
-			| winrm quickconfig
-			| winrm set winrm/config/client/auth @{Basic="true"}
-			| winrm set winrm/config/service/auth @{Basic="true"}
-			| winrm set winrm/config/service @{AllowUnencrypted="true"}
+		p Atomia Domain Registration is a system for registrars that manages the connections to different registrys and handles domain registration and management.
+		p Requires a base installed Ubuntu 14.04 server
 		
 		span Software installed:
 			ul
-				li Active Directory
+				li Atomia Domainreg
 				
 		span Firewall table (incoming traffic):
 		table.table.table-striped
@@ -35,9 +31,7 @@ block content
 					th Source
 			tbody
 				include firewall/global.jade
-				include firewall/active_directory.jade
-		p 
-			| Allow complete access between all Active directory servers. Alternatively limit traffic as described at https://msdn.microsoft.com/en-us/library/bb727063.aspx
+				include firewall/domainreg.jade
 				
 		p
 			=reportStatus

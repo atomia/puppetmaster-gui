@@ -130,15 +130,13 @@ router.post('/puppet', function(req, res, next) {
 });
 
 router.get('/glusterfs', function(req, res, next) {
-  getConfiguration('glusterfs', function(config){
-    moduleName = "atomia::glusterfs";
-    database.query("SELECT * FROM ssh_keys", function(err, rows, field){
-      if(err)
-        throw err;
-        res.render('wizard/glusterfs', { keys: rows, config: config, moduleName: moduleName });
-    })
-  });
+  setVariablesAndRender("glusterfs", res, null, req);
 });
+
+router.get('/glusterfs_replica', function(req, res, next) {
+  setVariablesAndRender("glusterfs", res, "glusterfs_replica", req);
+});
+
 
 function setVariablesAndRender(currentRole, res, role, req, hostname) {
   getConfiguration(currentRole, function(config){

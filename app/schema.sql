@@ -59,6 +59,7 @@ INSERT INTO app_config VALUES(null,'installation_steps_default','[
 	{"name": "Add an Active Directory replica","route" : "/wizard/active_directory_replica"},
 	{"name": "Install Atomia Domainreg","route" : "/wizard/domainreg"},
 	{"name": "Configure shared storage","route" : "/wizard/glusterfs"},
+	{"name": "Configure shared storage replicas","route" : "/wizard/glusterfs_replica"},
 	{"name": "Install internal Atomia applications", "route" : "/wizard/internal_apps"},
 	{"name": "Install public Atomia applications", "route" : "/wizard/public_apps"},
 	{"name": "Install AtomiaDNS","route" : "/wizard/atomiadns"},

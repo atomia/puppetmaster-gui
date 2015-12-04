@@ -164,19 +164,35 @@ router.post('/validate/ssh', function(req, res) {
     var serverKeyId = req.body.serverKey;
     var serverRole = req.body.serverRole;
 
-	if(serverKeyId != null && serverKeyId != "" && typeof(serverKeyId) != 'undefined'){
-		getKeyFromId(serverKeyId, function(key){
-			serverKey = key;
-			tryLogin();
-		});
-	}else {
-		tryLogin();
+	var arrHostnames = [];
+	var checked = 0;
+	if(serverHostname.indexOf(",") > -1) {
+		arrHostnames = serverHostname.split(",");
+	}
+	else {
+		arrHostnames[0] = serverHostname;
 	}
 
-	function tryLogin(){
-		io.emit('server', { consoleData: "\nVerifying SSH connectivity..." });
+	console.log(arrHostnames);
+	for(var i = 0; i < arrHostnames.length; i++)
+	{		
+		if(serverKeyId != null && serverKeyId != "" && typeof(serverKeyId) != 'undefined'){
+			(function(hostname) {
+			getKeyFromId(serverKeyId, function(key){
+				serverKey = key;
+				console.log(hostname);
+				tryLogin(hostname, finishedLoginCheck());
+			});
+			})(arrHostnames[i]);
+		}else {
+			tryLogin(arrHostnames[i], finishedLoginCheck());
+		}
+	}
+
+	function tryLogin(serverHost, callback){
+		io.emit('server', { consoleData: "\nVerifying SSH connectivity to " + serverHost + "..." });
 		sshSession = new ssh({
-		  host: serverHostname,
+		  host: serverHost,
 		  user: serverUsername,
 		  password: serverPassword,
 		  key: serverKey,
@@ -185,7 +201,7 @@ router.post('/validate/ssh', function(req, res) {
 
 		sshSession.on('error', function(err) {
 		  sshSession.end();
-		  returnError(res, "\nServer validation failed: Could not connect to the server via SSH!");
+		  returnError(res, "\nServer validation failed: Could not connect to the server " + serverHost + " via SSH!");
 		});
 
 		sshSession.exec("echo '\nThis is a test command from Atomia!\n'", {
@@ -193,13 +209,21 @@ router.post('/validate/ssh', function(req, res) {
 	        io.emit('server', { consoleData: stdout });
 	      },
 	      exit: function(code) {
-	        io.emit('server', { consoleData: "\nCommand completed with status code: " + code });
+			io.emit('server', { consoleData: "\nCommand completed with status code: " + code });
 			if(code == 0)
-				returnOk(res, "SSH login verified sucessfully");
+				finishedLoginCheck();
 			else
 				returnError(res, "Server validation failed: Could not execute remot SSH command");
-	      }
+				  
+		  }
 	    }).start();
+	}
+	
+	function finishedLoginCheck() {
+		if(checked == arrHostnames.length)
+			returnOk(res, "SSH login verified sucessfully");	
+			
+		checked++;
 	}
 });
 
@@ -386,8 +410,7 @@ router.post('/new', function(req, res) {
 								}
 
 								// Finally run puppet on the client
-
-
+								
 								var domain = serverHostname.split('.').pop().replace(/ /g,'').toLowerCase();
 								var hostname = serverHostname.replace(/\.[^\.]+$/, "").replace(/ /g,'').toLowerCase();
 								console.log(__dirname + "/../scripts/winrm -hostname "+ serverHostname +" -username \""+ serverUsername +"\" -password \""+ serverPassword +"\" \"SET FACTER_hostname=\""+ hostname +"\"& SET FACTER_domain=\"" +domain +"\"& SET FACTER_atomia_role_1=\""+serverRole+"\" & puppet agent --test\"");
@@ -412,8 +435,10 @@ router.post('/new', function(req, res) {
 								}
 								else
 								{
-									res.status(200);
-									res.send(JSON.stringify({ok: "ok"}));
+
+										res.status(200);
+										res.send(JSON.stringify({ok: "ok"}));
+									
 								}
 								});
 							});
@@ -423,47 +448,7 @@ router.post('/new', function(req, res) {
 
 
 				});
-/*
-				child_puppet_install.on('close', function(code) {
-					io.emit('server', { consoleData: "Adding server to local database..." });
-					database.query("INSERT INTO servers VALUES(null,'" + serverHostname + "','" + serverUsername + "','" + serverPassword + "','" + serverKeyId + "') ON DUPLICATE KEY UPDATE hostname='"+serverHostname+"', username='"+serverUsername+"', password='"+serverPassword+"', fk_ssh_key='"+serverKeyId+"' ", function(err, rows, field) {
-						if(err)
-						{
-							io.emit('server', { done: 'error', error: 'Could not add the server to the database: ' + err });
-							res.status(500);
-							res.send(JSON.stringify({error: "error"}));
-						}
 
-						serverId = rows["insertId"];
-						database.query("INSERT INTO roles VALUES(null,'" + serverRole + "','" + serverId + "')", function(err, rows, field) {
-							if(err)
-							{
-								io.emit('server', { done: 'error', error: 'Could not add the server role to the database: ' + err });
-								res.status(500);
-								res.send(JSON.stringify({error: "error"}));
-							}
-
-							// Finally run puppet on the client
-							console.log("running puppet");
-							console.log("python " + __dirname + "/../scripts/run_winrm_command.py " + serverUsername + " " + serverPassword + " " + serverHostname + " 'agent --test' 'c:\\Program Files (x86)\\Puppet Labs\\Puppet\\bin\\puppet.bat'");
-							var child_run_puppet = exec("python " + __dirname + "/../scripts/run_winrm_command.py " + serverUsername + " " + serverPassword + " " + serverHostname + " '' 'puppet agent --test'");
-							child_run_puppet.stdout.on('data', function(data) {
-  								io.emit('server', { consoleData: "" + data });
-							});
-
-							child_run_puppet.stderr.on('data', function(data) {
-								io.emit('server', { consoleData: 'stderr: ' + data });
-							});
-
-							child_run_puppet.on('close', function(code) {
-								console.log(code);
-								res.status(200);
-								res.send(JSON.stringify({ok: "ok"}));
-							});
-					  });
-					});
-				});
-				*/
 			});
 
 		}
@@ -511,27 +496,62 @@ router.post('/new', function(req, res) {
 									doPuppetRun(sshSession, function(result){
 										if(result == 0 || result == 2)
 										{
-											returnOk(res, "Server provisioned sucessfully!");
+											finishedProvisioning();
 										}
 										else {
-											returnError(res, "Error while provisioning. Server might not work fully, please try to run provisioning again");
+											error = true;
+											finishedProvisioning();
 										}
 									});
 
 								}
 								else {
-									returnError(res, "Failed to add server to the database!");
+									error = true;
+									finishedProvisioning();
 								}
 							});
 						}
 						else {
-							returnError(res, "Puppet setup failed");
+							error = true;
+							finishedProvisioning();
 						}
 					});
 				});
 			}
 
 		}
+	}
+	var checked = 0;
+	function finishedProvisioning() {
+		checked++;
+		if(checked == arrHostnames.length && error)
+			runDependencies("error");
+		else if(checked == arrHostnames.length)
+		{
+			runDependencies("ok");
+		}
+		
+		function runDependencies(status){
+			// Trigger puppet runs on dependant roles
+			if(serverRole == "glusterfs_replica")
+			{
+				doPuppetRunOnRole('internaldns',function(){
+					doPuppetRunOnRole('glusterfs',function(){
+						if(status == "error")
+							returnError(res, "Error while provisioning. Server might not work fully, please try to run provisioning again");	
+						else
+							returnOk(res, "Provisioning finished");
+					});													
+				});
+			}
+			else
+				if(status == "error")
+					returnError(res, "Error while provisioning. Server might not work fully, please try to run provisioning again");	
+				else
+					returnOk(res, "Provisioning finished");
+		}
+			
+		
 	}
 });
 
@@ -586,20 +606,61 @@ router.post('/new', function(req, res) {
 		}).start();
 
 	}
-
-
-
+	
+	function doPuppetRunOnRole(role, callback) {
+		io.emit('server', { consoleData: "Triggered puppet run on " + role  });
+		database.query("SELECT * FROM servers JOIN roles on servers.id = fk_server WHERE roles.name = '"+role+"'", function(err, rows, field) {
+			var serverKeyId = rows[0]['fk_ssh_key'];
+			var serverHostname = rows[0]["hostname"];
+			var serverUsername = rows[0]["username"];
+			var serverPassword = rows[0]["password"];
+			var serverKey = "";
+			if(serverKeyId != null && serverKeyId != "" && typeof(serverKeyId) != 'undefined'){
+				getKeyFromId(serverKeyId, function(key){
+					serverKey = key;
+					gotKey();
+				});
+			}else {
+				gotKey();
+			}
+			function gotKey(){
+				var sshSession = new ssh({
+					host: serverHostname,
+					user: serverUsername,
+					password: serverPassword,
+					key: serverKey,
+					timeout: 5000
+				});
+				doPuppetRun(sshSession, function(result){
+					if(result == 0 || result == 2)
+					{
+						io.emit('server', { consoleData: "Puppet run on " + role + " finished sucessfully!"  });
+						callback();
+					}
+					else {
+						io.emit('server', { consoleData: "Puppet run on " + role + " failed!"  });
+						callback();
+					}
+				});	
+			}		
+		});
+	};
 /* Helper functions */
 function returnOk(res, message){
 	io.emit('server', { consoleData: "\n" + message });
-	res.status(200);
-    res.send(JSON.stringify({ok: message}));
+	if(!res.headersSent){
+		res.status(200);
+		res.send(JSON.stringify({ok: message}));
+	}
 }
 
 function returnError(res, message){
 	io.emit('server', { consoleData:  "\n" + message });
-	res.status(500);
-    res.send(JSON.stringify({error: message}));
+	console.log(res.headersSent);
+	if(!res.headersSent){
+		res.status(500);
+		res.send(JSON.stringify({error: message}));
+	}
 }
 
 function getPuppetHostname(callback){
