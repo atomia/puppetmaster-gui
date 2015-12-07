@@ -10,7 +10,8 @@ module.exports = {
     rolesPretty["glusterfs"] = {"prettyName" : "GlusterFS"};
 		rolesPretty["glusterfs_replica"] = {"prettyName" : "GlusterFS replica"};
     rolesPretty["nagios_server"] = {"prettyName" : "Nagios"};
-
+		rolesPretty["atomiadns"] = {"prettyName" : "Atomia DNS"};
+		
     allRoles = [];
 	allRolesSimple = [];
     database.query("SELECT * FROM roles JOIN servers ON roles.fk_server = servers.id GROUP by roles.name ORDER BY servers.id", function(err, rows, field){
