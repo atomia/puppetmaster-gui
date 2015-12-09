@@ -1,0 +1,69 @@
+extends ../layout
+block content
+	.col-lg-1.col-centered
+		-myRole = 'atomiadns_powerdns'
+		include status_modal.jade
+		h1.page-header PowerDNS nameservers
+			if allRolesSimple[myRole]  && reportStatus == "successful"
+				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
+		if reportStatus != ""
+			p 
+				a(href="/servers/status/events/#{latestReport.hash}")
+					| Latest provisioning run: #{reportStatus}
+		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
+			h3 Installation complete!
+			p
+				button.btn.btn-lg.btn-success(type="submit",onClick="window.location.href = '/wizard/next_step';") Next Step
+
+		.panel.panel-primary
+			.panel-heading
+				h3.panel-title What is PowerDNS?
+			.panel-body
+				| The PowerDNS Authoritative Server is the only solution that enables authoritative DNS service from all major databases, including but not limited to MySQL, PostgreSQL, SQLite3, Oracle, Sybase, Microsoft SQL Server, LDAP and plain text files.
+				| <br><br>
+				| DNS answers can also be fully scripted using a variety of (scripting) languages such as Lua, Java, Perl, Python, Ruby, C and C++. Such scripting can be used for dynamic redirection, (spam) filtering or real time intervention.
+				| <br><br>
+				| In addition, the PowerDNS Authoritative Server is the leading DNSSEC implementation, hosting the majority of all DNSSEC domains worldwide. The Authoritative Server hosts at least 30% of all domain names in Europe, and around 90% of all DNSSEC domains in Europe.
+					
+
+		.panel.panel-primary
+			.panel-heading
+				h3.panel-title Requirements
+			.panel-body
+				| You need
+				ul
+					li One or more base installed Ubuntu 14.04 servers
+																	
+		span Software installed:
+			ul
+				li PowerDNS
+				
+		span Firewall table (incoming traffic):
+		table.table.table-striped
+			thead
+				tr
+					th Port
+					th Protocol
+					th type
+					th Source
+			tbody
+				include firewall/global.jade
+				include firewall/atomiadns_powerdns.jade
+				
+		if ( allRolesSimple[myRole] != "installed" )
+			.panel.panel-primary
+				.panel-heading
+					h3.panel-title More than 1 nameserver?
+				.panel-body
+					| You can deploy how many nameservers you want, we recommend at least 2. In order to deploy more than 1 nameserver simply specify all the servers hostnames separated by comma in the "server hostname" box below. 	
+			include ../servers/add_server.jade
+			-displayConfigure = "none"
+			include ../servers/configure_server.jade
+		else
+			-configureOnly = true
+			-displayConfigure = "block"
+			include ../servers/configure_server.jade
+			include ../servers/add_server.jade
+		
+		
+		input(type="hidden", id="serverRole", value="#{myRole}")

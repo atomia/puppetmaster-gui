@@ -74,6 +74,10 @@ router.get('/atomiadns', function(req, res, next) {
   setVariablesAndRender("atomiadns", res, null, req);
 });
 
+router.get('/atomiadns_powerdns', function(req, res, next) {
+  setVariablesAndRender("atomiadns_powerdns", res, null, req);
+});
+
 router.get('/nagios_server', function(req, res, next) {
   setVariablesAndRender("nagios/server", res, "nagios_server", req);
 });
@@ -96,6 +100,75 @@ router.get('/internal_apps', function(req, res, next) {
 
 router.get('/public_apps', function(req, res, next) {
   setVariablesAndRender("public_apps", res, null, req);
+});
+
+router.get('/fsagent', function(req, res, next) {
+  setVariablesAndRender("fsagent", res, null, req);
+});
+
+router.get('/installatron', function(req, res, next) {
+  setVariablesAndRender("installatron", res, null, req);
+});
+
+router.get('/awstats', function(req, res, next) {
+  setVariablesAndRender("awstats", res, null, req);
+});
+
+router.get('/daggre', function(req, res, next) {
+  setVariablesAndRender("daggre", res, null, req);
+});
+
+router.get('/cron', function(req, res, next) {
+  setVariablesAndRender("cronagent", res, null, req);
+});
+
+router.get('/haproxy', function(req, res, next) {
+  setVariablesAndRender("haproxy", res, null, req);
+});
+
+router.get('/apache', function(req, res, next) {
+  setVariablesAndRender("apache_agent", res, null, req);
+});
+
+router.get('/iis', function(req, res, next) {
+  setVariablesAndRender("iis", res, null, req);
+});
+
+router.get('/ftp', function(req, res, next) {
+  setVariablesAndRender("pureftpd", res, null, req);
+});
+
+router.get('/ftp_slave', function(req, res, next) {
+  setVariablesAndRender("pureftpd", res, "pureftpd_slave", req);
+});
+
+router.get('/mail', function(req, res, next) {
+  setVariablesAndRender("mailserver", res, null, req);
+});
+
+router.get('/mail_slave', function(req, res, next) {
+  setVariablesAndRender("mailserver", res, "mailserver_slave", req);
+});
+
+router.get('/webmail', function(req, res, next) {
+  setVariablesAndRender("webmail", res, null, req);
+});
+
+router.get('/mysql', function(req, res, next) {
+  setVariablesAndRender("mysql", res, null, req);
+});
+
+router.get('/postgresql', function(req, res, next) {
+  setVariablesAndRender("postgresql", res, null, req);
+});
+
+router.get('/mssql', function(req, res, next) {
+  setVariablesAndRender("mssql", res, null, req);
+});
+
+router.get('/done', function(req, res, next) {
+		res.render('wizard/done');
+
 });
 
 router.post('/puppet', function(req, res, next) {
@@ -168,7 +241,6 @@ function setVariablesAndRender(currentRole, res, role, req, hostname) {
 			else
 				reportStatus = ""
 
-				console.log("RENDER");
 			res.render('wizard/' + currentRole, { latestReport: reports[0], reportStatus: reportStatus, keys: keyRows, config: config, moduleName: moduleName, server: serverRows[0], puppetMaster: puppetHostname, path:req.originalUrl });
 
 		});

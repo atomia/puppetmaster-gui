@@ -1,0 +1,60 @@
+extends ../layout
+block content
+	.col-lg-1.col-centered
+		-myRole = 'awstats'
+		include status_modal.jade
+		h1.page-header Awstats
+			if allRolesSimple[myRole]  && reportStatus == "successful"
+				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
+		if reportStatus != ""
+			p 
+				a(href="/servers/status/events/#{latestReport.hash}")
+					| Latest provisioning run: #{reportStatus}
+		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
+			h3 Installation complete!
+			p
+				button.btn.btn-lg.btn-success(type="submit",onClick="window.location.href = '/wizard/next_step';") Next Step
+
+		.panel.panel-primary
+			.panel-heading
+				h3.panel-title Awstats?
+			.panel-body
+				| AWStats is a free powerful and featureful tool that generates advanced web, streaming, ftp or mail server statistics, graphically. This log analyzer works as a CGI or from command line and shows you all possible information your log contains, in few graphical web pages. It uses a || partial information file to be able to process large log files, often and quickly. It can analyze log files from all major server tools like Apache log files (NCSA combined/XLF/ELF log format or common/CLF log format), WebStar, IIS (W3C log format) and a lot of other web, proxy, ||wap, streaming servers, mail servers and some ftp servers.
+					
+
+		.panel.panel-primary
+			.panel-heading
+				h3.panel-title Requirements
+			.panel-body
+				| You need
+				ul
+					li A base installed Ubuntu 14.04 server
+																	
+		span Software installed:
+			ul
+				li Awstats
+				
+		span Firewall table (incoming traffic):
+		table.table.table-striped
+			thead
+				tr
+					th Port
+					th Protocol
+					th type
+					th Source
+			tbody
+				include firewall/global.jade
+				include firewall/awstats.jade
+				
+		if ( allRolesSimple[myRole] != "installed" )		
+			include ../servers/add_server.jade
+			-displayConfigure = "none"
+			include ../servers/configure_server.jade
+		else
+			-configureOnly = true
+			-displayConfigure = "block"
+			include ../servers/configure_server.jade
+			include ../servers/add_server.jade
+		
+		
+		input(type="hidden", id="serverRole", value="#{myRole}")

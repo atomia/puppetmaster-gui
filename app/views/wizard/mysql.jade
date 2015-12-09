@@ -1,0 +1,56 @@
+extends ../layout
+block content
+	.col-lg-1.col-centered
+		-myRole = 'mysql'
+		include status_modal.jade
+		h1.page-header Customer MySQL server
+			if allRolesSimple[myRole]  && reportStatus == "successful"
+				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
+		if reportStatus != ""
+			p 
+				a(href="/servers/status/events/#{latestReport.hash}")
+					| Latest provisioning run: #{reportStatus}
+		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
+			h3 Installation complete!
+			p
+				button.btn.btn-lg.btn-success(type="submit",onClick="window.location.href = '/wizard/next_step';") Next Step
+
+		.panel.panel-primary
+			.panel-heading
+				h3.panel-title MySQL?
+			.panel-body
+				| Mysql...
+					
+
+		.panel.panel-primary
+			.panel-heading
+				h3.panel-title Requirements
+			.panel-body
+				| You need
+				ul
+					li One or more Ubuntu 14.04 servers
+																					
+		span Firewall table (incoming traffic):
+		table.table.table-striped
+			thead
+				tr
+					th Port
+					th Protocol
+					th type
+					th Source
+			tbody
+				include firewall/global.jade
+				include firewall/mysql.jade
+				
+		if ( allRolesSimple[myRole] != "installed" )		
+			include ../servers/add_server.jade
+			-displayConfigure = "none"
+			include ../servers/configure_server.jade
+		else
+			-configureOnly = true
+			-displayConfigure = "block"
+			include ../servers/configure_server.jade
+			include ../servers/add_server.jade
+		
+		
+		input(type="hidden", id="serverRole", value="#{myRole}")

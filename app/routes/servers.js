@@ -453,20 +453,22 @@ router.post('/new', function(req, res) {
 
 		}
 		else {
-		  	serverHostname = arrHostnames[i];
+			serverHostname = arrHostnames[i];
+			(function(serverHost){
 			if(serverKeyId != null && serverKeyId != "" && typeof(serverKeyId) != 'undefined'){
 				getKeyFromId(serverKeyId, function(key){
 					serverKey = key;
-					gotKey();
+					gotKey(serverHost);
 				});
 			}else {
-				gotKey();
+				gotKey(serverHost);
 			}
+			})(serverHostname);
 
-			function gotKey() {
+			function gotKey(serverH) {
 				getPuppetHostname(function(puppet){
 					var sshSession = new ssh({
-				  		host: serverHostname,
+				  		host: serverH,
 				  		user: serverUsername,
 						password: serverPassword,
 				      	key: serverKey,
@@ -476,18 +478,20 @@ router.post('/new', function(req, res) {
 					sshSession.on('error', function(err) {
 						returnError(res, "Error communicating with the server: " + err);
 					});
-
+					
+					
 					setupPuppet(sshSession,puppet, res, function(result) {
+					
 						if(result == 0){
 							// Puppet is installed and connected lets add the server to local database and assign a role
 							io.emit('server', { consoleData: "Adding server to local database" });
-							addServerToDatabase(serverHostname, serverUsername, serverPassword, serverKeyId, serverRole, function (result) {
+							addServerToDatabase(serverH, serverUsername, serverPassword, serverKeyId, serverRole, function (result) {
 								if(result == 0)
 								{
 									io.emit('server', { consoleData: "Server added to the database, proceeding with provisioning." });
 									// Server is added to the database we can now do a puppet run
 									var sshSession = new ssh({
-										host: serverHostname,
+										host: serverH,
 										user: serverUsername,
 										password: serverPassword,
 										key: serverKey,
@@ -516,6 +520,7 @@ router.post('/new', function(req, res) {
 							finishedProvisioning();
 						}
 					});
+					
 				});
 			}
 
