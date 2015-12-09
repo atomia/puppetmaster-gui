@@ -6,7 +6,7 @@ Installation is currently done manually
 		git clone https://github.com/atomia/puppetmaster-gui.git
 		sudo apt-get install nodejs nodejs-legacy npm mysql-server python-pip
 		sudo pip install pywinrm
-		cd ~/puppetmaster-gui/app
+		cd puppetmaster-gui/app
 		sudo npm install
 		sudo npm install -g nodemon
 

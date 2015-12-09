@@ -13,7 +13,7 @@ var http = require('http').Server(app);
 io = require('socket.io')(http);
 
 http.listen(3000, function(){
-    console.log('Socket.IO listening on port 8082');
+    console.log('Socket.IO listening on port 3000');
 });
 
 var routes = require('./routes/index');
