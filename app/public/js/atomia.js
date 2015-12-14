@@ -240,6 +240,9 @@ $(document).ready(function(){
 				$(".alert-success").html("<span class='glyphicon glyphicon-thumbs-up' aria-hidden='true'></span> Provisioning finished sucessfully!");
 				$(".alert-success").show();
 				$(".alert-danger").hide();
+				$("#serverConsole").animate({
+						scrollTop:$("#serverConsole")[0].scrollHeight - $("#serverConsole").height()
+				},1,function(){});						
 			}
 		}).error(function(err){
 			console.log(err);
@@ -251,6 +254,9 @@ $(document).ready(function(){
 			$(".alert-danger").html("Provisioning failed: " + errorMsg);
 			$(".alert-danger").show();
 			$(".alert-success").hide();
+			$("#serverConsole").animate({
+						scrollTop:$("#serverConsole")[0].scrollHeight - $("#serverConsole").height()
+				},1,function(){});			
 		});
 
 	}
@@ -336,6 +342,7 @@ $(document).ready(function(){
 		$.post("/wizard/puppet", postData, function(data) {
 			if(typeof data.ok != 'undefined')
 			{
+				location.reload(); 
 			}
 			})
 			.error(function(err){
@@ -539,11 +546,12 @@ $(document).ready(function(){
 	function updateProgressBar(barId, progress) {
 	$(barId).css( "width", progress );
 	}
+	
 	function updateConsole(consoleId, data) {
-	$(consoleId).append(data);
-	$(consoleId).animate({
-	scrollTop:$(consoleId)[0].scrollHeight - $(consoleId).height()
-	},1,function(){});
+		$(consoleId).append(data);
+		$(consoleId).animate({
+		scrollTop:$(consoleId)[0].scrollHeight - $(consoleId).height()
+		},1,function(){});
 
 	}
 
@@ -556,15 +564,15 @@ $(document).ready(function(){
 	}
 
 	$(document).ready(function() {
-  $(".modal").on("hidden.bs.modal", function() {
-	  console.log("modal hidden");
-	  $("#serverConsole").html("");
-	  $(".alert-success").hide();
-	  $(".alert-danger").hide();
-	  $(".alert-succes").html("");
-	  $(".alert-danger").html("");
-  });
-});
+		$(".modal").on("hidden.bs.modal", function() {
+			$("#serverConsole").html("");
+			$(".alert-success").hide();
+			$(".alert-danger").hide();
+			$(".alert-succes").html("");
+			$(".alert-danger").html("");
+			location.reload(); 
+		});
+	});
 
 function scrollBottom() {
 	$("#serverConsole").animate({

@@ -1,47 +1,27 @@
 extends layout
 block content
 	.col-lg-1.col-centered
-    h1.page-header Dashboard
-    .row.placeholders
-      .col-xs-6.col-sm-3.placeholder
-        img.img-responsive(data-src="holder.js/200x200/auto/sky", alt="Generic placeholder thumbnail")
-        h4 Label
-        span.text-muted Something else
-      .col-xs-6.col-sm-3.placeholder
-        img.img-responsive(data-src="holder.js/200x200/auto/vine", alt="Generic placeholder thumbnail")
-        h4 Label
-        span.text-muted Something else
-      .col-xs-6.col-sm-3.placeholder
-        img.img-responsive(data-src="holder.js/200x200/auto/sky", alt="Generic placeholder thumbnail")
-        h4 Label
-        span.text-muted Something else
-      .col-xs-6.col-sm-3.placeholder
-        img.img-responsive(data-src="holder.js/200x200/auto/vine", alt="Generic placeholder thumbnail")
-        h4 Label
-        span.text-muted Something else
-    h2.sub-header Available servers
-    form(action="/servers/new")
-      button.btn.btn-default#newKeyButton(type="submit") Add server
-    .table-responsive
-      table.table.table-striped
-        thead
-          tr
-            th Hostname
-            th Roles
-            th Status
-            th Actions
-        tbody
-          each row in servers
-            tr
-              td
-                img(src="/img/ubuntu.jpg",width="32")
-                &nbsp;
-                a(href="/servers/status/" + row.hostname)=row.hostname
-              td
-                img(src="/img/"+ row.name + "-icon.png",width="32")
-                = row.name
-              td OK (2015-10-01 10:54)
-              td
-                button.btn.btn-primary.btn-xs(type="button") Add role
-                &nbsp;
-                button.btn.btn-danger.btn-xs.deleteServerButton(type="button",rel="#{row.hostname}") Delete
+		h1 Atomia Installation Dashboard
+		legend Available servers
+
+		.table-responsive
+		table.table.table-striped
+			thead
+			tr
+				th Hostname
+				th Roles
+				th Status
+				th Actions
+			tbody
+			each row in servers
+				tr
+				td
+					img(src="/img/ubuntu.jpg",width="32")
+					&nbsp;
+					a(href="/servers/status/" + row.hostname)=row.hostname
+				td
+					img(src="/img/"+ row.name + "-icon.png",width="32")
+					= row.name
+				td 
+				td
+					button.btn.btn-danger.btn-xs.deleteServerButton(type="button",rel="#{row.hostname}") Delete

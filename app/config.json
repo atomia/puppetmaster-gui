@@ -1,7 +1,7 @@
 {
   "database" : {
       "user": "puppetgui",
-      "password": "ker45tar",
+      "password": "foobar",
       "database": "hiera"
     }
 }

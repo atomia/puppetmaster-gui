@@ -6,55 +6,26 @@ block content
 		h1.page-header Active Directory
 			if allRolesSimple[myRole]  && reportStatus == "successful"
 				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
-		if reportStatus != ""
-			p 
-				a(href="/servers/status/events/#{latestReport.hash}")
-					| Latest provisioning run: #{reportStatus}
-		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
-			h3 Installation complete!
-			p
-				button.btn.btn-lg.btn-success(type="submit",onClick="window.location.href = '/wizard/next_step';") Next Step
-		p Requires a base installed Windows 2012 R2 server with winrm running for remote management to be available. Besides running the command below make sure that the Windows Remote Firewall rule allows connection from the puppet server, if they are on the same subnet it should be allowed by default.
-		pre
-			| winrm quickconfig
-			| winrm set winrm/config/client/auth @{Basic="true"}
-			| winrm set winrm/config/service/auth @{Basic="true"}
-			| winrm set winrm/config/service @{AllowUnencrypted="true"}
-		
-		span Software installed:
-			ul
-				li Active Directory
 				
-		span Firewall table (incoming traffic):
-		table.table.table-striped
-			thead
-				tr
-					th Port
-					th Protocol
-					th Source
-			tbody
-				tr
-					td 8140
-					td TCP
-					td PuppetMaster	
-				tr
-					td 47001 (WINRM)
-					td TCP
-					td PuppetMaster						
-				tr
-					td 5985 (WINRM)
-					td TCP
-					td PuppetMaster
-				tr
-					td 5986 (WINRM)
-					td TCP
-					td PuppetMaster	
-				tr
-					td 5666
-					td TCP
-					td Monitoring server					
-		p
-			=reportStatus
+		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
+			include installation_complete.jade
+								
+		if reportStatus != ""
+			include latest_puppet_run.jade
+						
+		include winrm_warning.jade
+		
+		include firewall/header.jade
+			include firewall/global.jade
+			include firewall/active_directory.jade
+			
+		.panel.panel-primary
+			.panel-heading
+				h3.panel-title Information
+			.panel-body
+				| Due to the complexity of automating the setup process of Active Directory please run the provisioning step until it shows as passed sucessfully.
+				| Please note that during the provisioning the server will reboot.
+
 		if ( allRolesSimple[myRole] != "installed" )
 			include ../servers/add_server.jade
 			-displayConfigure = "none"
@@ -67,3 +38,4 @@ block content
 		
 		
 		input(type="hidden", id="serverRole", value="#{myRole}")
+

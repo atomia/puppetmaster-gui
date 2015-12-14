@@ -15,11 +15,35 @@ exports.getReports = function (hostname, callback) {
 	}
 }
 
+exports.getLatestReportAndEvents = function (hostname, callback) {
+
+
+	if( hostname != 'undefined' && hostname.length > 0 ){
+		var q = "/v3/reports?query=" + encodeURIComponent('["=", "certname", "' + hostname + '"]');
+		puppetDbRequest(q, null, function(result) {
+			getRunStatus(JSON.parse(result), function(report){
+				if(report.length > 0){
+					exports.getEvents(report[0].hash, function(events){
+						callback(report[0],events);
+					});
+				}
+				else
+				{
+					callback([],[]);
+				}
+			});
+		});
+	}
+	else {
+		callback([]);
+	}
+}
+
 exports.getEvents = function (reportId, callback) {
 
 	var q = "/v3/events?query=" + encodeURIComponent('["=", "report", "' + reportId + '"]');
 	puppetDbRequest(q, null, function(result) {
-		console.log(result);
+
 		callback(JSON.parse(result));
 	});
 
@@ -31,7 +55,7 @@ function comp(a, b) {
 }
 
 function isReportReady(reportSize, result,callback){
-	console.log("isReportReady" + reportSize + " " + currentReportStep);
+
 	if(currentReportStep >= reportSize)
 	{
 
@@ -46,7 +70,7 @@ function getRunStatus(report, callback){
 	if(report.length <= 1)
 		callback([]);
 	for(var i = 0; i < report.length -1; i++) {
-		console.log("foo");
+
 		var q = "/v3/events?query=" + encodeURIComponent('["and", ["=", "status", "failure"],["=", "report", "'+report[i].hash+'"]]');
 		args = {
 			'report' : report,
@@ -59,7 +83,6 @@ function getRunStatus(report, callback){
 			else
 				stat = "successful";
 
-			console.log(rep['i']);
 			r = {
 				'status' :stat,
 				'hash': rep['report'][rep['i']].hash,

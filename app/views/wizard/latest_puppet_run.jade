@@ -1,0 +1,35 @@
+.panel.panel-primary
+	.panel-heading
+		h3.panel-title Latest Puppet run
+	.panel-body(style="padding:0px;")
+	if reportEvents.length == 0
+		.list-group
+			div.list-group-item( style="#{style}")
+				p 
+					| Report contains no events )
+	
+	
+	each e in reportEvents		
+		.list-group
+		-style=""
+		if e.status != 'success'
+			-style="border:5px solid #ffbac9";
+
+		div.list-group-item( style="#{style}")
+		
+			if e.status == 'success'
+				img(src="/img/icon_success_pink.png", style="float:right;width:32px;z-index:100;")
+			
+			h4.list-group-item-heading
+				if e['resource-type'] == 'File'
+					span.glyphicon.glyphicon-file(aria-hidden="true")
+				if e['resource-type'] == 'Exec'
+					span.glyphicon.glyphicon-cog(aria-hidden="true")
+				if e['resource-type'] == 'Nagios_host' || e['resource-type'] == 'Nagios_service'
+					img(src="/img/nagios_server-icon.png", style="width:24px;")
+				=e['resource-title']
+				
+			p.list-group-item-text
+				=e['message']
+	
+	button.btn.btn-lg.btn-success#startProvisioningButton( style="margin:10px;", type="submit",onClick="return false;") Provision Now

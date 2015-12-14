@@ -4,47 +4,25 @@ block content
 		-myRole = 'internaldns'
 		include status_modal.jade
 		h1.page-header Internal DNS server
-			if allRolesSimple[myRole]
+			if allRolesSimple[myRole]  && reportStatus == "successful"
 				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
-		if reportStatus != ""
-			p 
-				a(href="/servers/status/events/#{latestReport.hash}")
-					| Latest provisioning run: #{reportStatus}
-		if currentStep.route == path && allRolesSimple[myRole]
-			h3 Installation complete!
-			p
-				button.btn.btn-lg.btn-success(type="submit",onClick="window.location.href = '/wizard/next_step';") Next Step
-		p The internal dns server is used to hold dns records used within the Atomia environment. 
-		
-		span Software installed:
-			ul
-				li Bind9 (DNS server)
 				
-		span Firewall table (incoming traffic):
-		table.table.table-striped
-			thead
-				tr
-					th Port
-					th Protocol
-					th Source
-			tbody
-				tr
-					td 8140
-					td TCP
-					td PuppetMaster			
-				tr
-					td 53
-					td UDP
-					td Atomia*
-				tr
-					td 53
-					td TCP
-					td Atomia*
-				tr
-					td 5666
-					td TCP
-					td Monitoring server					
+		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
+			include installation_complete.jade
+								
+		if reportStatus != ""
+			include latest_puppet_run.jade
 		
+		.panel.panel-primary
+			.panel-heading
+				h3.panel-title Information
+			.panel-body		
+				p The internal dns server is used to hold dns records used within the Atomia environment. 
+
+		include firewall/header.jade
+			include firewall/global.jade
+			include firewall/internaldns.jade
+						
 		p  <i>*Atomia = All servers in the environment</i>	
 
 		if !allRolesSimple[myRole]

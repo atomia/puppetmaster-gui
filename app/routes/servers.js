@@ -75,7 +75,7 @@ router.post('/update_hostname', function(req, res, next) {
     var serverPassword = req.body.serverPassword;
 
 	var newHostname = "";
-	var newHostnameExec = exec(__dirname + "/../scripts/winrm -hostname "+ serverHostname +" -username \""+ serverUsername +"\" -password \""+ serverPassword +"\" \"\\\"C:\\Program Files (x86)\\Puppet Labs\\Puppet\\bin\\facter.bat\\\" fqdn\"");
+	var newHostnameExec = exec(__dirname + "/../scripts/winrm -hostname "+ serverHostname +" -username \""+ serverUsername +"\" -password \""+ serverPassword +"\" \"facter fqdn\"");
 
 	newHostnameExec.stdout.on('data', function(data) {
 		console.log(data);
@@ -83,7 +83,8 @@ router.post('/update_hostname', function(req, res, next) {
 	});
 
 	newHostnameExec.on('close', function (code) {
-		console.log(code);
+		console.log("CODE: "+ code);
+		console.log(newHostname);
 		if(code == 0)
 		{
 			newHostname = newHostname.replace(/(\r\n|\n|\r)/gm, "");
@@ -234,7 +235,7 @@ router.post('/validate/windows', function(req, res) {
     var serverPassword = req.body.serverPassword;
 
 	var error = false;
-	var tryWinRM = exec(__dirname + "/../scripts/winrm -hostname "+ serverHostname +" -username \""+ serverUsername +"\" -password \""+ serverPassword +"\" \"ls\"");
+	var tryWinRM = exec(__dirname + "/../scripts/winrm -hostname "+ serverHostname +" -username \""+ serverUsername +"\" -password \""+ serverPassword +"\" \"dir\"");
 
 	tryWinRM.stdout.on('data', function(data) {
 		io.emit('server', { consoleData: "" + data });
@@ -357,8 +358,8 @@ router.post('/new', function(req, res) {
 						error = true;
 					}
 				}
-
-				var child_puppet_install = exec(__dirname + "/../scripts/winrm -hostname "+ serverHostname +" -username \""+ serverUsername +"\" -password \""+ serverPassword +"\" \"%SystemRoot%\\system32\\WindowsPowerShell\\v1.0\\powershell.exe /C c:\\windows\\system32\\Dism /online /Enable-Feature /FeatureName:NetFx3 /All;(new-object System.Net.WebClient).Downloadfile('https://downloads.puppetlabs.com/windows/puppet-latest.msi', 'puppet-latest.msi');c:\\windows\\system32\\msiexec /qn /i puppet-latest.msi PUPPET_MASTER_SERVER='"+ puppetMaster +"'\" ");
+				//c:\\windows\\system32\\Dism /online /Enable-Feature /FeatureName:NetFx3 /All;
+				var child_puppet_install = exec(__dirname + "/../scripts/winrm -hostname "+ serverHostname +" -username \""+ serverUsername +"\" -password \""+ serverPassword +"\" \"%SystemRoot%\\system32\\WindowsPowerShell\\v1.0\\powershell.exe /C (new-object System.Net.WebClient).Downloadfile('https://downloads.puppetlabs.com/windows/puppet-x64-latest.msi', 'puppet-latest.msi');c:\\windows\\system32\\msiexec /qn /i puppet-latest.msi PUPPET_MASTER_SERVER='"+ puppetMaster +"'\" ");
 
 				child_puppet_install.stdout.on('data', function(data) {
 					io.emit('server', { consoleData: "" + data });
@@ -413,9 +414,10 @@ router.post('/new', function(req, res) {
 								
 								var domain = serverHostname.split('.').pop().replace(/ /g,'').toLowerCase();
 								var hostname = serverHostname.replace(/\.[^\.]+$/, "").replace(/ /g,'').toLowerCase();
-								console.log(__dirname + "/../scripts/winrm -hostname "+ serverHostname +" -username \""+ serverUsername +"\" -password \""+ serverPassword +"\" \"SET FACTER_hostname=\""+ hostname +"\"& SET FACTER_domain=\"" +domain +"\"& SET FACTER_atomia_role_1=\""+serverRole+"\" & puppet agent --test\"");
+								//"SET FACTER_hostname=\""+ hostname +"\"& SET FACTER_domain=\"" +domain +"\"&
+								console.log(__dirname + "/../scripts/winrm -hostname "+ serverHostname +" -username \""+ serverUsername +"\" -password \""+ serverPassword +"\" \"SET FACTER_atomia_role_1=\""+serverRole+"\" & puppet agent --test\"");
 
-								var child_run_puppet = exec(__dirname + "/../scripts/winrm -hostname "+ serverHostname +" -username \""+ serverUsername +"\" -password \""+ serverPassword +"\" \"SET FACTER_hostname=\""+ hostname +"\"& SET FACTER_domain=\"" +domain +"\"& SET FACTER_atomia_role_1=\""+serverRole+"\"& puppet agent --test\"");
+								var child_run_puppet = exec(__dirname + "/../scripts/winrm -hostname "+ serverHostname +" -username \""+ serverUsername +"\" -password \""+ serverPassword +"\" \"SET FACTER_atomia_role_1=\""+serverRole+"\"& puppet agent --test\"");
 								child_run_puppet.stdout.on('data', function(data) {
 									io.emit('server', { consoleData: "" + data });
 								});
@@ -425,19 +427,17 @@ router.post('/new', function(req, res) {
 								});
 
 								child_run_puppet.on('close', function(code) {
-								if(code != 0 || code != 2) {
+								if(code != 0 && code != 2) {
 									io.emit('server', { consoleData: 'Command exited with code: ' + code });
 									if(!error){
-										res.status(500);
-										res.send(JSON.stringify({error: "error"}));
 										error = true;
+										finishedProvisioning();
 									}
 								}
 								else
 								{
 
-										res.status(200);
-										res.send(JSON.stringify({ok: "ok"}));
+									finishedProvisioning();
 									
 								}
 								});
@@ -501,6 +501,7 @@ router.post('/new', function(req, res) {
 										if(result == 0 || result == 2)
 										{
 											finishedProvisioning();
+					
 										}
 										else {
 											error = true;
@@ -538,6 +539,7 @@ router.post('/new', function(req, res) {
 		
 		function runDependencies(status){
 			// Trigger puppet runs on dependant roles
+			// Reload Nagios always
 			if(serverRole == "glusterfs_replica")
 			{
 				doPuppetRunOnRole('internaldns',function(){
@@ -545,7 +547,7 @@ router.post('/new', function(req, res) {
 						if(status == "error")
 							returnError(res, "Error while provisioning. Server might not work fully, please try to run provisioning again");	
 						else
-							returnOk(res, "Provisioning finished");
+							returnOk(res, "Provisioning finished", serverRole);
 					});													
 				});
 			}
@@ -553,7 +555,7 @@ router.post('/new', function(req, res) {
 				if(status == "error")
 					returnError(res, "Error while provisioning. Server might not work fully, please try to run provisioning again");	
 				else
-					returnOk(res, "Provisioning finished");
+					returnOk(res, "Provisioning finished", serverRole);
 		}
 			
 		
@@ -651,8 +653,15 @@ router.post('/new', function(req, res) {
 		});
 	};
 /* Helper functions */
-function returnOk(res, message){
+function returnOk(res, message, serverRole){
 	io.emit('server', { consoleData: "\n" + message });
+	if(serverRole){
+	if(serverRole != 'nagios_server') {
+		io.emit('server', { consoleData: "Reloading nagios, you don't need to wait for this to be done :)" });
+		doPuppetRunOnRole('nagios_server',function(){
+			io.emit('server', { consoleData: "Nagios reloaded" });
+		});
+	}}
 	if(!res.headersSent){
 		res.status(200);
 		res.send(JSON.stringify({ok: message}));

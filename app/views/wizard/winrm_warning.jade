@@ -1,0 +1,18 @@
+.panel.panel-primary
+	.panel-heading
+		h3.panel-title Pre requirements
+	.panel-body
+		p Requires a base installed Windows 2012 R2 server with winrm running for remote management to be available. Besides running the command below make sure that the Windows Remote Firewall rule allows connection from the puppet server, if they are on the same subnet it should be allowed by default.
+		pre
+			| winrm quickconfig
+			| winrm set winrm/config/client/auth @{Basic="true"}
+			| winrm set winrm/config/service/auth @{Basic="true"}
+			| winrm set winrm/config/service @{AllowUnencrypted="true"}
+		p If your servers hostname differs from the Active Directory domain name you need to stop the Active Directory join from changing the servers DNS suffix.
+		pre
+			| Open command prompt
+			| sysadmin.cpl
+			|  - Computer Name
+			|  - Change
+			|  - More
+			|  - Disable "Change primary DNS suffix when domain membership changes"

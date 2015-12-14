@@ -188,15 +188,23 @@ router.post('/puppet', function(req, res, next) {
 		{
 			var hostname =  execSync.exec("facter fqdn 2> /dev/null").stdout;
 				database.query("INSERT INTO servers VALUES(null,'" + hostname + "','','','')",function(err, rows, field) {
-					serverId = rows["insertId"];
-					database.query("INSERT INTO roles VALUES(null,'puppet','" + serverId + "')", function(err, rows, field) {
-						io.emit('server', { done: 'ok', error: 'Puppetmaster installed sucessfully!' });
-						res.status(200);
-						res.send(JSON.stringify({ok: "ok"}));
-						database.query("UPDATE app_config SET val = 2 WHERE var = 'current_step';", function(err, rows, field) {
-
+					console.log(rows);
+					if(typeof rows != 'undefined')
+					{
+						serverId = rows["insertId"];
+						database.query("INSERT INTO roles VALUES(null,'puppet','" + serverId + "')", function(err, rows, field) {
+							io.emit('server', { done: 'ok', error: 'Puppetmaster installed sucessfully!' });
+							res.status(200);
+							res.send(JSON.stringify({ok: "ok"}));
+							database.query("UPDATE app_config SET val = 2 WHERE var = 'current_step';", function(err, rows, field) {
+	
+							});
 						});
-					});
+					}else
+					{
+							res.status(200);
+							res.send(JSON.stringify({ok: "ok"}));
+					}
 				});
 		}
 	});
@@ -234,14 +242,20 @@ function setVariablesAndRender(currentRole, res, role, req, hostname) {
 			else
 				serverHostname = "";
 				
-		puppetDB.getReports(serverHostname, function(reports){
+		puppetDB.getLatestReportAndEvents(serverHostname, function(reports, events){
 
-			if(reports.length > 0)
-				reportStatus = reports[0].status
-			else
-				reportStatus = ""
+			if(reports) {
+				reportStatus = reports.status
+				reportEvents = events;
+				console.log(events);
 
-			res.render('wizard/' + currentRole, { latestReport: reports[0], reportStatus: reportStatus, keys: keyRows, config: config, moduleName: moduleName, server: serverRows[0], puppetMaster: puppetHostname, path:req.originalUrl });
+			}
+			else {
+				reportStatus = "";
+				reportEvents = "";
+			}
+
+			res.render('wizard/' + currentRole, { latestReport: reports[0], reportEvents: reportEvents, reportStatus: reportStatus, keys: keyRows, config: config, moduleName: moduleName, server: serverRows[0], puppetMaster: puppetHostname, path:req.originalUrl });
 
 		});
         });

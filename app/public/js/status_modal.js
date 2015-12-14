@@ -6,7 +6,7 @@ socket.on('server', function (data) {
 	}
 	if(typeof data.consoleData != 'undefined' && typeof $('#serverConsole') != 'undefined'){
 		serverStatusViewModel.serverConsole(serverStatusViewModel.serverConsole() + data.consoleData);
-		if(scrollcount > 10)
+		if(scrollcount > 5)
 		{
 			$("#serverConsole").animate({
 				scrollTop:$("#serverConsole")[0].scrollHeight - $("#serverConsole").height()
@@ -15,6 +15,7 @@ socket.on('server', function (data) {
 		}
 		scrollcount++;
 		}
+
 		if(typeof data.done != 'undefined'){
 			if(data.done == "error")
 			{
@@ -24,8 +25,11 @@ socket.on('server', function (data) {
 			if(data.done == "ok")
 			{
 				$("#ok-content").html(data.ok)
-				$(".alert-success").show();
+				$(".alert-success").show();		
 			}
+			$("#serverConsole").animate({
+					scrollTop:$("#serverConsole")[0].scrollHeight - $("#serverConsole").height()
+			},1,function(){});			
 	}
 });
 
