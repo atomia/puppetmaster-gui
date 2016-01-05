@@ -1,9 +1,9 @@
 extends ../layout
 block content
 	.col-lg-1.col-centered
-		-myRole = 'fsagent'
+		-myRole = 'internal_mailserver'
 		include status_modal.jade
-		h1.page-header Awstats
+		h1.page-header Internal Mail server
 			if allRolesSimple[myRole]  && reportStatus == "successful"
 				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
 				
@@ -12,20 +12,20 @@ block content
 								
 		if reportStatus
 			include latest_puppet_run.jade
-
+		
 		.panel.panel-primary
 			.panel-heading
 				h3.panel-title Information
-			.panel-body
-				p AWStats is a free powerful and featureful tool that generates advanced web, streaming, ftp or mail server statistics, graphically. This log analyzer works as a CGI or from command line and shows you all possible information your log contains, in few graphical web pages. It uses a || partial information file to be able to process large log files, often and quickly. It can analyze log files from all major server tools like Apache log files (NCSA combined/XLF/ELF log format or common/CLF log format), WebStar, IIS (W3C log format) and a lot of other web, proxy, ||wap, streaming servers, mail servers and some ftp servers.
+			.panel-body		
+				p The internal mail server is used to send email from Atomia applications such as user information and invoices
 
-		
 		include firewall/header.jade
 			include firewall/global.jade
-			include firewall/awstats.jade
-			
+			include firewall/internal_mailserver.jade
+						
+		p  <i>*Atomia = All servers in the environment</i>	
 
-		if ( allRolesSimple[myRole] != "installed" )
+		if !allRolesSimple[myRole]
 			include ../servers/add_server.jade
 			-displayConfigure = "none"
 			include ../servers/configure_server.jade
@@ -37,4 +37,3 @@ block content
 		
 		
 		input(type="hidden", id="serverRole", value="#{myRole}")
-		

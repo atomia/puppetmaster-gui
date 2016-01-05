@@ -28,5 +28,15 @@ router.post('/', function(req, res, next) {
   res.send(JSON.stringify({ok: "ok"}));
 });
 
+router.get('/:configvar', function(req, res, next) {
+	var configVar = req.params.configvar;
+  database.query("SELECT * FROM configuration WHERE var = '"+ configVar +"'", function(err, rows, field){
+    if(err)
+      throw err;
+        res.json({output: rows[0].val});
+     
+
+  })	
+});
 
 module.exports = router;

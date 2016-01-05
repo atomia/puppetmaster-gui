@@ -1,40 +1,47 @@
 extends ../layout
 block content
-	//.col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
-
 	.col-lg-1.col-centered
+		-myRole = 'public_apps'
 		include status_modal.jade
-		h1.page-header Install Atomia public applications
+		h1.page-header Install Atomia Public applications
+			if allRolesSimple[myRole]  && reportStatus == "successful"
+				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
+				
+		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
+			include installation_complete.jade
+								
+		if reportStatus 
+			include latest_puppet_run.jade
+				
+		include winrm_warning.jade
 		
-		p This will install all customer facing applications of Atomia which includes:
-		ul
-			li Atomia Hosting Control Panel
-			li Atomia Billing Customer Panel
-			li Atomia Identity
-			li Atomia Store
-
-		legend Requirements
-		p 
-			| Requires a base installed Windows 2012 R2 server with winrm running for remote management to be available. Besides running the command below make sure that the Windows Remote Firewall rule allows connection from the puppet server, if they are on the same subnet it should be allowed by default.
-
-		pre
-			| winrm quickconfig
-			| winrm set winrm/config/client/auth @{Basic="true"}
-			| winrm set winrm/config/service/auth @{Basic="true"}
-			| winrm set winrm/config/service @{AllowUnencrypted="true"}
-
-		if !menuStatus["internaldns"]
-
+		include firewall/header.jade
+			include firewall/global.jade
+			include firewall/public_apps.jade
+								
+		.panel.panel-primary
+			.panel-heading
+				h3.panel-title Information
+			.panel-body
+				p This will install all customer facing applications of Atomia which includes:
+				ul
+					li Atomia Hosting Control Panel
+					li Atomia Billing Customer Panel
+					li Atomia Identity
+					li Atomia Store
+					
+		if ( allRolesSimple[myRole] != "installed" )
+			include ../servers/add_server.jade
+			-displayConfigure = "none"
+			include ../servers/configure_server.jade
 		else
 			-configureOnly = true
-			| You already have an Internal DNS server installed. Good job! If you would like to change the configuration you can do so above.
+			-displayConfigure = "block"
+			include ../servers/configure_server.jade
+			include ../servers/add_server.jade
+		
+		
+		input(type="hidden", id="serverRole", value="#{myRole}")
 
-		include ../servers/add_server.jade
 
-		include config_form.jade
-		input(type="hidden", id="serverRole", value="atomia_public_apps")
 
-		legend Done configuring?
-		button.btn.btn-lg.btn-success#startProvisioningButton(type="submit",onClick="return false;") Start Provisioning
-
-		//include ../servers/add_server_status.jade

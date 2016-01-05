@@ -114,6 +114,7 @@ $(document).ready(function(){
 			$('input[type=text], textarea').each(
 				function(index){
 					var input = $(this);
+					
 					if (input.val().indexOf("$fqdn") >= 0)
 					{
 						fqdn = input.val().replace("$fqdn",hostname);
@@ -136,6 +137,7 @@ $(document).ready(function(){
 		$('input[type=text], textarea').each(
 			function(index){
 				var input = $(this);
+				
 				if (input.val().indexOf("$puppet_host") >= 0) {
 					$.get('/servers/facter/fqdn', function(data) {
 						input.val(JSON.parse(data).ok.replace(/(\r\n|\n|\r)/gm,""));
@@ -145,7 +147,20 @@ $(document).ready(function(){
 					$.get('/servers/facter/ipaddress_eth0', function(data) {
 						input.val(JSON.parse(data).ok.replace(/(\r\n|\n|\r)/gm,""));
 					});
-				}				
+				}	
+				
+				if (input.attr('id') == 'mail_server_host' && input.val() == ""){
+					$.get('/roles/role/internal_mailserver', function(data) {
+						input.val(data.role[0].hostname.replace(/(\r\n|\n|\r)/gm,""));
+					});
+				}
+				
+				if(input.attr('id') == 'storage_server_hostname' && input.val() == ""){
+					$.get('/config/atomia::internaldns::zone_name', function(data) {
+						console.log(data);
+						input.val('gluster.' + data.output.replace(/(\r\n|\n|\r)/gm,""));
+					});					
+				}			
 			}
 		);		
 	}
@@ -371,18 +386,22 @@ $(document).ready(function(){
 
 	moduleName = $("#moduleName").val();
 	// Config is OK let's save it
-
+	var domainregConfigured = false;
 	$('.configVariables').each(function() {
+		
 	if(typeof (this) != 'undefined')
 	{
 	  if(this.value != "")
 	  {
 	    var tmpData = {};
-	    var tmpName = moduleName + "::" + $('#'+this.id).attr("name");
+
+	    var tmpName = moduleName + "::" + $("[id='"+this.id+"']").attr("name");
+		console.log(tmpName);
 	    // Special cases
 	    tmpData.key = tmpName;
 	    tmpData.value = "";
-	    if(typeof domainregConfigured == 'undefined' && tmpName == "atomia::domainreg::domainreg_tld_config_hash")
+		pushme = false;
+	    if(domainregConfigured == false && tmpName == "atomia::domainreg::domainreg_tld_config_hash")
 	    {
 	      tmpData.value = new Object();
 	      $("[name='domainreg_tld_config_hash']").each(function() {
@@ -395,19 +414,19 @@ $(document).ready(function(){
 	      });
 	      tmpData.value = JSON.stringify(tmpData.value);
 	      domainregConfigured = true;
+		  pushme = true;
 	    }
-	    else {
+	    else if(tmpName != "atomia::domainreg::domainreg_tld_config_hash") {
 	      tmpData.value = this.value;
+		  pushme = true;
 	    }
-
+		if(pushme)
 	      data.push(tmpData);
 	  }
 	}
 	});
-
 	postData = {};
 	postData.configData = data;
-
 
 	$.ajax({
 		type: 'POST',
@@ -570,7 +589,8 @@ $(document).ready(function(){
 			$(".alert-danger").hide();
 			$(".alert-succes").html("");
 			$(".alert-danger").html("");
-			location.reload(); 
+			if($(".alert-success").html() != "Server validated sucessfully! Proceed with configuration.")
+				location.reload(); 
 		});
 	});
 

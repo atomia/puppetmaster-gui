@@ -1,7 +1,17 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET users listing. */
+router.get('/role/:role', function(req, res, next) {
+	var roleName = req.params.role;
+	console.log(roleName);
+	database.query("SELECT * FROM roles JOIN servers on fk_server = servers.id WHERE name = '"+ roleName + "' ORDER by roles.id DESC LIMIT 1", function(err, rows, field) {
+		if(err)
+			throw err;
+		
+		res.json({role: rows});
+	})
+});
+
 router.get('/:hostname/:json?', function(req, res, next) {
   var hostname = req.params.hostname;
 
@@ -16,11 +26,13 @@ router.get('/:hostname/:json?', function(req, res, next) {
         res.json({roles: data});
 
       }
-      else {
+      else { 
         res.render('roles/hostname', { keys: rows });
       }
   })
 });
+
+
 
 
 module.exports = router;

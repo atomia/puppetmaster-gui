@@ -166,6 +166,12 @@ router.get('/mssql', function(req, res, next) {
   setVariablesAndRender("mssql", res, null, req);
 });
 
+
+
+router.get('/internal_mailserver', function(req, res, next) {
+  setVariablesAndRender("internal_mailserver", res, null, req);
+});
+
 router.get('/done', function(req, res, next) {
 		res.render('wizard/done');
 

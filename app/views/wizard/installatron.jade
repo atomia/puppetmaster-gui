@@ -6,47 +6,27 @@ block content
 		h1.page-header Installatron
 			if allRolesSimple[myRole]  && reportStatus == "successful"
 				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
-		if reportStatus != ""
-			p 
-				a(href="/servers/status/events/#{latestReport.hash}")
-					| Latest provisioning run: #{reportStatus}
+				
 		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
-			h3 Installation complete!
-			p
-				button.btn.btn-lg.btn-success(type="submit",onClick="window.location.href = '/wizard/next_step';") Next Step
+			include installation_complete.jade
+								
+		if reportStatus
+			include latest_puppet_run.jade
 
 		.panel.panel-primary
 			.panel-heading
-				h3.panel-title Installatron?
+				h3.panel-title Information
 			.panel-body
-				| Installatron Server is an API and optional GUI that enables the Installatron web application automation platform to be incorporated into existing web hosting infrastructure. With over 11 years of testing and improvements as its foundation, deploying Installatron Server bypasses expensive development costs and gives website owners access to the best solution on the market. Installatron Server can be self-hosted or hosted as a service on Installatron.com.
+				p Installatron Server is an API and optional GUI that enables the Installatron web application automation platform to be incorporated into existing web hosting infrastructure. With over 11 years of testing and improvements as its foundation, deploying Installatron Server bypasses expensive development costs and gives website owners access to the best solution on the market. Installatron Server can be self-hosted or hosted as a service on Installatron.com.
 					
 
-		.panel.panel-primary
-			.panel-heading
-				h3.panel-title Requirements
-			.panel-body
-				| You need
-				ul
-					li A base installed Ubuntu 14.04 server
-																	
-		span Software installed:
-			ul
-				li Installatron
-				
-		span Firewall table (incoming traffic):
-		table.table.table-striped
-			thead
-				tr
-					th Port
-					th Protocol
-					th type
-					th Source
-			tbody
-				include firewall/global.jade
-				include firewall/installatron.jade
-				
-		if ( allRolesSimple[myRole] != "installed" )		
+		
+		include firewall/header.jade
+			include firewall/global.jade
+			include firewall/installatron.jade
+			
+
+		if ( allRolesSimple[myRole] != "installed" )
 			include ../servers/add_server.jade
 			-displayConfigure = "none"
 			include ../servers/configure_server.jade
@@ -58,3 +38,4 @@ block content
 		
 		
 		input(type="hidden", id="serverRole", value="#{myRole}")
+		

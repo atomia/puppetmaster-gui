@@ -6,43 +6,26 @@ block content
 		h1.page-header Mail cluster slave
 			if allRolesSimple[myRole]  && reportStatus == "successful"
 				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
-		if reportStatus != ""
-			p 
-				a(href="/servers/status/events/#{latestReport.hash}")
-					| Latest provisioning run: #{reportStatus}
-		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
-			h3 Installation complete!
-			p
-				button.btn.btn-lg.btn-success(type="submit",onClick="window.location.href = '/wizard/next_step';") Next Step
-
-		.panel.panel-primary
-			.panel-heading
-				h3.panel-title Mail cluster?
-			.panel-body
-				| Mail cluster
-					
-
-		.panel.panel-primary
-			.panel-heading
-				h3.panel-title Requirements
-			.panel-body
-				| You need
-				ul
-					li One or more Ubuntu 14.04 servers
-																					
-		span Firewall table (incoming traffic):
-		table.table.table-striped
-			thead
-				tr
-					th Port
-					th Protocol
-					th type
-					th Source
-			tbody
-				include firewall/global.jade
-				include firewall/mailserver.jade
 				
-		if ( allRolesSimple[myRole] != "installed" )		
+		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
+			include installation_complete.jade
+								
+		if reportStatus
+			include latest_puppet_run.jade
+
+		.panel.panel-primary
+			.panel-heading
+				h3.panel-title Information
+			.panel-body
+				p Mail cluster...
+
+		
+		include firewall/header.jade
+			include firewall/global.jade
+			include firewall/mailserver.jade
+			
+
+		if ( allRolesSimple[myRole] != "installed" )
 			include ../servers/add_server.jade
 			-displayConfigure = "none"
 			include ../servers/configure_server.jade
@@ -54,3 +37,4 @@ block content
 		
 		
 		input(type="hidden", id="serverRole", value="#{myRole}")
+		

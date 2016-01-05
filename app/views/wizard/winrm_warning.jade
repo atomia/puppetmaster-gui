@@ -8,11 +8,5 @@
 			| winrm set winrm/config/client/auth @{Basic="true"}
 			| winrm set winrm/config/service/auth @{Basic="true"}
 			| winrm set winrm/config/service @{AllowUnencrypted="true"}
-		p If your servers hostname differs from the Active Directory domain name you need to stop the Active Directory join from changing the servers DNS suffix.
-		pre
-			| Open command prompt
-			| sysadmin.cpl
-			|  - Computer Name
-			|  - Change
-			|  - More
-			|  - Disable "Change primary DNS suffix when domain membership changes"
+		p When provisioning is done your server dns suffix will have changed to that of the specified domain. Please click the "Update hostname" button to sync this change
+	

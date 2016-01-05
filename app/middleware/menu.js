@@ -25,7 +25,7 @@ module.exports = {
 		rolesPretty["mssql"] = {"prettyName" : "Customer MSSQL"};
 		rolesPretty["mysql"] = {"prettyName" : "Customer MySQL"};
 		rolesPretty["postgresql"] = {"prettyName" : "Customer PostgreSQL"};	
-	
+		rolesPretty["internal_mailserver"] = {"prettyName" : "Internal mail server"};	
 		
     allRoles = [];
 	allRolesSimple = [];
