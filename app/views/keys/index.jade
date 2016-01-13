@@ -2,6 +2,7 @@ extends ../layout
 block content
 	.col-lg-1.col-centered
 		h1.page-header SSH keys
+		p If you use SSH key based authentication to access your servers you should add your private keys now. This step is optional and the installation process works just as well with password based authentication.
 		form(action="/keys/new")
 			button.btn.btn-default#newKeyButton(type="submit") Add key
 
