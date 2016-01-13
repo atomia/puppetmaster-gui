@@ -4,43 +4,28 @@ block content
 		-myRole = 'atomia_database'
 		include status_modal.jade
 		h1.page-header Atomia database server
-			if allRolesSimple[myRole]
+			if allRolesSimple[myRole]  && reportStatus == "successful"
 				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
-		if reportStatus != ""
-			p 
-				a(href="/servers/status/events/#{latestReport.hash}")
-					| Latest provisioning run: #{reportStatus}
-		if currentStep.route == path && allRolesSimple[myRole]
-			h3 Installation complete!
-			p
-				button.btn.btn-lg.btn-success(type="submit",onClick="window.location.href = '/wizard/next_step';") Next Step
-		p Atomia uses PostgreSQL as a backend datastore for all of it's data. 
-		
-		span Software installed:
-			ul
-				li PostgreSQL
 				
-		span Firewall table (incoming traffic):
-		table.table.table-striped
-			thead
-				tr
-					th Port
-					th Protocol
-					th Source
-			tbody
-				tr
-					td 8140
-					td TCP
-					td PuppetMaster			
-				tr
-					td 5666
-					td TCP
-					td Monitoring server					
-		
-		p  <i>*Atomia = All servers in the environment</i>	
+		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
+			include installation_complete.jade
+								
+		if reportStatus
+			include latest_puppet_run.jade
 
-		if !allRolesSimple[myRole]
-			-configureOnly = false
+		.panel.panel-primary
+			.panel-heading
+				h3.panel-title Information
+			.panel-body
+				p Atomia uses PostgreSQL as a backend datastore for all of it's data. 
+
+		
+		include firewall/header.jade
+			include firewall/global.jade
+			include firewall/atomia_database.jade
+			
+
+		if ( allRolesSimple[myRole] != "installed" )
 			include ../servers/add_server.jade
 			-displayConfigure = "none"
 			include ../servers/configure_server.jade

@@ -175,7 +175,7 @@ $(document).ready(function(){
 		$("#status_modal").modal('toggle');
 
 		var r = $("#serverRole").val();
-		if(r == "active_directory" || r == "active_directory_replica") {
+		if(r == "active_directory" || r == "active_directory_replica" || r == "internal_apps" || r == "public_apps") {
 			testWinRM(hostname, username, password, function(status){
 				jStatus = JSON.parse(status);
 				scrollBottom();
@@ -476,7 +476,7 @@ $(document).ready(function(){
 
 	function generatePasswordForm(field) {
 	var length = 12;
-	var chars = "abcdefghijklmnopqrstuvwxyz!@#$%^&*()+<>ABCDEFGHIJKLMNOP1234567890";
+	var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOP1234567890";
 	var pass = "";
 	for (var x = 0; x < length; x++) {
 	var i = Math.floor(Math.random() * chars.length);
