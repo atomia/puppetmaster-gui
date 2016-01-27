@@ -118,7 +118,7 @@ $(document).ready(function(){
 					if (input.val().indexOf("$fqdn") >= 0)
 					{
 						fqdn = input.val().replace("$fqdn",hostname);
-						input.val(fqdn);
+						input.val(fqdn.split(',')[0]);
 					}
 					if (input.val().indexOf("$ipaddress") >= 0)
 					{
@@ -175,7 +175,7 @@ $(document).ready(function(){
 		$("#status_modal").modal('toggle');
 
 		var r = $("#serverRole").val();
-		if(r == "active_directory" || r == "active_directory_replica" || r == "internal_apps" || r == "public_apps") {
+		if(r == "active_directory" || r == "active_directory_replica" || r == "internal_apps" || r == "public_apps" || r== "iis") {
 			testWinRM(hostname, username, password, function(status){
 				jStatus = JSON.parse(status);
 				scrollBottom();
@@ -449,7 +449,7 @@ $(document).ready(function(){
 		$("#div_" + field).removeClass("has-error");
 		var subject = $("#" + field).val();
 		var field_val = "";
-
+console.log($("#" + field + "_validation").val());
 		// Stored regular expressions
 		if($("#" + field + "_validation").val() == "%password")
 		{
@@ -463,6 +463,14 @@ $(document).ready(function(){
 		{
 			field_val = new RegExp('^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$',"g");
 		}
+        else if($("#" + field + "_validation").val() == "%email")
+        {
+            field_val = new RegExp('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$','g');
+        }
+        else if($("#" + field + "_validation").val() == "%ip")
+        {
+            field_val = new RegExp('^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$','g');
+        }        
 		else {
 			field_val = new RegExp($("#" + field + "_validation").val().replace(/(\r\n|\n|\r)/gm,"").trim(),"g");
 		}

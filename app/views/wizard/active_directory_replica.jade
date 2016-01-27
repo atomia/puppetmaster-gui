@@ -3,11 +3,11 @@ block content
 	.col-lg-1.col-centered
 		-myRole = 'active_directory_replica'
 		include status_modal.jade
-		h1.page-header Active Directory
-			if allRolesSimple[myRole]  && reportStatus == "successful"
+		h1.page-header Active Directory Replica
+			if allRolesSimple[myRole]  
 				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
 				
-		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
+		if currentStep.route == path && allRolesSimple[myRole]
 			include installation_complete.jade
 								
 		if reportStatus

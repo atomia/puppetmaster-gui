@@ -47,5 +47,6 @@ div#configure_server(style="display:"+displayConfigure+"")
 				input(type="hidden", id="#{c.name}_validation", value="#{c.validation}")
 				input(type="hidden", id="moduleName", value="#{moduleName}")
 
-	button.btn.btn-lg.btn-success#startProvisioningButton(style="float:right;", type="submit",onClick="return false;") Start provisioning	
+	if !(allRolesSimple[myRole]  && reportStatus == "successful")
+		button.btn.btn-lg.btn-success#startProvisioningButton(style="float:right;", type="submit",onClick="return false;") Bootstrap server	
 	<br/><br/>

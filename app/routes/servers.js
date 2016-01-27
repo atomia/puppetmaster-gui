@@ -344,7 +344,7 @@ router.post('/new', function(req, res) {
 	{
 		serverHostname = arrHostnames[i];
 		// If we are on Windows
-		if(serverRole == 'active_directory' || serverRole == 'active_directory_replica' || serverRole == 'internal_apps' || serverRole == 'public_apps') {
+		if(serverRole == 'active_directory' || serverRole == 'active_directory_replica' || serverRole == 'internal_apps' || serverRole == 'public_apps' || serverRole == 'iis') {
 
 			// Look for PuppetMaster hostname
 			database.query("select * from roles  JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field) {
@@ -498,15 +498,20 @@ router.post('/new', function(req, res) {
 										timeout: 5000
 									});
 									doPuppetRun(sshSession, function(result){
-										if(result == 0 || result == 2)
-										{
-											finishedProvisioning();
+                                        var sshSession = new ssh({
+                                            host: serverH,
+                                            user: serverUsername,
+                                            password: serverPassword,
+                                            key: serverKey,
+                                            timeout: 5000
+                                        });						
+                                        // Ensure that puppet is running on the server
+                                        ensurePuppetRunning(sshSession, function(result){
+                                            finishedProvisioning(); 
+                                        });
+											
 					
-										}
-										else {
-											error = true;
-											finishedProvisioning();
-										}
+				
 									});
 
 								}
@@ -532,7 +537,7 @@ router.post('/new', function(req, res) {
 		checked++;
 		if(checked == arrHostnames.length && error)
 			runDependencies("error");
-		else if(checked == arrHostnames.length)
+		else if(checked >= arrHostnames.length)
 		{
 			runDependencies("ok");
 		}
@@ -580,6 +585,23 @@ router.post('/new', function(req, res) {
 		}).start();
 	}
 
+	function ensurePuppetRunning(ssh, callback) {
+		console.log("Making sure Puppet is running");
+
+		ssh.exec('if [[ $(sudo service puppet status | /bin/grep not | /bin/grep -vc grep)  > 0 ]] ; then sudo service puppet start; else echo Puppet is running; fi', {
+			out: function(stdout){
+				io.emit('server', { consoleData: stdout });
+			},
+			err: function(stderr) {
+				io.emit('server', { consoleData: stderr });
+			},
+			exit: function(code) {
+				io.emit('server', { consoleData: "Command exited with status: " + code + "\n" });
+				callback(code);
+			}
+		}).start();
+	}
+    
 	function addServerToDatabase(serverHostname, serverUsername, serverPassword, serverKeyId, serverRole, callback) {
 		database.query("INSERT INTO servers VALUES(null,'" + serverHostname + "','" + serverUsername + "','" + serverPassword + "','" + serverKeyId + "') ON DUPLICATE KEY UPDATE hostname='"+serverHostname+"', username='"+serverUsername+"', password='"+serverPassword+"', fk_ssh_key='"+serverKeyId+"' ", function(err, rows, field) {
 			if(err)
@@ -614,43 +636,46 @@ router.post('/new', function(req, res) {
 
 	}
 	
-	function doPuppetRunOnRole(role, callback) {
-		io.emit('server', { consoleData: "Triggered puppet run on " + role  });
+	function doPuppetRunOnRole(role, callback) {	
 		database.query("SELECT * FROM servers JOIN roles on servers.id = fk_server WHERE roles.name = '"+role+"'", function(err, rows, field) {
-			var serverKeyId = rows[0]['fk_ssh_key'];
-			var serverHostname = rows[0]["hostname"];
-			var serverUsername = rows[0]["username"];
-			var serverPassword = rows[0]["password"];
-			var serverKey = "";
-			if(serverKeyId != null && serverKeyId != "" && typeof(serverKeyId) != 'undefined'){
-				getKeyFromId(serverKeyId, function(key){
-					serverKey = key;
-					gotKey();
-				});
-			}else {
-				gotKey();
-			}
-			function gotKey(){
-				var sshSession = new ssh({
-					host: serverHostname,
-					user: serverUsername,
-					password: serverPassword,
-					key: serverKey,
-					timeout: 5000
-				});
-				doPuppetRun(sshSession, function(result){
-					if(result == 0 || result == 2)
-					{
-						io.emit('server', { consoleData: "Puppet run on " + role + " finished sucessfully!"  });
-						callback();
-					}
-					else {
-						io.emit('server', { consoleData: "Puppet run on " + role + " failed!"  });
-						callback();
-					}
-				});	
-			}		
-		});
+            if(rows.length > 0 ) {
+                    io.emit('server', { consoleData: "Triggered puppet run on " + role  });
+                    var serverKeyId = rows[0]['fk_ssh_key'];
+                    var serverHostname = rows[0]["hostname"];
+                    var serverUsername = rows[0]["username"];
+                    var serverPassword = rows[0]["password"];
+                    var serverKey = "";
+                    if(serverKeyId != null && serverKeyId != "" && typeof(serverKeyId) != 'undefined'){
+                        getKeyFromId(serverKeyId, function(key){
+                            serverKey = key;
+                            gotKey();
+                        });
+                    }else {
+                        gotKey();
+                    }
+                    function gotKey(){
+                        var sshSession = new ssh({
+                            host: serverHostname,
+                            user: serverUsername,
+                            password: serverPassword,
+                            key: serverKey,
+                            timeout: 5000
+                        });
+                        doPuppetRun(sshSession, function(result){
+                            if(result == 0 || result == 2)
+                            {
+                                io.emit('server', { consoleData: "Puppet run on " + role + " finished sucessfully!"  });
+                                callback();
+                            }
+                            else {
+                                io.emit('server', { consoleData: "Puppet run on " + role + " failed!"  });
+                                callback();
+                            }
+                        });	
+                    }
+                }
+                callback();		
+            });
 	};
 /* Helper functions */
 function returnOk(res, message, serverRole){

@@ -17,7 +17,7 @@ block content
 			.panel-heading
 				h3.panel-title Information
 			.panel-body
-				p FTP slaves...
+				p We will now deploy the ftp slaves that will be connected to the master.
 		
 		include firewall/header.jade
 			include firewall/global.jade
@@ -25,6 +25,11 @@ block content
 			
 
 		if ( allRolesSimple[myRole] != "installed" )
+			.panel.panel-primary
+				.panel-heading
+					h3.panel-title Multiple server
+				.panel-body
+					p It is possible to add as many slave servers as needed. In order to deploy more than one just add them to the server hostname field separated by comma.      
 			include ../servers/add_server.jade
 			-displayConfigure = "none"
 			include ../servers/configure_server.jade

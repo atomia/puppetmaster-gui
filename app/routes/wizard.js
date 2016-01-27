@@ -118,7 +118,7 @@ router.get('/daggre', function(req, res, next) {
   setVariablesAndRender("daggre", res, null, req);
 });
 
-router.get('/cron', function(req, res, next) {
+router.get('/cronagent', function(req, res, next) {
   setVariablesAndRender("cronagent", res, null, req);
 });
 
@@ -237,14 +237,34 @@ function setVariablesAndRender(currentRole, res, role, req, hostname) {
 	  database.query("SELECT hostname, username, password, fk_ssh_key, ssh_keys.name as 'ssh_key_name' from servers JOIN roles ON roles.fk_server = servers.id LEFT JOIN ssh_keys ON ssh_keys.id = servers.fk_ssh_key WHERE roles.name = '"+dbRole+"'", function(err, serverRows, field){
         if(err)
           throw err;
+          console.log("SERVERS");
+          console.log(serverRows);
         database.query("select * from roles  JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
           puppetHostname = "";
           if(typeof rows[0] != 'undefined')
             puppetHostname = rows[0]['hostname'];
+          serverHostname = "";
           if(role)
             currentRole = role;
 			if(typeof serverRows[0] != 'undefined')
-				serverHostname = serverRows[0].hostname;
+            {
+            console.log(Object.keys(serverRows).length);
+            /*
+                if(serverRows.length >1){
+                    for(i = 0; i <= serverRows.length - 1; i++){
+                        
+                        if(i>0)
+                            serverHostname=serverHostname + ",";                        
+                        serverHostname = serverHostname + serverRows[i].hostname ;
+                        console.log("SERVER");
+                        console.log(serverHostname);
+
+                    }
+                    
+                }
+                else*/
+				    serverHostname = serverRows[0].hostname;
+            }
 			else
 				serverHostname = "";
 				
@@ -261,7 +281,7 @@ function setVariablesAndRender(currentRole, res, role, req, hostname) {
 				reportEvents = "";
 			}
 
-			res.render('wizard/' + currentRole, { latestReport: reports[0], reportEvents: reportEvents, reportStatus: reportStatus, keys: keyRows, config: config, moduleName: moduleName, server: serverRows[0], puppetMaster: puppetHostname, path:req.originalUrl });
+			res.render('wizard/' + currentRole, { latestReport: reports[0], reportEvents: reportEvents, reportStatus: reportStatus, keys: keyRows, config: config, moduleName: moduleName, server: serverRows, puppetMaster: puppetHostname, path:req.originalUrl });
 
 		});
         });
@@ -310,7 +330,7 @@ function getConfiguration (namespace, callback) {
               for(var b = 0;b <= options.length; b++){
                 data.options[b] = options[b];
                 if(options[b] == 'advanced')
-                  data.advanced = 'true';
+                  data.advanced = 'true'; 
                 else if(typeof options[b] != 'undefined' && options[b].split("=")[0] == 'default_file'){
                   try
                   {
@@ -347,6 +367,8 @@ function getConfiguration (namespace, callback) {
 
               data.value = "";
               for(b = 1; b < inputData.length; b++){
+                  if(b>1)
+                    data.value = data.value + " ";
                 data.value = data.value + inputData[b];
               }
 
@@ -364,6 +386,7 @@ function getConfiguration (namespace, callback) {
               data.doc = doc.stdout;
               data.validation = validation.stdout.trim();
               data.name = inputData[0];
+              
               variables[inputData[0]] = data;
             }
             if(a == sData.length -1)

@@ -1,7 +1,7 @@
 extends ../layout
 block content
 	.col-lg-1.col-centered
-		-myRole = 'fsagent'
+		-myRole = 'awstats'
 		include status_modal.jade
 		h1.page-header Awstats
 			if allRolesSimple[myRole]  && reportStatus == "successful"

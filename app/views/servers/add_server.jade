@@ -2,11 +2,18 @@ form.form-horizontal
 	fieldset
 		legend Server information
 	if configureOnly == true
+		- var serverHostname = ''
+		- var i = 0
+		each s in server
+			if i > 0
+				- serverHostname = serverHostname + ','          
+			- serverHostname += serverHostname + s.hostname
+			- i++           
 		div.row
 			div.form-group
 				label.col-lg-2.control-label(for='serverHostname') Server hostname
 				div.col-lg-8
-					input#serverHostname.form-control(type="text", value="#{server.hostname}", name="serverHostname", readonly="readonly")
+					input#serverHostname.form-control(type="text", value="#{serverHostname}", name="serverHostname", readonly="readonly")
 					button.btn.btn-xs.btn-info#updateServerHostnameButton(onClick="return(false);") Update hostname
 					span.help-block Hostname or ip address to the server
 					
@@ -14,20 +21,20 @@ form.form-horizontal
 			div.form-group
 				label.col-lg-2.control-label(for='serverUsername') Username
 				div.col-lg-8
-					input#serverUsername.form-control(type="text", value="#{server.username}", name="serverUsername", readonly="readonly")
+					input#serverUsername.form-control(type="text", value="#{server[0].username}", name="serverUsername", readonly="readonly")
 					span.help-block Username for user with root privileges
 		div.row
 			div.form-group
 				label.col-lg-2.control-label(for='serverPassword') Password
 				div.col-lg-8
-					input#serverPassword.form-control(type="password", value="#{server.password}", name="serverPassword", readonly="readonly")
+					input#serverPassword.form-control(type="password", value="#{server[0].password}", name="serverPassword", readonly="readonly")
 					span.help-block Password for the user
 		div.row
 			div.form-group
 				label.col-lg-2.control-label(for='serverKey') SSH Key (optional)
 				div.col-lg-8
 					select.form-control(name="serverKey",id="serverKey", readonly="readonly")
-						option(name="#{server.fk_ssh_key}",value="#{server.fk_ssh_key}") #{server.ssh_key_name}
+						option(name="#{server[0].fk_ssh_key}",value="#{server[0].fk_ssh_key}") #{server[0].ssh_key_name}
 						span.help-block SSH key if not using password based login
 
 	else

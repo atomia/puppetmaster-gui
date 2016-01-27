@@ -16,11 +16,12 @@ module.exports = {
     rolesPretty["installatron"] = {"prettyName" : "Installatron Server"};
     rolesPretty["awstats"] = {"prettyName" : "Awstats statistics"};
     rolesPretty["daggre"] = {"prettyName" : "Daggre"};
-    rolesPretty["cron"] = {"prettyName" : "Cronjobs"};
+    rolesPretty["cronagent"] = {"prettyName" : "Cronjobs"};
     rolesPretty["haproxy"] = {"prettyName" : "Haproxy load balancers"};
-    rolesPretty["apache"] = {"prettyName" : "Apache cluster"};
+    rolesPretty["apache_agent"] = {"prettyName" : "Apache cluster"};
     rolesPretty["iis"] = {"prettyName" : "IIS cluster"};
-    rolesPretty["mailserver"] = {"prettyName" : "Mail cluster"};
+    rolesPretty["mailserver"] = {"prettyName" : "Mail cluster master"};
+    rolesPretty["mailserver_slave"] = {"prettyName" : "Mail cluster slave"};
     rolesPretty["webmail"] = {"prettyName" : "Roundcube webmail"};
     rolesPretty["mssql"] = {"prettyName" : "Customer MSSQL"};
     rolesPretty["mysql"] = {"prettyName" : "Customer MySQL"};
@@ -29,6 +30,9 @@ module.exports = {
     rolesPretty["internal_apps"] = {"prettyName" : "Internal Atomia applications"};	
     rolesPretty["public_apps"] = {"prettyName" : "Public Atomia applications"};	
     rolesPretty["atomia_database"] = {"prettyName" : "Atomia database"};	
+    rolesPretty["pureftpd"] = {"prettyName" : "FTP cluster master"}
+    rolesPretty["pureftpd_slave"] = {"prettyName" : "FTP cluster slaves"}
+  
     
     allRoles = [];
 	allRolesSimple = [];

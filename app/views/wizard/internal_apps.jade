@@ -7,7 +7,7 @@ block content
 			if allRolesSimple[myRole]  && reportStatus == "successful"
 				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
 				
-		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
+		if currentStep.route == path && allRolesSimple[myRole] 
 			include installation_complete.jade
 								
 		if reportStatus 

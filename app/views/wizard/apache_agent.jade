@@ -26,6 +26,13 @@ block content
 			
 
 		if ( allRolesSimple[myRole] != "installed" )
+        
+			.panel.panel-primary
+				.panel-heading
+					h3.panel-title Multiple servers
+				.panel-body
+					p The cluster can consist of an unlimited number of servers, just add all the server hostnames in the "server hostname" field separated by comma. 
+                        
 			include ../servers/add_server.jade
 			-displayConfigure = "none"
 			include ../servers/configure_server.jade

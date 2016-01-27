@@ -29,7 +29,7 @@ block content
 							span.glyphicon.glyphicon-cog(aria-hidden="true")
 						if e['resource-type'] == 'Nagios_host' || e['resource-type'] == 'Nagios_service'
 							img(src="/img/nagios_server-icon.png", style="width:24px;")
-						=e['resource-title']
+						= e['resource-title']
 						
 					p.list-group-item-text
 						=e['message']

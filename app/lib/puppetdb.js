@@ -77,7 +77,6 @@ function getRunStatus(report, callback){
 			'i' : i
 		};
 		puppetDbRequest(q, args, function(result, rep) {
-			console.log(result);
 			if(JSON.parse(result).length > 0)
 				stat = "failure";
 			else

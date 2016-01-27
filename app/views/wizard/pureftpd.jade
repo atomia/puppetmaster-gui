@@ -1,7 +1,7 @@
 extends ../layout
 block content
 	.col-lg-1.col-centered
-		-myRole = 'fsagent'
+		-myRole = 'pureftpd'
 		include status_modal.jade
 		h1.page-header FTP cluster master
 			if allRolesSimple[myRole]  && reportStatus == "successful"
@@ -12,19 +12,19 @@ block content
 								
 		if reportStatus
 			include latest_puppet_run.jade
-
+		
 		.panel.panel-primary
 			.panel-heading
 				h3.panel-title Information
-			.panel-body
-				p FTP master...
-		
+			.panel-body		
+				p The FTP cluster is deployed in two steps. First we deploy the master node and afterwards we add the slave nodes that we need.
+
 		include firewall/header.jade
 			include firewall/global.jade
 			include firewall/pureftpd.jade
-			
+						
 
-		if ( allRolesSimple[myRole] != "installed" )
+		if !allRolesSimple[myRole]
 			include ../servers/add_server.jade
 			-displayConfigure = "none"
 			include ../servers/configure_server.jade
@@ -36,4 +36,4 @@ block content
 		
 		
 		input(type="hidden", id="serverRole", value="#{myRole}")
-		
+
