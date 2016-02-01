@@ -1,27 +1,33 @@
 extends layout
 block content
-	.col-lg-1.col-centered
-		h1 Atomia Installation Dashboard
-		legend Available servers
+    .col-lg-1.col-centered
+        h1 Atomia Installation Dashboard
+        legend Available servers
 
-		.table-responsive
-		table.table.table-striped
-			thead
-			tr
-				th Hostname
-				th Roles
-				th Status
-				th Actions
-			tbody
-			each row in servers
-				tr
-				td
-					img(src="/img/ubuntu.jpg",width="32")
-					&nbsp;
-					a(href="/servers/status/" + row.hostname)=row.hostname
-				td
-					img(src="/img/"+ row.name + "-icon.png",width="32")
-					= row.name
-				td 
-				td
-					button.btn.btn-danger.btn-xs.deleteServerButton(type="button",rel="#{row.hostname}") Delete
+        .table-responsive
+            table.table.table-striped
+                thead
+                    tr
+                        th Hostname
+                        th Roles
+                        th Status
+                        th Actions
+                tbody
+                    each row in servers
+                        tr
+                            td
+                                img(src="/img/ubuntu.jpg",width="32")
+                                &nbsp;
+                                a(href="/servers/status/" + row.hostname)=row.hostname
+                            td
+                                if  row.name == 'pureftpd' || row.name == 'pureftpd_slave' || row.name == 'cronagent' || row.name == 'daggre' || row.name == 'awstats' || row.name == 'fsagent' || row.name == 'public_apps' || row.name == 'internal_apps' || row.name == 'atomia_database' || row.name == 'active_directory' || row.name == 'active_directory_replica' || row.name == 'domainreg' || row.name == 'atomiadns' || row.name == 'atomiadns_powerdns'
+                                    img(src="/img/"+ row.name + "-icon.svg",width="32")
+                                    &nbsp;
+                                    = row.name
+                                else
+                                    img(src="/img/"+ row.name + "-icon.png",width="32")
+                                    &nbsp;
+                                    = row.name
+                            td
+                            td
+                                button.btn.btn-danger.btn-xs.deleteServerButton(type="button",rel="#{row.hostname}") Delete
