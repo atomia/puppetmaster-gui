@@ -50,6 +50,12 @@ module.exports = {
               a++;
             }
         }
+        database.query("SELECT * FROM roles JOIN servers on fk_server = servers.id WHERE name = 'nagios_server' ORDER by roles.id DESC LIMIT 1", function(err, rows, field) {
+		if(err)
+			throw err;
+            
+        });
+            
         database.query("SELECT * FROM app_config WHERE var IN('current_step','installation_steps_default')", function(err, rows, field){
           for(var i = 0; i <rows.length; i++)
           {
@@ -63,14 +69,22 @@ module.exports = {
 		  if( installationSteps != '')
           	currentStep = JSON.parse(installationSteps)[step];
 
-			console.log(currentStep);
-          res.locals = {
-            menuStatus: allRoles,
-            installationSteps: installationSteps,
-            currentStep : currentStep
-          };
+        database.query("SELECT * FROM roles JOIN servers on fk_server = servers.id WHERE name = 'nagios_server' ORDER by roles.id DESC LIMIT 1", function(err, rows, field) {
+            if(err)
+                throw err;
+            console.log(rows);
+            nagios = null;
+            if(rows)
+                nagios = rows[0]["hostname"] + "/nagios";
+            res.locals = {
+                menuStatus: allRoles,
+                installationSteps: installationSteps,
+                currentStep : currentStep,
+                nagiosUrl: nagios
+            };
 
-          next();
+            next();
+            });
         });
 
       });
