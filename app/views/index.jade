@@ -16,8 +16,6 @@ block content
                     each row in servers
                         tr
                             td
-                                img(src="/img/ubuntu.jpg",width="32")
-                                &nbsp;
                                 a(href="/servers/status/" + row.hostname)=row.hostname
                             td
                                 if  row.name == 'pureftpd' || row.name == 'pureftpd_slave' || row.name == 'cronagent' || row.name == 'daggre' || row.name == 'awstats' || row.name == 'fsagent' || row.name == 'public_apps' || row.name == 'internal_apps' || row.name == 'atomia_database' || row.name == 'active_directory' || row.name == 'active_directory_replica' || row.name == 'domainreg' || row.name == 'atomiadns' || row.name == 'atomiadns_powerdns'
