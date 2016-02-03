@@ -1,14 +1,21 @@
 .panel.panel-primary
 	.panel-heading
-		h3.panel-title Latest Puppet run
-	.panel-body(style="padding:0px;")
+		h3.panel-title Provisioning information
+	.panel-body(style="padding:0px;margin-left:5px;")
 	if reportEvents.length == 0
 		.list-group
 			div.list-group-item( style="#{style}")
 				p 
 					| Report contains no events, If this is the first time you should provision the server by clicking the provision button or wait for the first puppet run to be done
 	
-	
+	div.list-group-item( style="#{style}")
+		| Puppet is currently 
+		if puppetStatus
+			| running. Please wait for the current run to finish
+		else
+			| not performing a provisioning run. <a href="#" onClick="getLatestPuppetRun('#{myRole}');">Show the raw output of the last run</a><br/>
+			div#last_run          
+			button.btn.btn-lg.btn-success#startProvisioningButton( style="margin:10px;", type="submit",onClick="return false;") Provision Now	
 	each e in reportEvents		
 		.list-group
 		-style=""
@@ -32,4 +39,4 @@
 			p.list-group-item-text
 				=e['message']
 	
-	button.btn.btn-lg.btn-success#startProvisioningButton( style="margin:10px;", type="submit",onClick="return false;") Provision Now
+

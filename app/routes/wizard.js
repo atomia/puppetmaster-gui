@@ -6,6 +6,7 @@ var execSync = require('execSync');
 var fs = require('fs');
 var yaml = require('yamljs');
 var puppetDB = require('../lib/puppetdb.js');
+var ssh  = require('simple-ssh');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -177,6 +178,18 @@ router.get('/done', function(req, res, next) {
 
 });
 
+router.get('/output/:role', function(req, res, next) {
+		var role = req.params.role;
+        getLatestPuppetOutput(role, function(output){
+               if(output) {
+                   res.send(JSON.stringify({output: output}));
+               }
+               else
+                    res.send(JSON.stringify({output: ''}));
+        });
+
+});
+
 router.post('/puppet', function(req, res, next) {
 
 	var hasError = false;
@@ -280,9 +293,11 @@ function setVariablesAndRender(currentRole, res, role, req, hostname) {
 				reportStatus = "";
 				reportEvents = "";
 			}
+            getPuppetStatus(currentRole, function(puppetStatus) {
+  
 
-			res.render('wizard/' + currentRole, { latestReport: reports[0], reportEvents: reportEvents, reportStatus: reportStatus, keys: keyRows, config: config, moduleName: moduleName, server: serverRows, puppetMaster: puppetHostname, path:req.originalUrl });
-
+			 res.render('wizard/' + currentRole, { puppetStatus: puppetStatus, latestReport: reports[0], reportEvents: reportEvents, reportStatus: reportStatus, keys: keyRows, config: config, moduleName: moduleName, server: serverRows, puppetMaster: puppetHostname, path:req.originalUrl });
+            });
 		});
         });
       });
@@ -404,4 +419,100 @@ function getConfiguration (namespace, callback) {
     child.on('close', function(code) {
     });
 }
+
+
+function getPuppetStatus(role, callback) {
+    
+    //puppet agent: applying configuration
+    if(role!= 'active_directory' && role!= 'active_directory_replica' && role!= 'internal_apps' && role!= 'public_apps' ) {
+    var sshSession = getSSHSession(role, function(sshSession){
+        if(sshSession) 
+        {
+            var puppetStatus;
+            sshSession.exec("ps auxwww | grep 'puppet agent: applying configuration' | grep -v grep |  wc -l", {
+                out: function(stdout){
+                    if(stdout > 0)
+                    {
+                    callback(true);
+                    }
+                    else
+                    {
+                        callback(false);
+                    }
+                },
+                err: function(stderr) {
+                    callback(false);
+                },
+                exit: function(code) {
+                // io.emit('server', { consoleData: "Command exited with status: " + code + "\n" });
+                    //callback(code);
+                }
+            }).start();
+        }
+        else
+            callback(false);     
+    });
+    }
+    else
+    {
+        callback(false);
+    }
+
+}
+
+function getLatestPuppetOutput(role, callback){
+    console.log(role);
+    if(role!= 'active_directory' && role!= 'active_directory_replica' && role!= 'internal_apps' && role!= 'public_apps' ) {
+     var sshSession = getSSHSession(role, function(sshSession){
+     
+        if(sshSession) 
+        {
+            
+            var puppetOutput;
+            sshSession.exec("grep puppet-agent /var/log/syslog | tail -n1 | awk '{print $5}' | cut -d '[' -f 2 | sed 's/]://' | xargs -n1 -I% grep % /var/log/syslog", {
+                out: function(stdout){
+                   puppetOutput = puppetOutput + stdout;
+
+                },
+                err: function(stderr) {
+                    console.log(stderr);
+                    callback(null);
+                },
+                exit: function(code) {
+
+                    callback(puppetOutput);
+                }
+            }).start();
+        }
+        else
+            callback(null);     
+    });       
+    }
+    else
+    {
+        callback(null);
+    }
+}
+
+function getSSHSession(role, callback) {
+	database.query("SELECT * FROM roles JOIN servers on fk_server = servers.id  LEFT JOIN ssh_keys ON fk_ssh_key = ssh_keys.id WHERE roles.name = '"+ role + "' ", function(err, rows, field) {
+		if(err)
+			throw err;
+       
+       if(rows.length > 0)
+       {
+        var sshSession = new ssh({
+                    host: rows[0]["hostname"],
+                    user: rows[0]["username"],
+                    password: rows[0]["password"],
+                    key: rows[0]["content"],
+                    timeout: 2000
+                });		
+            callback(sshSession);
+        }
+        else
+            callback(null);
+	});    
+}
+
 module.exports = router;

@@ -72,7 +72,6 @@ module.exports = {
         database.query("SELECT * FROM roles JOIN servers on fk_server = servers.id WHERE name = 'nagios_server' ORDER by roles.id DESC LIMIT 1", function(err, rows, field) {
             if(err)
                 throw err;
-            console.log(rows);
             nagios = null;
             if(rows)
                 nagios = rows[0]["hostname"] + "/nagios";

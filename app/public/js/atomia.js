@@ -607,3 +607,19 @@ function scrollBottom() {
 		scrollTop:$("#serverConsole")[0].scrollHeight - $("#serverConsole").height()
 	},1,function(){});
 }
+
+function getLatestPuppetRun(role){
+    if($("#last_run").html().trim() != ""){
+        $("#last_run").hide();
+        $("#last_run").html("");
+        return;
+    }
+    else
+        $("#last_run").show();
+        
+    $.get("/wizard/output/" + role, function(data) {
+        
+        $("#last_run").html("<pre>"+JSON.parse(data).output+"</pre>");
+
+    });    
+}
