@@ -39,7 +39,6 @@ database = mysql.createConnection({
 database.connect();
 
 io.on('connection', function(socket){
-  console.log('a user connected');
 });
 
 

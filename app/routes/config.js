@@ -10,12 +10,10 @@ router.get('/', function(req, res, next) {
 // Adds configuration to the database takes an array of key, values
 router.post('/', function(req, res, next) {
   var configData = req.body.configData;
-  console.log(req.body);
   for (var i = 0; i < configData.length; i++) {
     var sql = "INSERT INTO configuration VALUES(null,'" + configData[i].key + "',?,'null') ON DUPLICATE KEY UPDATE val = ?";
     var sqlData = [configData[i].value,configData[i].value];
     sql = mysql.format(sql, sqlData);
-        console.log(sql);
     database.query(sql, function(err, rows, field) {
         if(err)
         {

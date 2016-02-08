@@ -207,7 +207,6 @@ router.post('/puppet', function(req, res, next) {
 		{
 			var hostname =  execSync.exec("facter fqdn 2> /dev/null").stdout;
 				database.query("INSERT INTO servers VALUES(null,'" + hostname + "','','','')",function(err, rows, field) {
-					console.log(rows);
 					if(typeof rows != 'undefined')
 					{
 						serverId = rows["insertId"];
@@ -250,8 +249,6 @@ function setVariablesAndRender(currentRole, res, role, req, hostname) {
 	  database.query("SELECT hostname, username, password, fk_ssh_key, ssh_keys.name as 'ssh_key_name' from servers JOIN roles ON roles.fk_server = servers.id LEFT JOIN ssh_keys ON ssh_keys.id = servers.fk_ssh_key WHERE roles.name = '"+dbRole+"'", function(err, serverRows, field){
         if(err)
           throw err;
-          console.log("SERVERS");
-          console.log(serverRows);
         database.query("select * from roles  JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field){
           puppetHostname = "";
           if(typeof rows[0] != 'undefined')
@@ -261,21 +258,6 @@ function setVariablesAndRender(currentRole, res, role, req, hostname) {
             currentRole = role;
 			if(typeof serverRows[0] != 'undefined')
             {
-            console.log(Object.keys(serverRows).length);
-            /*
-                if(serverRows.length >1){
-                    for(i = 0; i <= serverRows.length - 1; i++){
-                        
-                        if(i>0)
-                            serverHostname=serverHostname + ",";                        
-                        serverHostname = serverHostname + serverRows[i].hostname ;
-                        console.log("SERVER");
-                        console.log(serverHostname);
-
-                    }
-                    
-                }
-                else*/
 				    serverHostname = serverRows[0].hostname;
             }
 			else
@@ -286,7 +268,6 @@ function setVariablesAndRender(currentRole, res, role, req, hostname) {
 			if(reports) {
 				reportStatus = reports.status
 				reportEvents = events;
-				console.log(events);
 
 			}
 			else {
@@ -414,7 +395,6 @@ function getConfiguration (namespace, callback) {
 
     });
     child.stderr.on('data', function(data) {
-      console.log(data);
     });
     child.on('close', function(code) {
     });
@@ -461,7 +441,6 @@ function getPuppetStatus(role, callback) {
 }
 
 function getLatestPuppetOutput(role, callback){
-    console.log(role);
     if(role!= 'active_directory' && role!= 'active_directory_replica' && role!= 'internal_apps' && role!= 'public_apps' ) {
      var sshSession = getSSHSession(role, function(sshSession){
      
@@ -475,7 +454,6 @@ function getLatestPuppetOutput(role, callback){
 
                 },
                 err: function(stderr) {
-                    console.log(stderr);
                     callback(null);
                 },
                 exit: function(code) {

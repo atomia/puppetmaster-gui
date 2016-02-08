@@ -110,7 +110,6 @@ $(document).ready(function(){
 	{
 
 			var hostname = $("#serverHostname").val();
-			console.log(hostname);
 			$('input[type=text], textarea').each(
 				function(index){
 					var input = $(this);
@@ -123,7 +122,6 @@ $(document).ready(function(){
 					if (input.val().indexOf("$ipaddress") >= 0)
 					{
 						$.get("/servers/ip/" + hostname, function(data) {
-							console.log(data);
 						  ipaddr = input.val().replace("$ipaddress",data[0]);
 						  input.val(ipaddr);
 						});
@@ -157,7 +155,6 @@ $(document).ready(function(){
 				
 				if(input.attr('id') == 'storage_server_hostname' && input.val() == ""){
 					$.get('/config/atomia::internaldns::zone_name', function(data) {
-						console.log(data);
 						input.val('gluster.' + data.output.replace(/(\r\n|\n|\r)/gm,""));
 					});					
 				}			
@@ -247,7 +244,6 @@ $(document).ready(function(){
 
 		$("#status_modal").modal('toggle');
 		$.post("/servers/new", postData, function(data) {
-			console.log(data.ok);
 			if(typeof data.ok != 'undefined')
 			{
 				$("#configure_server").show();
@@ -260,7 +256,6 @@ $(document).ready(function(){
 				},1,function(){});						
 			}
 		}).error(function(err){
-			console.log(err);
 			if(typeof err.responseJSON != 'undefined')
 				errorMsg = err.responseJSON.error;
 			else
@@ -396,7 +391,6 @@ $(document).ready(function(){
 	    var tmpData = {};
 
 	    var tmpName = moduleName + "::" + $("[id='"+this.id+"']").attr("name");
-		console.log(tmpName);
 	    // Special cases
 	    tmpData.key = tmpName;
 	    tmpData.value = "";
@@ -449,7 +443,6 @@ $(document).ready(function(){
 		$("#div_" + field).removeClass("has-error");
 		var subject = $("#" + field).val();
 		var field_val = "";
-console.log($("#" + field + "_validation").val());
 		// Stored regular expressions
 		if($("#" + field + "_validation").val() == "%password")
 		{

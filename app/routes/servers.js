@@ -78,13 +78,10 @@ router.post('/update_hostname', function(req, res, next) {
 	var newHostnameExec = exec(__dirname + "/../scripts/winrm -hostname "+ serverHostname +" -username \""+ serverUsername +"\" -password \""+ serverPassword +"\" \"facter fqdn\"");
 
 	newHostnameExec.stdout.on('data', function(data) {
-		console.log(data);
 		newHostname = newHostname + data;
 	});
 
 	newHostnameExec.on('close', function (code) {
-		console.log("CODE: "+ code);
-		console.log(newHostname);
 		if(code == 0)
 		{
 			newHostname = newHostname.replace(/(\r\n|\n|\r)/gm, "");
@@ -131,7 +128,6 @@ router.post('/generate_certificates', function(req, res) {
 
 	child.on('close', function (code) {
 		var numCerts = execSync.exec("ls /etc/puppet/atomiacerts/certificates/ | wc -l").stdout;
-		console.log(numCerts.trim());
 		if(parseInt(numCerts.trim()) < 1)
 		{
 			io.emit('server', { error: 'The certificates was not generated!', done: 'error' });
@@ -174,14 +170,12 @@ router.post('/validate/ssh', function(req, res) {
 		arrHostnames[0] = serverHostname;
 	}
 
-	console.log(arrHostnames);
 	for(var i = 0; i < arrHostnames.length; i++)
 	{		
 		if(serverKeyId != null && serverKeyId != "" && typeof(serverKeyId) != 'undefined'){
 			(function(hostname) {
 			getKeyFromId(serverKeyId, function(key){
 				serverKey = key;
-				console.log(hostname);
 				tryLogin(hostname, finishedLoginCheck());
 			});
 			})(arrHostnames[i]);
@@ -299,7 +293,6 @@ router.post('/update', function(req, res) {
       key: serverKey,
       timeout: 5000
     });
-      console.log("Updating server");
     sshSession.on('error', function(err) {
       sshSession.end();
       io.emit('server', { consoleData: "Error communicating with the server: " + err });
@@ -307,7 +300,6 @@ router.post('/update', function(req, res) {
 
     sshSession.exec("sudo puppet agent --test --waitforcert 1", {
       out: function(stdout){
-          console.log("Updating server " + serverHostname + " " + stdout);
         io.emit('server', { consoleData: stdout });
       },
       exit: function(code) {
@@ -415,7 +407,6 @@ router.post('/new', function(req, res) {
 								var domain = serverHostname.split('.').pop().replace(/ /g,'').toLowerCase();
 								var hostname = serverHostname.replace(/\.[^\.]+$/, "").replace(/ /g,'').toLowerCase();
 								//"SET FACTER_hostname=\""+ hostname +"\"& SET FACTER_domain=\"" +domain +"\"&
-								console.log(__dirname + "/../scripts/winrm -hostname "+ serverHostname +" -username \""+ serverUsername +"\" -password \""+ serverPassword +"\" \"SET FACTER_atomia_role_1=\""+serverRole+"\" & puppet agent --test\"");
 
 								var child_run_puppet = exec(__dirname + "/../scripts/winrm -hostname "+ serverHostname +" -username \""+ serverUsername +"\" -password \""+ serverPassword +"\" \"SET FACTER_atomia_role_1=\""+serverRole+"\"& puppet agent --test\"");
 								child_run_puppet.stdout.on('data', function(data) {
@@ -569,8 +560,6 @@ router.post('/new', function(req, res) {
 
 	/* Setup puppet on a server with given ssh session */
 	function setupPuppet(ssh, puppet, res, callback) {
-		console.log("setting up Puppet");
-
 		ssh.exec("wget --no-check-certificate https://raw.github.com/atomia/puppet-atomia/master/files/bootstrap_linux.sh && chmod +x bootstrap_linux.sh && sudo ./bootstrap_linux.sh " + puppet + "", {
 			out: function(stdout){
 				io.emit('server', { consoleData: stdout });
@@ -586,8 +575,6 @@ router.post('/new', function(req, res) {
 	}
 
 	function ensurePuppetRunning(ssh, callback) {
-		console.log("Making sure Puppet is running");
-
 		ssh.exec('if [[ $(sudo service puppet status | /bin/grep not | /bin/grep -vc grep)  > 0 ]] ; then sudo service puppet start; else echo Puppet is running; fi', {
 			out: function(stdout){
 				io.emit('server', { consoleData: stdout });
@@ -695,7 +682,6 @@ function returnOk(res, message, serverRole){
 
 function returnError(res, message){
 	io.emit('server', { consoleData:  "\n" + message });
-	console.log(res.headersSent);
 	if(!res.headersSent){
 		res.status(500);
 		res.send(JSON.stringify({error: message}));
