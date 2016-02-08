@@ -73,7 +73,7 @@ module.exports = {
             if(err)
                 throw err;
             nagios = null;
-            if(rows)
+            if(rows.length > 0)
                 nagios = rows[0]["hostname"] + "/nagios";
             res.locals = {
                 menuStatus: allRoles,
