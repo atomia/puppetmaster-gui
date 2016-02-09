@@ -8,11 +8,11 @@ nav.navbar.navbar-inverse.navbar-fixed-top
           ul#menu-top.nav-menu
             li.menu-item-top
               a#top-btn(href='#content') Top
-            li.menu-item(typeof='sioc:Page', about='/pages/releases')
-              a(href='/pages/releases', property='dc:title')
+            li.menu-item(typeof='sioc:Page', about='/')
+              a(href='/', property='dc:title')
                 | Dashboard
-            li.menu-item(typeof='sioc:Page', about='/pages/general')
-              a(href='/pages/general', property='dc:title')
+            li.menu-item(typeof='sioc:Page', about='https://github.com/atomia/puppetmaster-gui/wiki')
+              a(href='https://github.com/atomia/puppetmaster-gui/wiki', property='dc:title')
                 | Documentation
             li.menu-item(typeof='sioc:Page', about='/pages/vps')
               a(href='http://#{nagios}', property='dc:title') 
@@ -28,7 +28,7 @@ nav.navbar.navbar-inverse.navbar-fixed-top
         span.list-group-item.active(href='#')
          | Installation tasks
         a.list-group-item(href='#{currentStep.route}')
-          |  Next task: #{currentStep.name}
+          |  Current task: #{currentStep.name}
         a.list-group-item(href='/wizard/all_tasks')
           |  List all tasks
 
