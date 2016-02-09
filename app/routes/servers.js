@@ -7,6 +7,8 @@ var fs = require('fs');
 var execSync = require('execSync');
 var exec = require('child_process').exec;
 var puppetDB = require('../lib/puppetdb.js');
+var Convert = require('ansi-to-html');
+var convert = new Convert();
 
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
@@ -610,10 +612,10 @@ router.post('/new', function(req, res) {
 	function doPuppetRun(ssh, callback) {
 		ssh.exec("sudo puppet agent --test --waitforcert 1", {
 			out: function(stdout){
-				io.emit('server', { consoleData: stdout });
+				io.emit('server', { consoleData: convert.toHtml(stdout) });
 			},
 			err: function(stderr) {
-				io.emit('server', { consoleData: stderr });
+				io.emit('server', { consoleData: convert.toHtml(stderr) });
 			},
 			exit: function(code) {
 				io.emit('server', { consoleData: "Command exited with status: " + code + "\n" });

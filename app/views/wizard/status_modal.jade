@@ -7,7 +7,7 @@ script(src='/js/status_modal.js')
 			.modal-body
 				p The command you triggered requires some actions to be performed on the server, you can monitor the progress below. Please allow the actions to finish before proceeding.
 				p
-					pre.pre-scrollable#serverConsole(data-bind="text: serverConsole")
+					pre.pre-scrollable#serverConsole(data-bind="html: serverConsole")
 					div.alert.alert-danger(style="display:none;")
 						span
 							strong#alert-content
