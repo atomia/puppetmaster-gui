@@ -9,10 +9,10 @@ block content
 				
 		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
 			include installation_complete.jade
-								
+		else if currentStep.route == path
+			include skip_step.jade								
 		if reportStatus
 			include latest_puppet_run.jade
-
 		.panel.panel-primary
 			.panel-heading
 				h3.panel-title Information

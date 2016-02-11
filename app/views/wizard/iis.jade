@@ -9,7 +9,8 @@ block content
 				
 		if currentStep.route == path && allRolesSimple[myRole]
 			include installation_complete.jade
-								
+		else if currentStep.route == path
+			include skip_step.jade								
 		if reportStatus
 			include latest_puppet_run.jade
 

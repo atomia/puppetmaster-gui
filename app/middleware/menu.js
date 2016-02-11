@@ -56,34 +56,38 @@ module.exports = {
             
         });
             
-        database.query("SELECT * FROM app_config WHERE var IN('current_step','installation_steps_default')", function(err, rows, field){
+        database.query("SELECT * FROM app_config WHERE var IN('current_step','installation_template')", function(err, rows, field){
           for(var i = 0; i <rows.length; i++)
           {
             if(rows[i].var == 'current_step')
               step = rows[i].val;
-            if(rows[i].var == 'installation_steps_default')
-              installationSteps = rows[i].val;
+            if(rows[i].var == 'installation_template')
+              installationTemplate = rows[i].val;
 
           }
-		  currentStep = 0;
-		  if( installationSteps != '')
-          	currentStep = JSON.parse(installationSteps)[step];
+          database.query("SELECT * FROM app_config WHERE var = '" + installationTemplate + "'", function(err, rows, field){
+            installationSteps = rows[0].val;
+            currentStep = 0;
+            if( installationSteps != '')
+                currentStep = JSON.parse(installationSteps)[step];
 
-        database.query("SELECT * FROM roles JOIN servers on fk_server = servers.id WHERE name = 'nagios_server' ORDER by roles.id DESC LIMIT 1", function(err, rows, field) {
-            if(err)
-                throw err;
-            nagios = null;
-            if(rows.length > 0)
-                nagios = rows[0]["hostname"] + "/nagios";
-            res.locals = {
-                menuStatus: allRoles,
-                installationSteps: installationSteps,
-                currentStep : currentStep,
-                nagiosUrl: nagios
-            };
+            database.query("SELECT * FROM roles JOIN servers on fk_server = servers.id WHERE name = 'nagios_server' ORDER by roles.id DESC LIMIT 1", function(err, rows, field) {
+                if(err)
+                    throw err;
+                nagios = null;
+                if(rows.length > 0)
+                    nagios = rows[0]["hostname"] + "/nagios";
+                res.locals = {
+                    menuStatus: allRoles,
+                    installationSteps: installationSteps,
+                    currentStep : currentStep,
+                    nagiosUrl: nagios,
+                    installationTemplate: installationTemplate,
+                };
 
-            next();
-            });
+                next();
+                });
+          });
         });
 
       });

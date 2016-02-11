@@ -131,3 +131,13 @@ body {
 .list-group-item-heading {
     font-size: 15px;
 }
+
+.active_selection {
+    border:3px dashed;
+    border-color:#C90062;
+    border-radius: 50%;
+}
+
+.install_item {
+    padding: 10px;
+}

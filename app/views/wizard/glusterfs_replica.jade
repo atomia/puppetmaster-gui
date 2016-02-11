@@ -8,7 +8,8 @@ block content
 				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
 		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
 			include installation_complete.jade
-								
+		else if currentStep.route == path
+			include skip_step.jade								
 		if reportStatus
 			include latest_puppet_run.jade
 

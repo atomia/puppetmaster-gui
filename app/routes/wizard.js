@@ -14,36 +14,42 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/next_step', function(req, res, next) {
-  database.query("SELECT * FROM app_config WHERE var IN('current_step','installation_steps_default')", function(err, rows, field){
+  database.query("SELECT * FROM app_config WHERE var IN('current_step','installation_template')", function(err, rows, field){
     for(var i = 0; i <rows.length; i++)
     {
       if(rows[i].var == 'current_step')
         step = rows[i].val;
-      if(rows[i].var == 'installation_steps_default')
-        installationSteps = rows[i].val;
+      if(rows[i].var == 'installation_template')
+        var installationTemplate = rows[i].val;
     }
-    nextStepId = parseInt(step) + 1;
-    nextStep = JSON.parse(installationSteps)[nextStepId];
-    res.redirect(nextStep.route);
-    database.query("UPDATE app_config SET val =" + nextStepId + " WHERE var = 'current_step'", function(err, rows, field){
+    database.query("SELECT * FROM app_config WHERE var = '" + installationTemplate + "'", function(err, rows, field){
+        installationSteps = rows[0].val;
+        nextStepId = parseInt(step) + 1;
+        nextStep = JSON.parse(installationSteps)[nextStepId];
+        res.redirect(nextStep.route);
+        database.query("UPDATE app_config SET val =" + nextStepId + " WHERE var = 'current_step'", function(err, rows, field){
 
+        });
     });
 
   });
 });
 
 router.get('/all_tasks', function(req, res, next) {
-  database.query("SELECT * FROM app_config WHERE var IN('current_step','installation_steps_default')", function(err, rows, field){
+  database.query("SELECT * FROM app_config WHERE var IN('current_step','installation_template')", function(err, rows, field){
     for(var i = 0; i <rows.length; i++)
     {
       if(rows[i].var == 'current_step')
         step = rows[i].val;
-      if(rows[i].var == 'installation_steps_default')
-        installationSteps = rows[i].val;
+      if(rows[i].var == 'installation_template')
+        installationTemplate = rows[i].val;
     }
-    currentStep = JSON.parse(installationSteps)[step];
-    res.render('wizard/all_tasks', {allSteps: JSON.parse(installationSteps)});
-
+    database.query("SELECT * FROM app_config WHERE var = '" + installationTemplate + "'", function(err, rows, field){
+        installationSteps = rows[0].val;
+        console.log(installationSteps);
+        currentStep = JSON.parse(installationSteps)[step];
+        res.render('wizard/all_tasks', {allSteps: JSON.parse(installationSteps)});
+    });
   });
 });
 
@@ -167,7 +173,9 @@ router.get('/mssql', function(req, res, next) {
   setVariablesAndRender("mssql", res, null, req);
 });
 
-
+router.get('/openstack', function(req, res, next) {
+  setVariablesAndRender("openstack", res, null, req);
+});
 
 router.get('/internal_mailserver', function(req, res, next) {
   setVariablesAndRender("internal_mailserver", res, null, req);
@@ -236,6 +244,20 @@ router.get('/glusterfs_replica', function(req, res, next) {
   setVariablesAndRender("glusterfs", res, "glusterfs_replica", req);
 });
 
+router.post('/template', function(req, res, next) {
+    var templateName = req.body.templateName;
+    database.query("UPDATE app_config SET val = '"+templateName+"'WHERE var = 'installation_template';", function(err, rows, field) {
+        if(!err){
+            res.status(200);
+            res.send(JSON.stringify({ok: "ok"}));
+        }
+        else{
+            res.status(500);
+            res.send(JSON.stringify({error: err}));
+        }
+    });
+
+});
 
 function setVariablesAndRender(currentRole, res, role, req, hostname) {
   getConfiguration(currentRole, function(config){

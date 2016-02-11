@@ -1,0 +1,17 @@
+extends ../layout
+block content
+	.col-lg-1.col-centered
+		include status_modal.jade
+		h1.page-header Configure OpenStack
+
+		p On this page you can add your OpenStack credentials
+
+		include config_form.jade
+
+
+		p
+			legend Done configuring?
+			p 
+				| When you are done with the configuration on this page press the save button below to save your configuration and proceed to the next installation step
+			p 
+				button.btn.btn-lg.btn-primary#saveConfigurationButton(type="submit",onClick="return false;") Save configuration

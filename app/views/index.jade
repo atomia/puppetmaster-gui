@@ -2,6 +2,24 @@ extends layout
 block content
     .col-lg-1.col-centered
         h1 Atomia Installation Dashboard
+        legend Installation template
+        div#template_selection(style="width:50%;margin: 0 auto;")
+            a(href="#",onClick="selectTemplate('installation_steps_complete')")
+                if(installationTemplate == 'installation_steps_complete')
+                    img.install_item#installation_steps_complete.active_selection(data-toggle="tooltip", data-placement="top", title="Install the complete Atomia platform",style="width:96px;",src="/img/complete_icon.svg")
+                else
+                    img.install_item#installation_steps_complete(data-toggle="tooltip", data-placement="top", title="Install the complete Atomia platform",style="width:96px;",src="/img/complete_icon.svg")
+            a(href="#",onClick="selectTemplate('installation_steps_shared')")
+                if(installationTemplate == 'installation_steps_shared')
+                    img.install_item#installation_steps_shared.active_selection(data-toggle="tooltip", data-placement="top", title="Install Atomia for shared hosting only",style="width:96px;",src="/img/shared_hosting_icon.svg")
+                else
+                    img.install_item#installation_steps_shared(data-toggle="tooltip", data-placement="top", title="Install Atomia for shared hosting only",style="width:96px;",src="/img/shared_hosting_icon.svg")
+            a(href="#",onClick="selectTemplate('installation_steps_openstack')")
+                if(installationTemplate == 'installation_steps_openstack')
+                    img.install_item#installation_steps_openstack.active_selection(data-toggle="tooltip", data-placement="top", title="Install Atomia for cloud hosting only",style="width:96px;",src="/img/cloud_icon.svg")
+                else
+                    img.install_item#installation_steps_openstack(data-toggle="tooltip", data-placement="top", title="Install Atomia for cloud hosting only",style="width:96px;",src="/img/cloud_icon.svg")              
+        
         legend Available servers
 
         .table-responsive

@@ -1,6 +1,9 @@
 var socket = io();
 var allTldProcesses = {};
 $(document).ready(function(){
+
+    $('[data-toggle="tooltip"]').tooltip()
+
 	replaceVarsOnLoad();
 	// Register listeners
 	var newServerButton = document.getElementById('newServerButton');
@@ -149,7 +152,8 @@ $(document).ready(function(){
 				
 				if (input.attr('id') == 'mail_server_host' && input.val() == ""){
 					$.get('/roles/role/internal_mailserver', function(data) {
-						input.val(data.role[0].hostname.replace(/(\r\n|\n|\r)/gm,""));
+                        if(typeof data.role[0] != 'undefined')
+						  input.val(data.role[0].hostname.replace(/(\r\n|\n|\r)/gm,""));
 					});
 				}
 				
@@ -544,6 +548,7 @@ $(document).ready(function(){
 		$("#status_modal").modal('toggle');
 		$.post("/servers/generate_certificates", postData, function(data) {
 			jsonData = JSON.parse(data);
+            console.log(jsonData);
 			if(typeof jsonData.ok != 'undefined')
 			{
 				$("#automationserver_encryption_cert_thumb").val(jsonData.certificates.automation_encryption.replace(/(\r\n|\n|\r)/gm,""));
@@ -590,7 +595,7 @@ $(document).ready(function(){
 			$(".alert-danger").hide();
 			$(".alert-succes").html("");
 			$(".alert-danger").html("");
-			if($(".alert-success").html() != "Server validated sucessfully! Proceed with configuration.")
+			if($(".alert-success").html() != "Server validated sucessfully! Proceed with configuration." && !($(".alert-success").html().indexOf("Certificates generate") > -1))
 				location.reload(); 
 		});
 	});
@@ -615,4 +620,15 @@ function getLatestPuppetRun(role){
         $("#last_run").html("<pre>"+JSON.parse(data).output+"</pre>");
 
     });    
+}
+
+function selectTemplate(templateName){
+		var postData = { templateName : templateName, };
+		$.post("/wizard/template", postData, function(data) {
+			$("#template_selection a img").removeClass("active_selection");
+            $("#" + templateName).addClass("active_selection");
+		}).error(function(err){
+            alert("Could not change template.");
+		});
+            
 }
