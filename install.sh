@@ -8,6 +8,7 @@ sudo npm install
 
 MYSQL_PASSWORD=`openssl rand -base64 16`
 
+sudo mysql --defaults-file=/etc/mysql/debian.cnf -e "DROP USER 'puppetgui'@'localhost';"
 sudo mysql --defaults-file=/etc/mysql/debian.cnf -e "DROP USER 'puppetgui'@'localhost'; CREATE USER 'puppetgui'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD';GRANT ALL PRIVILEGES ON hiera.* TO 'puppetgui'@'localhost';FLUSH PRIVILEGES;"
 
 cd /opt/puppetmaster-gui/app
