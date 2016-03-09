@@ -191,7 +191,7 @@ router.post('/validate/ssh', function(req, res) {
 		sshSession = new ssh({
 		  host: serverHost,
 		  user: serverUsername,
-		  password: serverPassword,
+		  pass: serverPassword,
 		  key: serverKey,
 		  timeout: 5000
 		});
@@ -292,6 +292,7 @@ router.post('/update', function(req, res) {
     sshSession = new ssh({
       host: serverHostname,
       user: serverUsername,
+      pass: serverPassword,
       key: serverKey,
       timeout: 5000
     });
@@ -463,7 +464,7 @@ router.post('/new', function(req, res) {
 					var sshSession = new ssh({
 				  		host: serverH,
 				  		user: serverUsername,
-						password: serverPassword,
+						pass: serverPassword,
 				      	key: serverKey,
 				  		timeout: 5000
 				  	});
@@ -486,7 +487,7 @@ router.post('/new', function(req, res) {
 									var sshSession = new ssh({
 										host: serverH,
 										user: serverUsername,
-										password: serverPassword,
+										pass: serverPassword,
 										key: serverKey,
 										timeout: 5000
 									});
@@ -494,7 +495,7 @@ router.post('/new', function(req, res) {
                                         var sshSession = new ssh({
                                             host: serverH,
                                             user: serverUsername,
-                                            password: serverPassword,
+                                            pass: serverPassword,
                                             key: serverKey,
                                             timeout: 5000
                                         });						
@@ -646,7 +647,7 @@ router.post('/new', function(req, res) {
                         var sshSession = new ssh({
                             host: serverHostname,
                             user: serverUsername,
-                            password: serverPassword,
+                            pass: serverPassword,
                             key: serverKey,
                             timeout: 5000
                         });

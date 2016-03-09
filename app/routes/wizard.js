@@ -504,7 +504,7 @@ function getSSHSession(role, callback) {
         var sshSession = new ssh({
                     host: rows[0]["hostname"],
                     user: rows[0]["username"],
-                    password: rows[0]["password"],
+                    pass: rows[0]["password"],
                     key: rows[0]["content"],
                     timeout: 2000
                 });		
