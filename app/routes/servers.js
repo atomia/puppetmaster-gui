@@ -699,7 +699,7 @@ function getPuppetHostname(callback){
 
 function getKeyFromId(serverKeyId, callback) {
 		database.query("SELECT * FROM ssh_keys WHERE id = '" + serverKeyId + "'", function(err, rows, field){
-			if(typeof rows[0].content != 'undefined')
+			if(typeof rows[0] != 'undefined')
 			{
 				callback(rows[0].content);
 			}
