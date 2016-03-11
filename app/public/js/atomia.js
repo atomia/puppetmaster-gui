@@ -176,7 +176,7 @@ $(document).ready(function(){
 		$("#status_modal").modal('toggle');
 
 		var r = $("#serverRole").val();
-		if(r == "active_directory" || r == "active_directory_replica" || r == "internal_apps" || r == "public_apps" || r== "iis") {
+		if(r == "active_directory" || r == "active_directory_replica" || r == "internal_apps" || r == "public_apps" || r== "iis" || r == "mssql") {
 			testWinRM(hostname, username, password, function(status){
 				jStatus = JSON.parse(status);
 				scrollBottom();
