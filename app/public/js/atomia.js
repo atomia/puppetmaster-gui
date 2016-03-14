@@ -94,7 +94,7 @@ $(document).ready(function(){
 	{
 		for (var i=0, max=deleteServerButton.length; i < max; i++) {
 			deleteServerButton[i].addEventListener('click', function() {
-				deleteServer($(this).attr('rel'));
+				deleteServer($(this).attr('rel').replace(/^\s+|\s+$/g, ''));
 			}, false);
 		}
 	}
@@ -323,15 +323,17 @@ $(document).ready(function(){
 		});
 	}
 
-	function deleteServer(element, hostname) {
-
-		$.ajax({
-			url: '/servers/' + hostname,
-			type: 'DELETE',
-			success: function(result) {
-				location.reload();
-			}
-		});
+	function deleteServer(hostname) {
+        if(confirm("Removing a server will only remove it's configuration from the installation appliation. It will not delete any actual configuration on the server"))
+        {
+            $.ajax({
+                url: '/servers/' + hostname,
+                type: 'DELETE',
+                success: function(result) {
+                    location.reload();
+                }
+            });
+        }
 
 	}
 
