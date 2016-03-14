@@ -15,7 +15,7 @@ form.form-horizontal
 				div.col-lg-8
 					input#serverHostname.form-control(type="text", value="#{serverHostname}", name="serverHostname", readonly="readonly")
 					button.btn.btn-xs.btn-info#updateServerHostnameButton(onClick="return(false);") Update hostname
-					span.help-block Hostname or ip address to the server
+					span.help-block Hostname or ip address to the server. For nameservers or other roles where you have more than one instance enter all hostnames separated by comma.
 					
 		div.row
 			div.form-group
@@ -43,7 +43,7 @@ form.form-horizontal
 				label.col-lg-2.control-label(for='serverHostname') Server hostname
 				div.col-lg-8
 					input#serverHostname.form-control(type="text", placeholder="myserver.com", name="serverHostname")
-					span.help-block Hostname or ip address to the server
+					span.help-block Hostname or ip address to the server. For nameservers or other roles where you have more than one instance enter all hostnames separated by comma.
 			div.row
 				div.form-group
 					label.col-lg-2.control-label(for='serverUsername') Username
