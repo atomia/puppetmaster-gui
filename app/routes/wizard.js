@@ -332,7 +332,7 @@ function getConfiguration (namespace, callback) {
 
             var data = {};
             data.required = "notrequired";
-            if(typeof(inputData[1]) == 'undefined' || inputData[1] == "")
+            if(typeof(inputData[1]) == 'undefined')
             {
               inputData[1] = "";
               data.required = "required";

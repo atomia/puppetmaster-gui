@@ -339,7 +339,7 @@ router.post('/new', function(req, res) {
 	{
 		serverHostname = arrHostnames[i];
 		// If we are on Windows
-		if(serverRole == 'active_directory' || serverRole == 'active_directory_replica' || serverRole == 'internal_apps' || serverRole == 'public_apps' || serverRole == 'iis' || serverRole = 'mssql') {
+		if(serverRole == 'active_directory' || serverRole == 'active_directory_replica' || serverRole == 'internal_apps' || serverRole == 'public_apps' || serverRole == 'iis' || serverRole == 'mssql') {
 
 			// Look for PuppetMaster hostname
 			database.query("select * from roles  JOIN servers ON servers.id=roles.fk_server WHERE roles.name='puppet'", function(err, rows, field) {

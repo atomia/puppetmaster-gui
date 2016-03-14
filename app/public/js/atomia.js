@@ -368,20 +368,29 @@ $(document).ready(function(){
 	var data = [];
 
 	if($('input[type="text"].invalid').size() > 0) {
-	alert("One or more variables does not pass validation, please adjust the marked fields");
-	return false;
+        alert("One or more variables does not pass validation, please adjust the marked fields");
+        return false;
 	}
-	$('input[type="text"].required').each(function() {
-	if(typeof (this) != 'undefined')
-	{
-	  if(this.value == "")
-	  {
-	    alert("Please fill in all required configuration variables");
-	    $(this).focus();
-	    return false;
-	  }
-	}
+    var hasError = false;
+    var firstError = null;
+	$('#basic_options').find('input[type="text"].required').each(function() {
+        if(typeof (this) != 'undefined')
+        {
+            if(this.value == "")
+            {
+                $(this).addClass('validation_error');
+                if(!hasError)
+                    firstError = this;
+                hasError = true;
+            }
+        }
 	});
+    
+    if(hasError) {
+        alert("Please fill in all required configuration variables");
+        $(firstError).focus();
+        return false;
+    }
 
 	moduleName = $("#moduleName").val();
 	// Config is OK let's save it

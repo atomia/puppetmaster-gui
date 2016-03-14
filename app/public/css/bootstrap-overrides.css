@@ -141,3 +141,7 @@ body {
 .install_item {
     padding: 10px;
 }
+
+.validation_error {
+    border: 3px solid #C90062 !important;
+}
