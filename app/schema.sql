@@ -130,6 +130,7 @@ INSERT INTO app_config VALUES(null,'installation_steps_openstack','[
 	{"name": "Install Puppet Master","route" : "/wizard/puppet"},
 	{"name": "Add SSH keys","route" : "/keys"},
 	{"name": "Initial configuration","route" : "/wizard/basic"},
+	{"name": "Setup internal DNS","route" : "/wizard/internaldns"},
 	{"name": "Setup monitoring","route" : "/wizard/nagios_server"},
 	{"name": "Install Atomia database","route" : "/wizard/atomia_database"},
 	{"name": "Setup Active Directory","route" : "/wizard/active_directory"},
