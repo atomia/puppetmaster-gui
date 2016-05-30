@@ -370,8 +370,20 @@ $(document).ready(function(){
 	var data = [];
 
 	if($('input[type="text"].invalid').size() > 0) {
-        alert("One or more variables does not pass validation, please adjust the marked fields");
-        return false;
+    // Validation is not working properly, disable temporarlily
+    //alert("One or more variables does not pass validation, please adjust the marked fields");
+    //return false;
+	}
+	$('input[type="text"].required').each(function() {
+	if(typeof (this) != 'undefined')
+	{
+	  if(this.value == "")
+	  {
+          console.log(this);  
+	    alert("Please fill in all required configuration variables");
+	    $(this).focus();
+	    return false;
+	  }
 	}
     var hasError = false;
     var firstError = null;
@@ -478,7 +490,16 @@ $(document).ready(function(){
         else if($("#" + field + "_validation").val() == "%ip")
         {
             field_val = new RegExp('^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$','g');
-        }        
+        }
+        else if($("#" + field + "_validation").val() == "%apache_cluster_nodes"){
+            field_val = new RegExp('^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$',"g");       
+        }
+        else if($("#" + field + "_validation").val() == "%iis_cluster_nodes"){
+            field_val = new RegExp('^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$',"g");       
+        }
+        else if($("#" + field + "_validation").val() == "%ftp_cluster_nodes"){
+            field_val = new RegExp('^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$',"g");       
+        }                                   
 		else {
 			field_val = new RegExp($("#" + field + "_validation").val().replace(/(\r\n|\n|\r)/gm,"").trim(),"g");
 		}
