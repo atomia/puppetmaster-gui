@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "test": "jshint app.js */*.js"
   },
   "dependencies": {
     "body-parser": "^1.13.3",
@@ -23,5 +24,8 @@
     "yamljs": "^0.2.4",
     "q": "~1.4.1",
     "ansi-to-html": "~0.4.1"
+  },
+  "devDependencies": {
+    "jshint": "~2.9.2"
   }
 }

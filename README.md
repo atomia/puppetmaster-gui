@@ -1,5 +1,7 @@
 # Puppetmaster GUI for deploying Atomia
 
+[![Build Status](https://travis-ci.org/atomia/puppetmaster-gui.svg?branch=master)](https://travis-ci.org/atomia/puppetmaster-gui)
+
 Handles the complete setup of an Atomia environmnet by utilizing Puppet
 
 ## Installation instructions
