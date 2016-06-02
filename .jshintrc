@@ -1,0 +1,3 @@
+{
+    "loopfunc"      : true  // Allow functions to be defined within loops.
+}
