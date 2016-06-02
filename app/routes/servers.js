@@ -402,15 +402,15 @@ router.post('/new', function (req, res) {
 								if (serverKeyId !== null && serverKeyId !== '' && typeof serverKeyId != 'undefined') {
 										getKeyFromId(serverKeyId, function (key) {
 												serverKey = key;
-												gotKey(serverHost);
+												gotKey(serverHost,serverUsername, serverPassword, serverKey, serverRole);
 										});
 								} else {
-										gotKey(serverHost);
+										gotKey(serverHost,serverUsername, serverPassword, serverKey, serverRole);
 								}
 						}(serverHostname));
 				}
 		}
-		function gotKey(serverH) {
+		function gotKey(serverH, serverUsername, serverPassword, serverKey, serverRole) {
 				getPuppetHostname(function (puppet) {
 						var sshSession = new ssh({
 								host: serverH,
@@ -558,16 +558,16 @@ function doPuppetRunOnRole(role, callback) {
 						if (serverKeyId !== null && serverKeyId !== '' && typeof serverKeyId != 'undefined') {
 								getKeyFromId(serverKeyId, function (key) {
 										serverKey = key;
-										gotKeyPuppetRole();
+										gotKeyPuppetRole(serverHostname, serverUsername, serverPassword, serverKey, role);
 								});
 						} else {
-								gotKeyPuppetRole();
+								gotKeyPuppetRole(serverHostname, serverUsername, serverPassword, serverKey, role);
 						}
 				}
 				callback();
 		});
 }
-function gotKeyPuppetRole() {
+function gotKeyPuppetRole(serverHostname, serverUsername, serverPassword, serverKey, role) {
 		var sshSession = new ssh({
 				host: serverHostname,
 				user: serverUsername,
