@@ -16,6 +16,8 @@ $(document).ready(function () {
 	var updateServerHostnameButton = document.getElementById('updateServerHostnameButton');
     var newKeyButton = document.getElementById('newKeyButton');
 	var removeKeyButton = document.getElementsByClassName('removeKeyButton');
+	var winrmCommandButton = document.getElementById('winrmCommandButton');
+
 	$('.password').each(function (index) {
 		if ($(this).val() === '') {
 			generatePasswordForm($(this).attr('id'));
@@ -86,12 +88,17 @@ $(document).ready(function () {
 			addNewKey();
 		}, false);
 	}
-	if(removeKeyButton) {
+	if (removeKeyButton) {
 		for (var k = 0, maxK = removeKeyButton.length; k < maxK; k++) {
 			removeKeyButton[k].addEventListener('click', function () {
 				removeKey($(this).attr('rel').replace(/^\s+|\s+$/g, ''));
 			}, false);
 		}
+	}
+	if (winrmCommandButton) {
+		winrmCommandButton.addEventListener('click', function () {
+			copyToClipboard('winrmCommand');
+		}, false);
 	}
 });
 function replaceVars() {
@@ -332,7 +339,7 @@ function installPuppetMaster() {
 function validateConfigForm(forwardOnComplete) {
 	var data = [];
 	if ($(".invalid")[0]) {
-		if(!confirm('One or more of the entered values does not pass validation. Are you sure you want to proceed?')){
+		if (!confirm('One or more of the entered values does not pass validation. Are you sure you want to proceed?')) {
 			return;
 		}
 	}
@@ -561,9 +568,9 @@ function selectTemplate(templateName) {
 function addNewKey() {
 	var postData = { keyTitle: $('#keyTitle').val(), keyContent: $('#keyContent').val() };
     var validationRegex = /^-----BEGIN((.|\n)*)-----END.*$/;
-    var result = postData.keyContent.match(validationRegex);	
-	if(result === null) {
-		if(!confirm('The private key you entered does not seem to be valid. Are you sure it is a valid key?')){
+    var result = postData.keyContent.match(validationRegex);
+	if (result === null) {
+		if (!confirm('The private key you entered does not seem to be valid. Are you sure it is a valid key?')) {
 			return;
 		}
 	}
@@ -571,7 +578,7 @@ function addNewKey() {
 		window.location.replace('/keys');
 	}).error(function (err) {
 		alert('Could not save the private key');
-	});	
+	});
 }
 
 function removeKey(keyId) {
@@ -584,4 +591,55 @@ function removeKey(keyId) {
 			}
 		});
 	}
+}
+
+function copyToClipboard(elementId) {
+	var elem = document.getElementById(elementId);
+	// create hidden text element, if it doesn't already exist
+    var targetId = "_hiddenCopyText_";
+    var isInput = elem.tagName === "INPUT" || elem.tagName === "TEXTAREA";
+    var origSelectionStart, origSelectionEnd;
+    if (isInput) {
+        // can just use the original source element for the selection and copy
+        target = elem;
+        origSelectionStart = elem.selectionStart;
+        origSelectionEnd = elem.selectionEnd;
+    } else {
+        // must use a temporary form element for the selection and copy
+        target = document.getElementById(targetId);
+        if (!target) {
+            var target = document.createElement("textarea");
+            target.style.position = "absolute";
+            target.style.left = "-9999px";
+            target.style.top = "0";
+            target.id = targetId;
+            document.body.appendChild(target);
+        }
+        target.textContent = elem.textContent;
+    }
+    // select the content
+    var currentFocus = document.activeElement;
+    target.focus();
+    target.setSelectionRange(0, target.value.length);
+
+    // copy the selection
+    var succeed;
+    try {
+		succeed = document.execCommand("copy");
+    } catch (e) {
+        succeed = false;
+    }
+    // restore original focus
+    if (currentFocus && typeof currentFocus.focus === "function") {
+        currentFocus.focus();
+    }
+
+    if (isInput) {
+        // restore prior selection
+        elem.setSelectionRange(origSelectionStart, origSelectionEnd);
+    } else {
+        // clear temporary content
+        target.textContent = "";
+    }
+    return succeed;
 }
