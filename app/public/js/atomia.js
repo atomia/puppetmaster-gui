@@ -331,7 +331,10 @@ function installPuppetMaster() {
 }
 function validateConfigForm(forwardOnComplete) {
 	var data = [];
-	if ($('input[type="text"].invalid').size() > 0) {
+	if ($(".invalid")[0]) {
+		if(!confirm('One or more of the entered values does not pass validation. Are you sure you want to proceed?')){
+			return;
+		}
 	}
 	var hasError = false;
 	var firstError = null;
