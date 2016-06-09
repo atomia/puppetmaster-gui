@@ -176,18 +176,21 @@ router.post('/validate/ssh', function (req, res) {
 			sshSession.end();
 			returnError(res, '\nServer validation failed: Could not connect to the server ' + serverHost + ' via SSH!');
 		});
-		sshSession.exec('echo \'\nThis is a test command from Atomia!\n\'', {
-			out: function (stdout) {
-				io.emit('server', { consoleData: stdout });
-			},
-			exit: function (code) {
-				io.emit('server', { consoleData: '\nCommand completed with status code: ' + code });
-				if (code === 0)
-					finishedLoginCheck();
-				else
-					returnError(res, 'Server validation failed: Could not execute remot SSH command');
-			}
-		}).start();
+		shouldUseSudo(sshSession,function(sudo){
+			sshSession.exec(sudo + 'echo \'\nThis is a test command from Atomia!\n\'', {
+				out: function (stdout) {
+					io.emit('server', { consoleData: stdout });
+				},
+				exit: function (code) {
+					io.emit('server', { consoleData: '\nCommand completed with status code: ' + code });
+					if (code === 0)
+						finishedLoginCheck();
+					else
+						returnError(res, 'Server validation failed: Could not execute remot SSH command');
+				}
+			}).start();
+		});
+
 	}
 	function finishedLoginCheck() {
 		if (checked == arrHostnames.length)
@@ -269,14 +272,16 @@ router.post('/update', function (req, res) {
 			sshSession.end();
 			io.emit('server', { consoleData: 'Error communicating with the server: ' + err });
 		});
-		sshSession.exec('sudo puppet agent --test --waitforcert 1', {
-			out: function (stdout) {
-				io.emit('server', { consoleData: stdout });
-			},
-			exit: function (code) {
-				io.emit('server', { consoleData: code });
-			}
-		}).start();
+		shouldUseSudo(sshSession,function(sudo){
+			sshSession.exec(sudo + 'puppet agent --test --waitforcert 1', {
+				out: function (stdout) {
+					io.emit('server', { consoleData: stdout });
+				},
+				exit: function (code) {
+					io.emit('server', { consoleData: code });
+				}
+			}).start();
+		});
 	}
 	res.status(200);
 	res.send(JSON.stringify({ ok: 'ok' }));
@@ -491,32 +496,36 @@ router.post('/new', function (req, res) {
 });
 /* Setup puppet on a server with given ssh session */
 function setupPuppet(ssh, puppet, res, callback) {
-	ssh.exec('wget --no-check-certificate https://raw.github.com/atomia/puppet-atomia/master/files/bootstrap_linux.sh && chmod +x bootstrap_linux.sh && sudo ./bootstrap_linux.sh ' + puppet + '', {
-		out: function (stdout) {
-			io.emit('server', { consoleData: stdout });
-		},
-		err: function (stderr) {
-			io.emit('server', { consoleData: stderr });
-		},
-		exit: function (code) {
-			io.emit('server', { consoleData: 'Command exited with status: ' + code + '\n' });
-			callback(code);
-		}
-	}).start();
+	shouldUseSudo(ssh,function(sudo) {
+		ssh.exec('wget --no-check-certificate https://raw.github.com/atomia/puppet-atomia/master/files/bootstrap_linux.sh && chmod +x bootstrap_linux.sh && ' + sudo + './bootstrap_linux.sh ' + puppet + '', {
+			out: function (stdout) {
+				io.emit('server', { consoleData: stdout });
+			},
+			err: function (stderr) {
+				io.emit('server', { consoleData: stderr });
+			},
+			exit: function (code) {
+				io.emit('server', { consoleData: 'Command exited with status: ' + code + '\n' });
+				callback(code);
+			}
+		}).start();
+	});
 }
 function ensurePuppetRunning(ssh, callback) {
-	ssh.exec('if [[ $(sudo service puppet status | /bin/grep not | /bin/grep -vc grep)  > 0 ]] ; then sudo service puppet start; else echo Puppet is running; fi', {
-		out: function (stdout) {
-			io.emit('server', { consoleData: stdout });
-		},
-		err: function (stderr) {
-			io.emit('server', { consoleData: stderr });
-		},
-		exit: function (code) {
-			io.emit('server', { consoleData: 'Command exited with status: ' + code + '\n' });
-			callback(code);
-		}
-	}).start();
+	shouldUseSudo(ssh,function(sudo) {
+		ssh.exec('if [[ $(' + sudo + 'service puppet status | /bin/grep not | /bin/grep -vc grep)  > 0 ]] ; then ' + sudo + 'service puppet start; else echo Puppet is running; fi', {
+			out: function (stdout) {
+				io.emit('server', { consoleData: stdout });
+			},
+			err: function (stderr) {
+				io.emit('server', { consoleData: stderr });
+			},
+			exit: function (code) {
+				io.emit('server', { consoleData: 'Command exited with status: ' + code + '\n' });
+				callback(code);
+			}
+		}).start();
+	});
 }
 function addServerToDatabase(serverHostname, serverUsername, serverPassword, serverKeyId, serverRole, callback) {
 	database.query('INSERT INTO servers VALUES(null,\'' + serverHostname + '\',\'' + serverUsername + '\',\'' + serverPassword + '\',\'' + serverKeyId + '\') ON DUPLICATE KEY UPDATE hostname=\'' + serverHostname + '\', username=\'' + serverUsername + '\', password=\'' + serverPassword + '\', fk_ssh_key=\'' + serverKeyId + '\' ', function (err, rows, field) {
@@ -533,18 +542,20 @@ function addServerToDatabase(serverHostname, serverUsername, serverPassword, ser
 	});
 }
 function doPuppetRun(ssh, callback) {
-	ssh.exec('sudo puppet agent --test --waitforcert 1', {
-		out: function (stdout) {
-			io.emit('server', { consoleData: convert.toHtml(stdout) });
-		},
-		err: function (stderr) {
-			io.emit('server', { consoleData: convert.toHtml(stderr) });
-		},
-		exit: function (code) {
-			io.emit('server', { consoleData: 'Command exited with status: ' + code + '\n' });
-			callback(code);
-		}
-	}).start();
+	shouldUseSudo(ssh,function(sudo) {
+		ssh.exec(sudo + 'puppet agent --test --waitforcert 1', {
+			out: function (stdout) {
+				io.emit('server', { consoleData: convert.toHtml(stdout) });
+			},
+			err: function (stderr) {
+				io.emit('server', { consoleData: convert.toHtml(stderr) });
+			},
+			exit: function (code) {
+				io.emit('server', { consoleData: 'Command exited with status: ' + code + '\n' });
+				callback(code);
+			}
+		}).start();
+	});
 }
 function doPuppetRunOnRole(role, callback) {
 	database.query('SELECT * FROM servers JOIN roles on servers.id = fk_server WHERE roles.name = \'' + role + '\'', function (err, rows, field) {
@@ -628,4 +639,19 @@ function ValidateIPaddress(ipaddress) {
 	}
 	return false;
 }
+function shouldUseSudo(sshSession, callback) {
+	newSession = new ssh({
+		host: sshSession.host,
+		user: sshSession.user,
+		pass: sshSession.pass,
+		key: sshSession.key,
+		timeout: 5000
+	});
+	newSession.exec('if [ "$EUID" -ne "0" ]; then exit 1; fi', {
+		exit: function (code) {
+			callback((code == 1 ? "sudo " : ""));
+		}
+	}).start();
+}
+
 module.exports = router;
