@@ -19,7 +19,7 @@ block content
 							td
 								textarea(style="width:100%;")= row.content
 							td
-								button.btn.btn-danger.btn-xs Remove
+								button.btn.btn-danger.btn-xs.removeKeyButton(rel=row.id,type="submit", onClick="return false;") Remove
 
 		a(href='/wizard/next_step')
 			button.btn.btn-default() Continue to the next step

@@ -21,7 +21,16 @@ router.post('/new', function (req, res) {
     database.query('INSERT INTO ssh_keys VALUES(null,\'' + keyTitle + '\',\'' + keyContent + '\')', function (err, rows, field) {
         if (err)
             res.send(JSON.stringify({ error: err }));
-        res.send(JSON.stringify({ ok: "ok" }));
+        res.send(JSON.stringify({ status: "ok" }));
+    });
+});
+router.delete('/:id', function (req, res, next) {
+    var keyId = req.params.id;
+    database.query('DELETE ssh_keys FROM ssh_keys WHERE id =' + keyId, function (err, rows, field) {
+        if (err) {
+            res.send(JSON.stringify({ error: 'could not delete from database' }));
+        }
+        res.send(JSON.stringify({ status: 'ok' }));
     });
 });
 module.exports = router;

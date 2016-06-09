@@ -15,6 +15,7 @@ $(document).ready(function () {
 	var deleteServerButton = document.getElementsByClassName('deleteServerButton');
 	var updateServerHostnameButton = document.getElementById('updateServerHostnameButton');
     var newKeyButton = document.getElementById('newKeyButton');
+	var removeKeyButton = document.getElementsByClassName('removeKeyButton');
 	$('.password').each(function (index) {
 		if ($(this).val() === '') {
 			generatePasswordForm($(this).attr('id'));
@@ -84,6 +85,13 @@ $(document).ready(function () {
 		newKeyButton.addEventListener('click', function () {
 			addNewKey();
 		}, false);
+	}
+	if(removeKeyButton) {
+		for (var k = 0, maxK = removeKeyButton.length; k < maxK; k++) {
+			removeKeyButton[k].addEventListener('click', function () {
+				removeKey($(this).attr('rel').replace(/^\s+|\s+$/g, ''));
+			}, false);
+		}
 	}
 });
 function replaceVars() {
@@ -561,4 +569,16 @@ function addNewKey() {
 	}).error(function (err) {
 		alert('Could not save the private key');
 	});	
+}
+
+function removeKey(keyId) {
+	if (confirm('Are you sure you want to remove the key?')) {
+		$.ajax({
+			url: '/keys/' + keyId,
+			type: 'DELETE',
+			success: function (result) {
+				location.reload();
+			}
+		});
+	}
 }
