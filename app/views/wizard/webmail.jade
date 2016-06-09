@@ -7,7 +7,7 @@ block content
 			if allRolesSimple[myRole]  && reportStatus == "successful"
 				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
 		if reportStatus != ""
-			p 
+			p
 				a(href="/servers/status/events/#{latestReport.hash}")
 					| Latest provisioning run: #{reportStatus}
 		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
@@ -20,7 +20,7 @@ block content
 				h3.panel-title Webmail?
 			.panel-body
 				| Webmail...
-					
+
 
 		.panel.panel-primary
 			.panel-heading
@@ -29,7 +29,7 @@ block content
 				| You need
 				ul
 					li One Ubuntu 14.04 servers
-																					
+
 		span Firewall table (incoming traffic):
 		table.table.table-striped
 			thead
@@ -41,8 +41,8 @@ block content
 			tbody
 				include firewall/global.jade
 				include firewall/webmail.jade
-				
-		if ( allRolesSimple[myRole] != "installed" )		
+
+		if ( allRolesSimple[myRole] != "installed" )
 			include ../servers/add_server.jade
 			-displayConfigure = "none"
 			include ../servers/configure_server.jade
@@ -51,6 +51,6 @@ block content
 			-displayConfigure = "block"
 			include ../servers/configure_server.jade
 			include ../servers/add_server.jade
-		
-		
+
+
 		input(type="hidden", id="serverRole", value="#{myRole}")

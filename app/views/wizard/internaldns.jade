@@ -6,25 +6,25 @@ block content
 		h1.page-header Internal DNS server
 			if allRolesSimple[myRole]  && reportStatus == "successful"
 				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
-				
+
 		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
 			include installation_complete.jade
 		else if currentStep.route == path
-			include skip_step.jade								
+			include skip_step.jade
 		if reportStatus
 			include latest_puppet_run.jade
-		
+
 		.panel.panel-primary
 			.panel-heading
 				h3.panel-title Information
-			.panel-body		
-				p The internal dns server is used to hold dns records used within the Atomia environment. 
+			.panel-body
+				p The internal dns server is used to hold dns records used within the Atomia environment.
 
 		include firewall/header.jade
 			include firewall/global.jade
 			include firewall/internaldns.jade
-						
-		p  <i>*Atomia = All servers in the environment</i>	
+
+		p  <i>*Atomia = All servers in the environment</i>
 
 		if !allRolesSimple[myRole]
 			include ../servers/add_server.jade
@@ -35,6 +35,6 @@ block content
 			-displayConfigure = "block"
 			include ../servers/configure_server.jade
 			include ../servers/add_server.jade
-		
-		
+
+
 		input(type="hidden", id="serverRole", value="#{myRole}")

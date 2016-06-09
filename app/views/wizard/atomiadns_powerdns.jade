@@ -6,11 +6,11 @@ block content
 		h1.page-header PowerDNS nameservers
 			if allRolesSimple[myRole]  && reportStatus == "successful"
 				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
-				
+
 		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
 			include installation_complete.jade
 		else if currentStep.route == path
-			include skip_step.jade								
+			include skip_step.jade
 		if reportStatus
 			include latest_puppet_run.jade
 
@@ -23,19 +23,19 @@ block content
 				| DNS answers can also be fully scripted using a variety of (scripting) languages such as Lua, Java, Perl, Python, Ruby, C and C++. Such scripting can be used for dynamic redirection, (spam) filtering or real time intervention.
 				| <br><br>
 				| In addition, the PowerDNS Authoritative Server is the leading DNSSEC implementation, hosting the majority of all DNSSEC domains worldwide. The Authoritative Server hosts at least 30% of all domain names in Europe, and around 90% of all DNSSEC domains in Europe.
-					
-		
+
+
 		include firewall/header.jade
 			include firewall/global.jade
 			include firewall/atomiadns_powerdns.jade
-			
+
 
 		if ( allRolesSimple[myRole] != "installed" )
 			.panel.panel-primary
 						.panel-heading
 							h3.panel-title More than 1 nameserver?
 						.panel-body
-							| You can deploy how many nameservers you want, we recommend at least 2. In order to deploy more than 1 nameserver simply specify all the servers hostnames separated by comma in the "server hostname" box below. 			
+							| You can deploy how many nameservers you want, we recommend at least 2. In order to deploy more than 1 nameserver simply specify all the servers hostnames separated by comma in the "server hostname" box below.
 			include ../servers/add_server.jade
 			-displayConfigure = "none"
 			include ../servers/configure_server.jade
@@ -44,7 +44,7 @@ block content
 			-displayConfigure = "block"
 			include ../servers/configure_server.jade
 			include ../servers/add_server.jade
-		
-		
+
+
 		input(type="hidden", id="serverRole", value="#{myRole}")
-		
+
