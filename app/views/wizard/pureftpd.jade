@@ -6,24 +6,24 @@ block content
 		h1.page-header FTP cluster master
 			if allRolesSimple[myRole]  && reportStatus == "successful"
 				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
-				
+
 		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
 			include installation_complete.jade
 		else if currentStep.route == path
-			include skip_step.jade										
+			include skip_step.jade
 		if reportStatus
 			include latest_puppet_run.jade
-		
+
 		.panel.panel-primary
 			.panel-heading
 				h3.panel-title Information
-			.panel-body		
+			.panel-body
 				p The FTP cluster is deployed in two steps. First we deploy the master node and afterwards we add the slave nodes that we need.
 
 		include firewall/header.jade
 			include firewall/global.jade
 			include firewall/pureftpd.jade
-						
+
 
 		if !allRolesSimple[myRole]
 			include ../servers/add_server.jade
@@ -34,7 +34,7 @@ block content
 			-displayConfigure = "block"
 			include ../servers/configure_server.jade
 			include ../servers/add_server.jade
-		
-		
+
+
 		input(type="hidden", id="serverRole", value="#{myRole}")
 

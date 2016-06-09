@@ -6,11 +6,11 @@ block content
 		h1.page-header Cron agent
 			if allRolesSimple[myRole]  && reportStatus == "successful"
 				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
-				
+
 		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
 			include installation_complete.jade
 		else if currentStep.route == path
-			include skip_step.jade								
+			include skip_step.jade
 		if reportStatus
 			include latest_puppet_run.jade
 
@@ -18,13 +18,13 @@ block content
 			.panel-heading
 				h3.panel-title Information
 			.panel-body
-				p Cron is used to schedule periodic tasks. 
+				p Cron is used to schedule periodic tasks.
 
-		
+
 		include firewall/header.jade
 			include firewall/global.jade
 			include firewall/cronagent.jade
-			
+
 
 		if ( allRolesSimple[myRole] != "installed" )
 			include ../servers/add_server.jade
@@ -35,8 +35,8 @@ block content
 			-displayConfigure = "block"
 			include ../servers/configure_server.jade
 			include ../servers/add_server.jade
-		
-		
+
+
 		input(type="hidden", id="serverRole", value="#{myRole}")
-		
-	
+
+

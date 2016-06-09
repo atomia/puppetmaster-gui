@@ -6,11 +6,11 @@ block content
 		h1.page-header Daggre
 			if allRolesSimple[myRole]  && reportStatus == "successful"
 				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
-				
+
 		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
 			include installation_complete.jade
 		else if currentStep.route == path
-			include skip_step.jade								
+			include skip_step.jade
 		if reportStatus
 			include latest_puppet_run.jade
 
@@ -20,11 +20,11 @@ block content
 			.panel-body
 				p  Daggre is used to analyze statistical data and transform it into aggregateable data such as traffic and storage usage over time.
 
-		
+
 		include firewall/header.jade
 			include firewall/global.jade
 			include firewall/daggre.jade
-			
+
 
 		if ( allRolesSimple[myRole] != "installed" )
 			include ../servers/add_server.jade
@@ -35,6 +35,6 @@ block content
 			-displayConfigure = "block"
 			include ../servers/configure_server.jade
 			include ../servers/add_server.jade
-		
-		
+
+
 		input(type="hidden", id="serverRole", value="#{myRole}")

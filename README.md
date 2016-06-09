@@ -2,11 +2,11 @@
 
 [![Build Status](https://travis-ci.org/atomia/puppetmaster-gui.svg?branch=master)](https://travis-ci.org/atomia/puppetmaster-gui)
 
-Handles the complete setup of an Atomia environmnet by utilizing Puppet
+Handles the complete setup of an Atomia environment by utilizing Puppet.
 
 ## Installation instructions
 
-Detailed instructions at https://github.com/atomia/puppetmaster-gui/wiki/Installing-a-production-environment
+Detailed instructions can be found on [our wiki](https://github.com/atomia/puppetmaster-gui/wiki/Installing-a-production-environment).
 
 ## Problems?
 

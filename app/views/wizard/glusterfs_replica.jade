@@ -9,7 +9,7 @@ block content
 		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
 			include installation_complete.jade
 		else if currentStep.route == path
-			include skip_step.jade								
+			include skip_step.jade
 		if reportStatus
 			include latest_puppet_run.jade
 
@@ -18,15 +18,15 @@ block content
 				h3.panel-title What is GlusterFS?
 			.panel-body
 				| GlusterFS is a scalable network filesystem. Using common off-the-shelf hardware, you can create large, distributed storage solutions for media streaming, data analysis, and other data- and bandwidth-intensive tasks. GlusterFS is free and open source software.
-					
-				
+
+
 		.panel.panel-primary
 			.panel-heading
 				h3.panel-title Not using GlusterFS?
 			.panel-body
 				| By default Atomia is set up with GlusterFS, however it works fine with just about any other storage system as long as the following requirements are fulfilled:
 				ul
-					li Can connect to Active Directory 
+					li Can connect to Active Directory
 					li Perform idmappings (rfc2307)
 					li Can export nfs and cifs (if hosting IIS websites)
 				| To proceed with your already existing storage system <a href="#">click here</a>, otherwise read on :).
@@ -40,16 +40,16 @@ block content
 				ul
 					li 2 or more base installed Ubuntu 14.04 servers
 					li A physical volume available on each server (path configurable but should be the same on all servers)
-					li (otpional) 2 network cards (make sure dns points to the network to use for storage traffic or enter the ip address on the storage net below)
-					
-															
+					li (optional) 2 network cards (make sure DNS points to the network to use for storage traffic or enter the IP address on the storage net below)
 
-		
-				
+
+
+
+
 		include firewall/header.jade
 			include firewall/global.jade
 			include firewall/glusterfs.jade
-				
+
 		p
 			=reportStatus
 		if ( allRolesSimple[myRole] != "installed" )
@@ -58,7 +58,7 @@ block content
 					h3.panel-title Important!
 				.panel-body
 					| The server hostname should be the hostname for all the replica nodes in the cluster separated by comma. You also need to update the "Peers field" and make sure it contains all the gluster nodes including the master.
-		
+
 			include ../servers/add_server.jade
 			-displayConfigure = "none"
 			include ../servers/configure_server.jade
@@ -67,7 +67,7 @@ block content
 			-displayConfigure = "block"
 			include ../servers/configure_server.jade
 			include ../servers/add_server.jade
-		
-		
+
+
 		input(type="hidden", id="serverRole", value="#{myRole}")
 

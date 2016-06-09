@@ -4,28 +4,28 @@ block content
 		-myRole = 'active_directory_replica'
 		include status_modal.jade
 		h1.page-header Active Directory Replica
-			if allRolesSimple[myRole]  
+			if allRolesSimple[myRole]
 				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
-				
+
 		if currentStep.route == path && allRolesSimple[myRole]
 			include installation_complete.jade
 		else if currentStep.route == path
 			include skip_step.jade
-								
+
 		if reportStatus
 			include latest_puppet_run.jade
 
 		include winrm_warning.jade
-		
+
 		include firewall/header.jade
 			include firewall/global.jade
 			include firewall/active_directory.jade
-			
+
 		.panel.panel-primary
 			.panel-heading
 				h3.panel-title Information
 			.panel-body
-				| Due to the complexity of automating the setup process of Active Directory please run the provisioning step until it shows as passed sucessfully.
+				| Due to the complexity of automating the setup process of Active Directory please run the provisioning step until it shows as passed successfully.
 				| Please note that during the provisioning the server will reboot.
 
 		if ( allRolesSimple[myRole] != "installed" )
@@ -37,7 +37,7 @@ block content
 			-displayConfigure = "block"
 			include ../servers/configure_server.jade
 			include ../servers/add_server.jade
-		
-		
+
+
 		input(type="hidden", id="serverRole", value="#{myRole}")
 

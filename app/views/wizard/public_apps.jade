@@ -6,20 +6,20 @@ block content
 		h1.page-header Install Atomia Public applications
 			if allRolesSimple[myRole]  && reportStatus == "successful"
 				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
-				
-		if currentStep.route == path && allRolesSimple[myRole]  
+
+		if currentStep.route == path && allRolesSimple[myRole]
 			include installation_complete.jade
 		else if currentStep.route == path
-			include skip_step.jade								
-		if reportStatus 
+			include skip_step.jade
+		if reportStatus
 			include latest_puppet_run.jade
-				
+
 		include winrm_warning.jade
-		
+
 		include firewall/header.jade
 			include firewall/global.jade
 			include firewall/public_apps.jade
-								
+
 		.panel.panel-primary
 			.panel-heading
 				h3.panel-title Information
@@ -30,7 +30,7 @@ block content
 					li Atomia Billing Customer Panel
 					li Atomia Identity
 					li Atomia Store
-					
+
 		if ( allRolesSimple[myRole] != "installed" )
 			include ../servers/add_server.jade
 			-displayConfigure = "none"
@@ -40,8 +40,8 @@ block content
 			-displayConfigure = "block"
 			include ../servers/configure_server.jade
 			include ../servers/add_server.jade
-		
-		
+
+
 		input(type="hidden", id="serverRole", value="#{myRole}")
 
 

@@ -6,26 +6,26 @@ block content
 		h1.page-header Monitoring server
 			if allRolesSimple[myRole]
 				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
-	
+
 		if currentStep.route == path && allRolesSimple[myRole] && reportStatus == "successful"
 			include installation_complete.jade
 		else if currentStep.route == path
 			include skip_step.jade
-		if reportStatus 
+		if reportStatus
 			include latest_puppet_run.jade
 
 		.panel.panel-primary
 			.panel-heading
 				h3.panel-title Information
-			.panel-body					
+			.panel-body
 				| Monitoring is an important part of any environment in order to ensure that all services are functioning properly. We deploy a Nagios server which will manage the monitoring for us. Every server created during the installation process will automatically be connected to the monitoring server and have relevant checks added.
-		
+
 		include firewall/header.jade
 			include firewall/global.jade
-			include firewall/nagios_server.jade		
+			include firewall/nagios_server.jade
 
-		p  <i>*Admin = Limit access to administrators IP-addresses if needed according to your policy, otherwise open to the world</i>	
-			
+		p  <i>*Admin = Limit access to administrators IP-addresses if needed according to your policy, otherwise open to the world</i>
+
 		if ( allRolesSimple[myRole] != "installed" )
 			include ../servers/add_server.jade
 			-displayConfigure = "none"
@@ -35,6 +35,6 @@ block content
 			-displayConfigure = "block"
 			include ../servers/configure_server.jade
 			include ../servers/add_server.jade
-		
-		
+
+
 		input(type="hidden", id="serverRole", value="#{myRole}")
