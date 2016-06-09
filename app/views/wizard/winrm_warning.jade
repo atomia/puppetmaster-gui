@@ -3,10 +3,9 @@
 		h3.panel-title Pre requirements
 	.panel-body
 		p Requires a base installed Windows 2012 R2 server with winrm running for remote management to be available. Besides running the command below make sure that the Windows Remote Firewall rule allows connection from the puppet server, if they are on the same subnet it should be allowed by default.
-		pre
-			| winrm quickconfig
-			| winrm set winrm/config/client/auth @{Basic="true"}
-			| winrm set winrm/config/service/auth @{Basic="true"}
-			| winrm set winrm/config/service @{AllowUnencrypted="true"}
+		pre#winrmCommand
+			| start cmd /k "winrm quickconfig & winrm set winrm/config/client/auth @{Basic="true"} & winrm set winrm/config/service/auth @{Basic="true"} & winrm set winrm/config/service @{AllowUnencrypted="true"}"
+		p
+			button.btn.btn-xs.btn-default#winrmCommandButton(type="submit",onClick="return false;") Copy command to clipboard
 		p When provisioning is done your server DNS suffix will have changed to that of the specified domain. Please click the "Update hostname" button to sync this change.
 
