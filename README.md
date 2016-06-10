@@ -8,6 +8,9 @@ Handles the complete setup of an Atomia environment by utilizing Puppet.
 
 Detailed instructions can be found on [our wiki](https://github.com/atomia/puppetmaster-gui/wiki/Installing-a-production-environment).
 
-## Problems?
+## Contributions
 
-Please report any problems as Github issues or as a pull request ;)
+All contributions are welcome and are preferably done via Issue reports and or Pull requests.
+
+## Maintainers
+* Stefan Mortensen, stefan.mortensen@atomia.com, github: stefanmortensen
