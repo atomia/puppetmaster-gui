@@ -12,6 +12,13 @@ router.get('/', function (req, res, next) {
 	res.render('wizard/index');
 });
 router.get('/next_step', function (req, res, next) {
+	skipStep(1, res);
+});
+router.get('/next_step/:skipSteps', function (req, res, next) {
+	var skipSteps = req.params.skipSteps;
+	skipStep(skipSteps, res);
+});
+function skipStep(numberOfSteps, res) {
 	var installationTemplate = '';
 	database.query('SELECT * FROM app_config WHERE var IN(\'current_step\',\'installation_template\')', function (err, rows, field) {
 		for (var i = 0; i < rows.length; i++) {
@@ -22,14 +29,14 @@ router.get('/next_step', function (req, res, next) {
 		}
 		database.query('SELECT * FROM app_config WHERE var = \'' + installationTemplate + '\'', function (err, rows, field) {
 			installationSteps = rows[0].val;
-			nextStepId = parseInt(step) + 1;
+			nextStepId = parseInt(step) + parseInt(numberOfSteps);
 			nextStep = JSON.parse(installationSteps)[nextStepId];
 			res.redirect(nextStep.route);
 			database.query('UPDATE app_config SET val =' + nextStepId + ' WHERE var = \'current_step\'', function (err, rows, field) {
 			});
 		});
 	});
-});
+}
 router.get('/all_tasks', function (req, res, next) {
 	database.query('SELECT * FROM app_config WHERE var IN(\'current_step\',\'installation_template\')', function (err, rows, field) {
 		for (var i = 0; i < rows.length; i++) {
@@ -377,13 +384,14 @@ function getPuppetStatus(role, callback) {
 					exit: function (code) {
 					}
 				}).start();
+				sshSession.on('error', function (err) {
+				sshSession.end();
+				callback(false);
+				});
 			} else {
 				callback(false);
 			}
-			sshSession.on('error', function (err) {
-				sshSession.end();
-				callback(false);
-			});
+
 		});
 	} else {
 		callback(false);
