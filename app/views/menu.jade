@@ -33,9 +33,7 @@ nav.navbar.navbar-inverse.navbar-fixed-top
           |  List all tasks
 
         span.list-group-item.active(href='#')
-         | Installed servers
+         | Installed roles
         each m in menuStatus
           a.list-group-item(href='/wizard/'+m.url)
            !=m.prettyName
-           span(style="float:right;font-size:9px")
-            !=m.hostname

@@ -314,13 +314,17 @@ function updateHostname() {
 	var hostname = $('#serverHostname').val();
 	var username = $('#serverUsername').val();
 	var password = $('#serverPassword').val();
+	var currentRole = $('#serverRole').val();
+	var serverKey = $('#serverKey').val();
 	var postData = {
 		serverHostname: hostname.replace(/(\r\n|\n|\r)/gm, ''),
 		serverUsername: username,
-		serverPassword: password
+		serverPassword: password,
+		serverRole: currentRole,
+		serverKey: serverKey
 	};
 	$.post('/servers/update_hostname', postData, function (data) {
-		$('#serverHostname').val(JSON.parse(data).ok);
+		alert("Server hostname updated");
 	}).error(function (err) {
 		console.log(err.responseText);
 	});

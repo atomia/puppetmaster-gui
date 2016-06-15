@@ -65,28 +65,48 @@ router.post('/update_hostname', function (req, res, next) {
 	var serverHostname = req.body.serverHostname;
 	var serverUsername = req.body.serverUsername;
 	var serverPassword = req.body.serverPassword;
-	var newHostname = '';
-	var newHostnameExec = exec(__dirname + '/../scripts/winrm -hostname ' + serverHostname + ' -username "' + serverUsername + '" -password "' + serverPassword + '" "facter fqdn"');
-	newHostnameExec.stdout.on('data', function (data) {
-		newHostname = newHostname + data;
-	});
-	newHostnameExec.on('close', function (code) {
-		if (code === 0) {
-			newHostname = newHostname.replace(/(\r\n|\n|\r)/gm, '');
-			if (newHostname !== '') {
-				database.query('UPDATE servers SET hostname = \'' + newHostname.toLowerCase() + '\' WHERE hostname = \'' + serverHostname + '\'', function (err, rows, field) {
+	var serverRole = req.body.serverRole;
+	var serverKeyId = req.body.serverKey;
+	var arrHostnames = serverHostname.split(",");
+
+	database.query('DELETE servers from servers JOIN roles ON servers.id = roles.fk_server WHERE roles.name=\'' + serverRole + '\'', function (err, rows, field) {
+		if (err) {
+			console.log(err);
+			res.send(JSON.stringify({ error: 'could not delete servers from database' }));
+			return;
+		}
+		database.query('DELETE from roles where roles.name=\'' + serverRole + '\'',function (err, rows, field) {
+			if (err) {
+				console.log(err);
+				res.send(JSON.stringify({ error: 'could not delete roles from database' }));
+				return;
+			}
+			for(var i = 0; i < arrHostnames.length ; i++) {
+				database.query('INSERT INTO servers VALUES(null,\'' + arrHostnames[i] + '\',\'' + serverUsername + '\',\'' + serverPassword + '\',\'' + serverKeyId + '\')', function (err, rows, field) {
 					if (err) {
-						res.send(JSON.stringify({ error: 'could not update hostname' }));
-					} else {
-						res.send(JSON.stringify({ ok: newHostname.toLowerCase() }));
+						res.send(JSON.stringify({ error: 'could not insert server to database' }));
+						console.log(err);
+						return;
 					}
+					database.query('INSERT INTO roles VALUES(null,\'' + serverRole + '\',\'' + rows.insertId + '\')', function (err, rows, field) {
+						if (err) {
+							res.send(JSON.stringify({ error: 'could not insert roles to database' }));
+							console.log(err);
+							return;
+						}
+						update_hostname_callback(arrHostnames.length, res);
+					});
 				});
 			}
-		} else {
-			res.send(JSON.stringify({ error: 'could not update hostname, host unreachable?' }));
-		}
+		});
 	});
 });
+var hostnameCount = 0;
+function update_hostname_callback( max, res){
+	if(hostnameCount == max)
+		res.send(JSON.stringify({ success: 'server updated' }));
+	hostnameCount++;
+}
 router.post('/generate_certificates', function (req, res) {
 	var appDomain = req.body.appDomain;
 	var login = req.body.login;
@@ -176,21 +196,18 @@ router.post('/validate/ssh', function (req, res) {
 			sshSession.end();
 			returnError(res, '\nServer validation failed: Could not connect to the server ' + serverHost + ' via SSH!');
 		});
-		shouldUseSudo(sshSession,function(sudo){
-			sshSession.exec(sudo + 'echo \'\nThis is a test command from Atomia!\n\'', {
-				out: function (stdout) {
-					io.emit('server', { consoleData: stdout });
-				},
-				exit: function (code) {
-					io.emit('server', { consoleData: '\nCommand completed with status code: ' + code });
-					if (code === 0)
-						finishedLoginCheck();
-					else
-						returnError(res, 'Server validation failed: Could not execute remot SSH command');
-				}
-			}).start();
-		});
-
+		sshSession.exec('echo \'\nThis is a test command from Atomia!\n\'', {
+			out: function (stdout) {
+				io.emit('server', { consoleData: stdout });
+			},
+			exit: function (code) {
+				io.emit('server', { consoleData: '\nCommand completed with status code: ' + code });
+				if (code === 0)
+					finishedLoginCheck();
+				else
+					returnError(res, 'Server validation failed: Could not execute remot SSH command');
+			}
+		}).start();
 	}
 	function finishedLoginCheck() {
 		if (checked == arrHostnames.length)
@@ -272,16 +289,14 @@ router.post('/update', function (req, res) {
 			sshSession.end();
 			io.emit('server', { consoleData: 'Error communicating with the server: ' + err });
 		});
-		shouldUseSudo(sshSession,function(sudo){
-			sshSession.exec(sudo + 'puppet agent --test --waitforcert 1', {
-				out: function (stdout) {
-					io.emit('server', { consoleData: stdout });
-				},
-				exit: function (code) {
-					io.emit('server', { consoleData: code });
-				}
-			}).start();
-		});
+		sshSession.exec('sudo puppet agent --test --waitforcert 1', {
+			out: function (stdout) {
+				io.emit('server', { consoleData: stdout });
+			},
+			exit: function (code) {
+				io.emit('server', { consoleData: code });
+			}
+		}).start();
 	}
 	res.status(200);
 	res.send(JSON.stringify({ ok: 'ok' }));
@@ -496,36 +511,32 @@ router.post('/new', function (req, res) {
 });
 /* Setup puppet on a server with given ssh session */
 function setupPuppet(ssh, puppet, res, callback) {
-	shouldUseSudo(ssh,function(sudo) {
-		ssh.exec('wget --no-check-certificate https://raw.github.com/atomia/puppet-atomia/master/files/bootstrap_linux.sh && chmod +x bootstrap_linux.sh && ' + sudo + './bootstrap_linux.sh ' + puppet + '', {
-			out: function (stdout) {
-				io.emit('server', { consoleData: stdout });
-			},
-			err: function (stderr) {
-				io.emit('server', { consoleData: stderr });
-			},
-			exit: function (code) {
-				io.emit('server', { consoleData: 'Command exited with status: ' + code + '\n' });
-				callback(code);
-			}
-		}).start();
-	});
+	ssh.exec('wget --no-check-certificate https://raw.github.com/atomia/puppet-atomia/master/files/bootstrap_linux.sh && chmod +x bootstrap_linux.sh && sudo ./bootstrap_linux.sh ' + puppet + '', {
+		out: function (stdout) {
+			io.emit('server', { consoleData: stdout });
+		},
+		err: function (stderr) {
+			io.emit('server', { consoleData: stderr });
+		},
+		exit: function (code) {
+			io.emit('server', { consoleData: 'Command exited with status: ' + code + '\n' });
+			callback(code);
+		}
+	}).start();
 }
 function ensurePuppetRunning(ssh, callback) {
-	shouldUseSudo(ssh,function(sudo) {
-		ssh.exec('if [[ $(' + sudo + 'service puppet status | /bin/grep not | /bin/grep -vc grep)  > 0 ]] ; then ' + sudo + 'service puppet start; else echo Puppet is running; fi', {
-			out: function (stdout) {
-				io.emit('server', { consoleData: stdout });
-			},
-			err: function (stderr) {
-				io.emit('server', { consoleData: stderr });
-			},
-			exit: function (code) {
-				io.emit('server', { consoleData: 'Command exited with status: ' + code + '\n' });
-				callback(code);
-			}
-		}).start();
-	});
+	ssh.exec('if [[ $(sudo service puppet status | /bin/grep not | /bin/grep -vc grep)  > 0 ]] ; then sudo service puppet start; else echo Puppet is running; fi', {
+		out: function (stdout) {
+			io.emit('server', { consoleData: stdout });
+		},
+		err: function (stderr) {
+			io.emit('server', { consoleData: stderr });
+		},
+		exit: function (code) {
+			io.emit('server', { consoleData: 'Command exited with status: ' + code + '\n' });
+			callback(code);
+		}
+	}).start();
 }
 function addServerToDatabase(serverHostname, serverUsername, serverPassword, serverKeyId, serverRole, callback) {
 	database.query('INSERT INTO servers VALUES(null,\'' + serverHostname + '\',\'' + serverUsername + '\',\'' + serverPassword + '\',\'' + serverKeyId + '\') ON DUPLICATE KEY UPDATE hostname=\'' + serverHostname + '\', username=\'' + serverUsername + '\', password=\'' + serverPassword + '\', fk_ssh_key=\'' + serverKeyId + '\' ', function (err, rows, field) {
@@ -542,20 +553,18 @@ function addServerToDatabase(serverHostname, serverUsername, serverPassword, ser
 	});
 }
 function doPuppetRun(ssh, callback) {
-	shouldUseSudo(ssh,function(sudo) {
-		ssh.exec(sudo + 'puppet agent --test --waitforcert 1', {
-			out: function (stdout) {
-				io.emit('server', { consoleData: convert.toHtml(stdout) });
-			},
-			err: function (stderr) {
-				io.emit('server', { consoleData: convert.toHtml(stderr) });
-			},
-			exit: function (code) {
-				io.emit('server', { consoleData: 'Command exited with status: ' + code + '\n' });
-				callback(code);
-			}
-		}).start();
-	});
+	ssh.exec('sudo puppet agent --test --waitforcert 1', {
+		out: function (stdout) {
+			io.emit('server', { consoleData: convert.toHtml(stdout) });
+		},
+		err: function (stderr) {
+			io.emit('server', { consoleData: convert.toHtml(stderr) });
+		},
+		exit: function (code) {
+			io.emit('server', { consoleData: 'Command exited with status: ' + code + '\n' });
+			callback(code);
+		}
+	}).start();
 }
 function doPuppetRunOnRole(role, callback) {
 	database.query('SELECT * FROM servers JOIN roles on servers.id = fk_server WHERE roles.name = \'' + role + '\'', function (err, rows, field) {
@@ -639,19 +648,4 @@ function ValidateIPaddress(ipaddress) {
 	}
 	return false;
 }
-function shouldUseSudo(sshSession, callback) {
-	newSession = new ssh({
-		host: sshSession.host,
-		user: sshSession.user,
-		pass: sshSession.pass,
-		key: sshSession.key,
-		timeout: 5000
-	});
-	newSession.exec('if [ "$EUID" -ne "0" ]; then exit 1; fi', {
-		exit: function (code) {
-			callback((code == 1 ? "sudo " : ""));
-		}
-	}).start();
-}
-
 module.exports = router;
