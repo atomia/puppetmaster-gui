@@ -549,7 +549,7 @@ function addServerToDatabase(serverHostname, serverUsername, serverPassword, ser
 					console.log(err);
 					callback(1);
 				}
-				if(rows.length == 0) {
+				if(rows.length === 0) {
 					database.query('INSERT INTO roles VALUES(null,\'' + serverRole + '\',\'' + serverId + '\')', function (err, rows, field) {
 						if (err)
 							callback(1);
