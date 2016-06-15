@@ -544,10 +544,18 @@ function addServerToDatabase(serverHostname, serverUsername, serverPassword, ser
 			callback(1);
 		if (serverRole !== '' && typeof serverRole != 'undefined') {
 			serverId = rows.insertId;
-			database.query('INSERT INTO roles VALUES(null,\'' + serverRole + '\',\'' + serverId + '\')', function (err, rows, field) {
-				if (err)
+			database.query('SELECT * FROM roles JOIN servers on roles.fk_server = servers.id WHERE servers.hostname=\'' + serverHostname + '\'', function (err, rows, field) {
+				if(err){
+					console.log(err);
 					callback(1);
-				callback(0);
+				}
+				if(rows.length == 0) {
+					database.query('INSERT INTO roles VALUES(null,\'' + serverRole + '\',\'' + serverId + '\')', function (err, rows, field) {
+						if (err)
+							callback(1);
+						callback(0);
+					});
+				}
 			});
 		}
 	});
