@@ -556,6 +556,8 @@ function addServerToDatabase(serverHostname, serverUsername, serverPassword, ser
 						callback(0);
 					});
 				}
+				else
+					callback(0);
 			});
 		}
 	});
