@@ -33,7 +33,7 @@ module.exports = {
 		rolesPretty.ftp_slave = { 'prettyName': 'FTP cluster slaves' };
 		allRoles = [];
 		allRolesSimple = [];
-		database.query('SELECT * FROM roles JOIN servers ON roles.fk_server = servers.id  GROUP BY roles.name ORDER BY servers.id', function (err, rows, field) {
+		database.query('SELECT * FROM roles JOIN servers ON roles.fk_server = servers.id  GROUP BY name ORDER BY servers.id', function (err, rows, field) {
 			if (err)
 				throw err;
 			a = 0;

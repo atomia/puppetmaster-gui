@@ -377,8 +377,13 @@ function getPuppetStatus(role, callback) {
 					exit: function (code) {
 					}
 				}).start();
-			} else
+			} else {
 				callback(false);
+			}
+			sshSession.on('error', function (err) {
+				sshSession.end();
+				callback(false);
+			});
 		});
 	} else {
 		callback(false);
