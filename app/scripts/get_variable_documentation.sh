@@ -15,5 +15,5 @@ fi
 
 NAMESPACE=$1
 VARIABLE=$2
-cat "${MODULE_PATH}/${NAMESPACE}.pp" | egrep "^####\s?$VARIABLE:" | cut -d ':' -f2 |  sed -e 's/^[[:space:]]*//'
+cat "${MODULE_PATH}/${NAMESPACE}.pp" | egrep "^####\s?$VARIABLE:" | cut -d ':' -f2-10 |  sed -e 's/^[[:space:]]*//'
 
