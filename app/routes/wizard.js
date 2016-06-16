@@ -238,17 +238,20 @@ function setVariablesAndRender(currentRole, res, role, req, hostname) {
 					} else
 						serverHostname = '';
 					puppetDB.getLatestReportAndEvents(serverHostname, function (reports, events) {
+						var latestReport;
 						if (reports) {
 							reportStatus = reports.status;
 							reportEvents = events;
+							latestReport = reports[0];
 						} else {
-							reportStatus = '';
+							reportStatus = 'error';
 							reportEvents = '';
+							latestReport = null;
 						}
 						getPuppetStatus(currentRole, function (puppetStatus) {
 							res.render('wizard/' + currentRole, {
 								puppetStatus: puppetStatus,
-								latestReport: reports[0],
+								latestReport: latestReport,
 								reportEvents: reportEvents,
 								reportStatus: reportStatus,
 								keys: keyRows,

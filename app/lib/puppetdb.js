@@ -13,6 +13,11 @@ exports.getLatestReportAndEvents = function (hostname, callback) {
 	if (hostname != 'undefined' && hostname.length > 0) {
 		var q = '/v3/reports?query=' + encodeURIComponent('["=", "certname", "' + hostname + '"]');
 		puppetDbRequest(q, null, function (result) {
+			if(result === null)
+			{
+				callback(null);
+				return;
+			}
 			if(result.length > 0) {
 				getRunStatus(JSON.parse(result), function (report) {
 					if (report.length > 0) {
@@ -92,5 +97,9 @@ function puppetDbRequest(query, args, callback) {
 			callback(str, args);
 		});
 	};
-	http.request(options, parseRequest).end();
+	var request = http.request(options, parseRequest);
+	request.on('error', function () {
+		callback(null,"");
+	});
+	request.end();
 }
