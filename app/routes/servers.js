@@ -543,21 +543,25 @@ function addServerToDatabase(serverHostname, serverUsername, serverPassword, ser
 		if (err)
 			callback(1);
 		if (serverRole !== '' && typeof serverRole != 'undefined') {
-			serverId = rows.insertId;
-			database.query('SELECT * FROM roles JOIN servers on roles.fk_server = servers.id WHERE servers.hostname=\'' + serverHostname + '\'', function (err, rows, field) {
-				if(err){
-					console.log(err);
+			database.query('SELECT * FROM servers WHERE hostname =\'' + serverHostname + '\'', function (err, rows, field) {
+				if (err)
 					callback(1);
-				}
-				if(rows.length === 0) {
-					database.query('INSERT INTO roles VALUES(null,\'' + serverRole + '\',\'' + serverId + '\')', function (err, rows, field) {
-						if (err)
-							callback(1);
+				serverId = rows[0].id;
+				database.query('SELECT * FROM roles JOIN servers on roles.fk_server = servers.id WHERE servers.hostname=\'' + serverHostname + '\' AND roles.name=\'' + serverRole + '\'', function (err, rows, field) {
+					if(err){
+						console.log(err);
+						callback(1);
+					}
+					if(rows.length === 0) {
+						database.query('INSERT INTO roles VALUES(null,\'' + serverRole + '\',\'' + serverId + '\')', function (err, rows, field) {
+							if (err)
+								callback(1);
+							callback(0);
+						});
+					}
+					else
 						callback(0);
-					});
-				}
-				else
-					callback(0);
+				});
 			});
 		}
 	});
