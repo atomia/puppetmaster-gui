@@ -612,10 +612,8 @@ function gotKeyPuppetRole(serverHostname, serverUsername, serverPassword, server
 	doPuppetRun(sshSession, function (result) {
 		if (result === 0 || result == 2) {
 			io.emit('server', { consoleData: 'Puppet run on ' + role + ' finished sucessfully!' });
-			callback();
 		} else {
 			io.emit('server', { consoleData: 'Puppet run on ' + role + ' failed!' });
-			callback();
 		}
 	});
 }
