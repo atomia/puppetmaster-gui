@@ -452,14 +452,32 @@ function validateConfigField(field) {
 		$('#div_' + field).addClass('has-error');
 	}
 }
+String.prototype.replaceAt=function(index, character) {
+    return this.substr(0, index) + character + this.substr(index+character.length);
+}
 function generatePasswordForm(field) {
 	var length = 12;
-	var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOP1234567890';
+	var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVXYZ1234567890';
+	var lowerCase = 'abcdefghijklmnopqrstuvwxyz';
+	var upperCase = 'ABCDEFGHIJKLMNOPQRSTUVXYZ';
+	var numbers = '1234567890';
 	var pass = '';
 	for (var x = 0; x < length; x++) {
 		var i = Math.floor(Math.random() * chars.length);
 		pass += chars.charAt(i);
 	}
+	var arr = []
+	while(arr.length < 3){
+		var randomnumber=Math.ceil(Math.random()*(length - 1));
+		var found=false;
+		for(var a=0;a<arr.length;a++){
+			if(arr[a]==randomnumber){found=true;break;}
+		}
+		if(!found)arr[arr.length]=randomnumber;
+	}
+	pass = pass.replaceAt(arr[0], lowerCase.charAt(Math.floor(Math.random() * lowerCase.length)));
+	pass = pass.replaceAt(arr[1], upperCase.charAt(Math.floor(Math.random() * upperCase.length)));
+	pass = pass.replaceAt(arr[2], numbers.charAt(Math.floor(Math.random() * numbers.length)));
 	$('#' + field).val(pass);
 	validateConfigField(field);
 }
