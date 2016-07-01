@@ -84,7 +84,6 @@ INSERT INTO app_config VALUES(null,'installation_steps_complete','[
 	{"name": "Install Customer MySQL server", "route" : "/wizard/mysql"},
 	{"name": "Install Customer PostgreSQL server", "route" : "/wizard/postgresql"},
 	{"name": "Install Customer MSSQL server", "route" : "/wizard/mssql"},
-    {"name": "Configure OpenStack","route" : "/wizard/openstack"},
 	{"name": "Installation complete!", "route" : "/wizard/done"}
 ]');
 

@@ -86,7 +86,7 @@ router.get('/active_directory', function (req, res, next) {
 	setVariablesAndRender('active_directory', res, null, req);
 });
 router.get('/active_directory_replica', function (req, res, next) {
-	setVariablesAndRender('active_directory', res, 'active_directory_replica', req);
+	setVariablesAndRender('active_directory_replica', res, 'active_directory_replica', req);
 });
 router.get('/windows', function (req, res, next) {
 	setVariablesAndRender('windows_base', res, null, req);

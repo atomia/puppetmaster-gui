@@ -113,9 +113,15 @@ function replaceVars() {
 			fqdn = input.val().replace('${::fqdn}', hostname);
 			input.val(fqdn.split(',')[0]);
 		}
-		if (input.val().indexOf('$ipaddress') >= 0) {
+		if (input.val().indexOf('${::ipaddress}') >= 0) {
 			$.get('/servers/ip/' + hostname, function (data) {
-				ipaddr = input.val().replace('$ipaddress', data[0]);
+				ipaddr = input.val().replace('${::ipaddress}', data[0]);
+				input.val(ipaddr);
+			});
+		}
+		if (input.val().indexOf('$::ipaddress') >= 0) {
+			$.get('/servers/ip/' + hostname, function (data) {
+				ipaddr = input.val().replace('$::ipaddress', data[0]);
 				input.val(ipaddr);
 			});
 		}
