@@ -1,8 +1,8 @@
-apt-get update
+sudo apt-get update
 sudo apt-get install -y git nodejs nodejs-legacy npm mysql-server python-pip
 sudo pip install pywinrm
 cd /opt
-git clone https://github.com/atomia/puppetmaster-gui.git
+sudo git clone https://github.com/atomia/puppetmaster-gui.git
 cd puppetmaster-gui/app
 sudo npm install
 
@@ -14,15 +14,15 @@ sudo mysql --defaults-file=/etc/mysql/debian.cnf -e "CREATE USER 'puppetgui'@'lo
 cd /opt/puppetmaster-gui/app
 sudo mysql --defaults-file=/etc/mysql/debian.cnf < schema.sql
 
-echo "{
+sudo bash -c 'echo "{
   \"database\" : {
       \"user\": \"puppetgui\",
-      \"password\": \"$MYSQL_PASSWORD\",
+      \"password\": \"'$MYSQL_PASSWORD'\",
       \"database\": \"hiera\"
     }
-}" > /opt/puppetmaster-gui/app/config.json
+}" > /opt/puppetmaster-gui/app/config.json'
 
-cp /opt/puppetmaster-gui/puppetmaster-gui.conf /etc/init
+sudo cp /opt/puppetmaster-gui/puppetmaster-gui.conf /etc/init
 
-start puppetmaster-gui
+sudo start puppetmaster-gui
 
