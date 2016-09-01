@@ -130,12 +130,12 @@ function replaceVars() {
 function replaceVarsOnLoad() {
 	$('input[type=text], textarea').each(function (index) {
 		var input = $(this);
-		if (input.val().indexOf('$puppet_host') >= 0) {
+		if (input.val().indexOf('%puppet_host') >= 0) {
 			$.get('/servers/facter/fqdn', function (data) {
 				input.val(JSON.parse(data).ok.replace(/(\r\n|\n|\r)/gm, ''));
 			});
 		}
-		if (input.val().indexOf('$puppet_ip') >= 0) {
+		if (input.val().indexOf('%puppet_ip') >= 0) {
 			$.get('/servers/facter/ipaddress_eth0', function (data) {
 				input.val(JSON.parse(data).ok.replace(/(\r\n|\n|\r)/gm, ''));
 			});
