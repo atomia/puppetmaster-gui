@@ -223,7 +223,7 @@ router.post('/validate/windows', function (req, res) {
 	var error = false;
 	var tryWinRM = exec(__dirname + '/../scripts/winrm -hostname ' + serverHostname + ' -username "' + serverUsername + '" -password "' + serverPassword + '" "dir"');
 	tryWinRM.stdout.on('data', function (data) {
-		io.emit('server', { consoleData: '' + data });
+		io.emit('server', { consoleData: '' + convert.toHtml(data) });
 	});
 	tryWinRM.stderr.on('data', function (data) {
 		io.emit('server', { consoleData: 'stderr: ' + data });
@@ -340,10 +340,10 @@ router.post('/new', function (req, res) {
 				//c:\\windows\\system32\\Dism /online /Enable-Feature /FeatureName:NetFx3 /All;
 				var child_puppet_install = exec(__dirname + '/../scripts/winrm -hostname ' + serverHostname + ' -username "' + serverUsername + '" -password "' + serverPassword + '" "%SystemRoot%\\system32\\WindowsPowerShell\\v1.0\\powershell.exe /C (new-object System.Net.WebClient).Downloadfile(\'https://downloads.puppetlabs.com/windows/puppet-x64-latest.msi\', \'puppet-latest.msi\');c:\\windows\\system32\\msiexec /qn /i puppet-latest.msi PUPPET_MASTER_SERVER=\'' + puppetMaster + '\'" ');
 				child_puppet_install.stdout.on('data', function (data) {
-					io.emit('server', { consoleData: '' + data });
+					io.emit('server', { consoleData: '' + convert.toHtml(data) });
 				});
 				child_puppet_install.stderr.on('data', function (data) {
-					io.emit('server', { consoleData: 'stderr: ' + data });
+					io.emit('server', { consoleData: 'stderr: ' + convert.toHtml(data) });
 					io.emit('server', {
 						done: 'error',
 						error: 'Could not run winrm command, is winrm setup to allow connections?'
@@ -363,7 +363,7 @@ router.post('/new', function (req, res) {
 							error = true;
 						}
 					} else {
-						io.emit('server', { consoleData: 'Puppet installed. \nAdding server to local database...' });
+						io.emit('server', { consoleData: 'Puppet installed. \nAdding server to local database...<br />' });
 						database.query('INSERT INTO servers VALUES(null,\'' + serverHostname + '\',\'' + serverUsername + '\',\'' + serverPassword + '\',\'' + serverKeyId + '\') ON DUPLICATE KEY UPDATE hostname=\'' + serverHostname + '\', username=\'' + serverUsername + '\', password=\'' + serverPassword + '\', fk_ssh_key=\'' + serverKeyId + '\' ', function (err, rows, field) {
 							if (err) {
 								io.emit('server', {
@@ -395,10 +395,10 @@ router.post('/new', function (req, res) {
 								//"SET FACTER_hostname=\""+ hostname +"\"& SET FACTER_domain=\"" +domain +"\"&
 								var child_run_puppet = exec(__dirname + '/../scripts/winrm -hostname ' + serverHostname + ' -username "' + serverUsername + '" -password "' + serverPassword + '" "SET FACTER_atomia_role_1="' + serverRole + '"& puppet agent --test"');
 								child_run_puppet.stdout.on('data', function (data) {
-									io.emit('server', { consoleData: '' + data });
+									io.emit('server', { consoleData: '' + convert.toHtml(data) });
 								});
 								child_run_puppet.stderr.on('data', function (data) {
-									io.emit('server', { consoleData: 'stderr: ' + data });
+									io.emit('server', { consoleData: 'stderr: ' + convert.toHtml(data) });
 								});
 								child_run_puppet.on('close', function (code) {
 									if (code !== 0 && code != 2) {
