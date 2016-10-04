@@ -1545,8 +1545,8 @@
                 },
                 "simple-plist": {
                   "version": "0.0.5",
-                  "from": "simple-plist@git://github.com/monsterkodi/node-simple-plist.git",
-                  "resolved": "git://github.com/monsterkodi/node-simple-plist.git#5ff35d61ff600391ccd784a18616fa73c09e0aea",
+                  "from": "simple-plist@git://github.com/wollardj/node-simple-plist.git",
+                  "resolved": "git://github.com/wollardj/node-simple-plist.git",
                   "dependencies": {
                     "plist": {
                       "version": "1.2.0",
