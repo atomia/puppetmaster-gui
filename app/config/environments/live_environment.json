@@ -1,0 +1,742 @@
+{
+	"name" : "Live Environment",
+	"priority": "0",
+	"description": "Optimized for live usage",
+	"servers": [
+		{
+			"category": "System",
+			"category_id": "system",
+			"selected": true,
+			"members": [
+				{
+					"name": "Active directory",
+					"description": "",
+					"required": true,
+					"selected": true,
+					"cluster": false,
+					"multiple": false,
+					"node_count": 1,
+					"operating_system": "windows",
+					"requirements": [
+							{
+								"check": "ram",
+								"value": "4",
+								"name": "%v GB RAM"
+							},
+							{
+								"check": "cpu",
+								"value": "1",
+								"name": "%v CPUs"
+							},
+							{
+								"check": "disk",
+								"value": "50",
+								"name": "%v GB disk space"
+							}
+					],
+					"roles": [
+						"active_directory"
+					]
+				},
+				{
+					"name": "Active directory replica",
+					"description": "It is recommended to install an Active directory replica in live environments",
+					"required": false,
+					"selected": true,
+					"cluster": false,
+					"multiple": false,
+					"node_count": 1,
+					"requirements": [
+							{
+								"check": "ram",
+								"value": "4",
+								"name": "%v GB RAM"
+							},
+							{
+								"check": "cpu",
+								"value": "1",
+								"name": "%v CPUs"
+							},
+							{
+								"check": "disk",
+								"value": "50",
+								"name": "%v GB disk space"
+							}
+					],
+					"operating_system": "windows",
+					"roles": [
+						"active_directory_replica"
+					]
+				},
+				{
+					"name": "Internal DNS",
+					"description": "Used to store DNS information local to the environment",
+					"required": true,
+					"selected": true,
+					"cluster": false,
+					"multiple": false,
+					"node_count": 1,
+					"category": "system",
+					"operating_system": "ubuntu",
+					"requirements": [
+							{
+								"check": "ram",
+								"value": "1",
+								"name": "%v GB RAM"
+							},
+							{
+								"check": "cpu",
+								"value": "1",
+								"name": "%v CPUs"
+							},
+							{
+								"check": "disk",
+								"value": "10",
+								"name": "%v GB disk space"
+							}
+					],
+					"roles": [
+						"internal_dns"
+					]
+				},
+				{
+					"name": "Monitoring",
+					"description": "Setup monitoring of all provisioned servers with Nagios.",
+					"required": false,
+					"selected": true,
+					"cluster": false,
+					"multiple": false,
+					"node_count": 1,
+					"category": "system",
+					"operating_system": "ubuntu",
+					"requirements": [
+							{
+								"check": "ram",
+								"value": "2",
+								"name": "%v GB RAM"
+							},
+							{
+								"check": "cpu",
+								"value": "2",
+								"name": "%v CPUs"
+							},
+							{
+								"check": "disk",
+								"value": "50",
+								"name": "%v GB disk space"
+							}
+					],
+					"roles": [
+						"nagios"
+					]
+				},
+				{
+					"name": "Atomia database",
+					"description": "",
+					"required": true,
+					"selected": true,
+					"cluster": false,
+					"multiple": false,
+					"node_count": 1,
+					"operating_system": "ubuntu",
+					"requirements": [
+							{
+								"check": "ram",
+								"value": "8",
+								"name": "%v GB RAM"
+							},
+							{
+								"check": "cpu",
+								"value": "4",
+								"name": "%v CPUs"
+							},
+							{
+								"check": "disk",
+								"value": "100",
+								"name": "%v GB disk space"
+							}
+					],
+					"roles": [
+						"atomia_database"
+					]
+				},
+				{
+					"name": "Internal mail server",
+					"description": "Set up a mail server that will handle all outgoing email that Atomia sends",
+					"required": false,
+					"selected": true,
+					"cluster": false,
+					"multiple": false,
+					"node_count": 1,
+					"operating_system": "ubuntu",
+					"requirements": [
+							{
+								"check": "ram",
+								"value": "1",
+								"name": "%v GB RAM"
+							},
+							{
+								"check": "cpu",
+								"value": "1",
+								"name": "%v CPUs"
+							},
+							{
+								"check": "disk",
+								"value": "10",
+								"name": "%v GB disk space"
+							}
+					],
+					"roles": [
+						"internal_mailserver"
+					]
+				},
+				{
+					"name": "Atomia internal",
+					"description": "",
+					"required": true,
+					"selected": true,
+					"cluster": false,
+					"multiple": false,
+					"node_count": 1,
+					"operating_system": "windows",
+					"requirements": [
+							{
+								"check": "ram",
+								"value": "8",
+								"name": "%v GB RAM"
+							},
+							{
+								"check": "cpu",
+								"value": "4",
+								"name": "%v CPUs"
+							},
+							{
+								"check": "disk",
+								"value": "100",
+								"name": "%v GB disk space"
+							}
+					],
+					"roles": [
+						"internal_apps"
+					]
+				},
+				{
+					"name": "Atomia Public",
+					"description": "",
+					"required": true,
+					"selected": true,
+					"cluster": false,
+					"multiple": false,
+					"node_count": 1,
+					"operating_system": "windows",
+					"requirements": [
+							{
+								"check": "ram",
+								"value": "8",
+								"name": "%v GB RAM"
+							},
+							{
+								"check": "cpu",
+								"value": "4",
+								"name": "%v CPUs"
+							},
+							{
+								"check": "disk",
+								"value": "100",
+								"name": "%v GB disk space"
+							}
+					],
+					"roles": [
+						"public_apps"
+					]
+				}
+			]
+		},
+		{
+			"category": "DNS",
+			"category_id": "dns",
+			"selected": true,
+			"members": [
+				{
+					"name": "Atomia DNS",
+					"description": "",
+					"required": true,
+					"selected": true,
+					"cluster": false,
+					"multiple": false,
+					"node_count": 1,
+					"operating_system": "ubuntu",
+					"requirements": [
+							{
+								"check": "ram",
+								"value": "1",
+								"name": "%v GB RAM"
+							},
+							{
+								"check": "cpu",
+								"value": "1",
+								"name": "%v CPUs"
+							},
+							{
+								"check": "disk",
+								"value": "10",
+								"name": "%v GB disk space"
+							}
+					],
+					"roles": [
+						"atomiadns"
+					]
+				},
+				{
+					"name": "Nameservers",
+					"description": "",
+					"required": false,
+					"selected": true,
+					"cluster": false,
+					"multiple": true,
+					"node_count": 1,
+					"operating_system": "ubuntu",
+					"requirements": [
+							{
+								"check": "ram",
+								"value": "1",
+								"name": "%v GB RAM"
+							},
+							{
+								"check": "cpu",
+								"value": "1",
+								"name": "%v CPUs"
+							},
+							{
+								"check": "disk",
+								"value": "10",
+								"name": "%v GB disk space"
+							}
+					],
+					"roles": [
+						"atomiadns"
+					]
+				}
+			]
+		},
+		{
+			"category": "Shared hosting",
+			"category_id": "shared_hosting",
+			"selected": true,
+			"members": [
+				{
+					"name": "Filesystem agent",
+					"description": "",
+					"required": true,
+					"selected": true,
+					"cluster": false,
+					"multiple": false,
+					"node_count": 1,
+					"operating_system": "ubuntu",
+					"requirements": [
+							{
+								"check": "ram",
+								"value": "1",
+								"name": "%v GB RAM"
+							},
+							{
+								"check": "cpu",
+								"value": "1",
+								"name": "%v CPUs"
+							},
+							{
+								"check": "disk",
+								"value": "10",
+								"name": "%v GB disk space"
+							}
+					],
+					"roles": [
+						"fsagent"
+					]
+				},
+				{
+					"name": "Installatron",
+					"description": "Used to install applications from the control panel, requires a valid Installatron Server license",
+					"required": false,
+					"selected": true,
+					"cluster": false,
+					"multiple": false,
+					"node_count": 1,
+					"operating_system": "ubuntu",
+					"requirements": [
+							{
+								"check": "ram",
+								"value": "1",
+								"name": "%v GB RAM"
+							},
+							{
+								"check": "cpu",
+								"value": "1",
+								"name": "%v CPUs"
+							},
+							{
+								"check": "disk",
+								"value": "20",
+								"name": "%v GB disk space"
+							}
+					],
+					"roles": [
+						"installatron"
+					]
+				},
+				{
+					"name": "Awstats",
+					"description": "Used to display usage statistics in the control panel",
+					"required": false,
+					"selected": true,
+					"cluster": false,
+					"multiple": false,
+					"node_count": 1,
+					"operating_system": "ubuntu",
+					"requirements": [
+							{
+								"check": "ram",
+								"value": "1",
+								"name": "%v GB RAM"
+							},
+							{
+								"check": "cpu",
+								"value": "1",
+								"name": "%v CPUs"
+							},
+							{
+								"check": "disk",
+								"value": "10",
+								"name": "%v GB disk space"
+							}
+					],
+					"roles": [
+						"awstats"
+					]
+				},
+				{
+					"name": "Daggre",
+					"description": "Collects usage information from different systems like storage usage",
+					"required": false,
+					"selected": true,
+					"cluster": false,
+					"multiple": false,
+					"node_count": 1,
+					"operating_system": "ubuntu",
+					"requirements": [
+							{
+								"check": "ram",
+								"value": "1",
+								"name": "%v GB RAM"
+							},
+							{
+								"check": "cpu",
+								"value": "1",
+								"name": "%v CPUs"
+							},
+							{
+								"check": "disk",
+								"value": "10",
+								"name": "%v GB disk space"
+							}
+					],
+					"roles": [
+						"daggre"
+					]
+				},
+				{
+					"name": "Cronjob",
+					"description": "Allows users to add scheduled tasks from the control panel",
+					"required": false,
+					"selected": true,
+					"cluster": false,
+					"multiple": false,
+					"node_count": 1,
+					"operating_system": "ubuntu",
+					"requirements": [
+							{
+								"check": "ram",
+								"value": "1",
+								"name": "%v GB RAM"
+							},
+							{
+								"check": "cpu",
+								"value": "1",
+								"name": "%v CPUs"
+							},
+							{
+								"check": "disk",
+								"value": "20",
+								"name": "%v GB disk space"
+							}
+					],
+					"roles": [
+						"cronagent"
+					]
+				},
+				{
+					"name": "Apache cluster",
+					"description": "Host websites on Apache",
+					"required": false,
+					"selected": true,
+					"cluster": true,
+					"multiple": false,
+					"node_count": 1,
+					"operating_system": "ubuntu",
+					"requirements": [
+							{
+								"check": "ram",
+								"value": "4",
+								"name": "%v GB RAM"
+							},
+							{
+								"check": "cpu",
+								"value": "4",
+								"name": "%v CPUs"
+							},
+							{
+								"check": "disk",
+								"value": "20",
+								"name": "%v GB disk space"
+							}
+					],
+					"roles": [
+						"apache"
+					]
+				},
+				{
+					"name": "IIS cluster",
+					"description": "Host websites on IIS (Windows)",
+					"required": false,
+					"selected": true,
+					"cluster": true,
+					"multiple": false,
+					"node_count": 1,
+					"operating_system": "windows",
+					"requirements": [
+							{
+								"check": "ram",
+								"value": "4",
+								"name": "%v GB RAM"
+							},
+							{
+								"check": "cpu",
+								"value": "4",
+								"name": "%v CPUs"
+							},
+							{
+								"check": "disk",
+								"value": "50",
+								"name": "%v GB disk space"
+							}
+					],
+					"roles": [
+						"iis"
+					]
+				},
+				{
+					"name": "FTP cluster",
+					"description": "Allows users to manage the content of their home directory",
+					"required": false,
+					"selected": true,
+					"cluster": true,
+					"multiple": false,
+					"node_count": 1,
+					"operating_system": "ubuntu",
+					"requirements": [
+							{
+								"check": "ram",
+								"value": "1",
+								"name": "%v GB RAM"
+							},
+							{
+								"check": "cpu",
+								"value": "1",
+								"name": "%v CPUs"
+							},
+							{
+								"check": "disk",
+								"value": "10",
+								"name": "%v GB disk space"
+							}
+					],
+					"roles": [
+						"pureftpd"
+					]
+				},
+				{
+					"name": "Mail cluster",
+					"description": "Host mail accounts",
+					"required": false,
+					"selected": true,
+					"cluster": true,
+					"multiple": false,
+					"node_count": 1,
+					"operating_system": "ubuntu",
+					"requirements": [
+							{
+								"check": "ram",
+								"value": "2",
+								"name": "%v GB RAM"
+							},
+							{
+								"check": "cpu",
+								"value": "2",
+								"name": "%v CPUs"
+							},
+							{
+								"check": "disk",
+								"value": "20",
+								"name": "%v GB disk space"
+							}
+					],
+					"roles": [
+						"postfix"
+					]
+				},
+				{
+					"name": "Load balancers",
+					"description": "Distributes traffic between your cluster nodes",
+					"required": false,
+					"selected": true,
+					"cluster": false,
+					"multiple": true,
+					"node_count": 1,
+					"operating_system": "ubuntu",
+					"requirements": [
+							{
+								"check": "ram",
+								"value": "1",
+								"name": "%v GB RAM"
+							},
+							{
+								"check": "cpu",
+								"value": "1",
+								"name": "%v CPUs"
+							},
+							{
+								"check": "disk",
+								"value": "10",
+								"name": "%v GB disk space"
+							}
+					],
+					"roles": [
+						"haproxy"
+					]
+				},
+				{
+					"name": "Customer MySQL",
+					"description": "Host MySQL databases",
+					"required": false,
+					"selected": true,
+					"cluster": false,
+					"multiple": false,
+					"node_count": 1,
+					"operating_system": "ubuntu",
+					"requirements": [
+							{
+								"check": "ram",
+								"value": "4",
+								"name": "%v GB RAM"
+							},
+							{
+								"check": "cpu",
+								"value": "4",
+								"name": "%v CPUs"
+							},
+							{
+								"check": "disk",
+								"value": "100",
+								"name": "%v GB disk space"
+							}
+					],
+					"roles": [
+						"mysql"
+					]
+				},
+				{
+					"name": "Customer PostgreSQL",
+					"description": "Host PostgreSQL databases",
+					"required": false,
+					"selected": true,
+					"cluster": false,
+					"multiple": false,
+					"node_count": 1,
+					"operating_system": "ubuntu",
+					"requirements": [
+							{
+								"check": "ram",
+								"value": "4",
+								"name": "%v GB RAM"
+							},
+							{
+								"check": "cpu",
+								"value": "4",
+								"name": "%v CPUs"
+							},
+							{
+								"check": "disk",
+								"value": "100",
+								"name": "%v GB disk space"
+							}
+					],
+					"roles": [
+						"postgres"
+					]
+				},
+				{
+					"name": "Customer MSSQL",
+					"description": "Host MSSQL databases",
+					"required": false,
+					"selected": true,
+					"cluster": false,
+					"multiple": false,
+					"node_count": 1,
+					"operating_system": "windows",
+					"requirements": [
+							{
+								"check": "ram",
+								"value": "4",
+								"name": "%v GB RAM"
+							},
+							{
+								"check": "cpu",
+								"value": "4",
+								"name": "%v CPUs"
+							},
+							{
+								"check": "disk",
+								"value": "100",
+								"name": "%v GB disk space"
+							}
+					],
+					"roles": [
+						"mssql"
+					]
+				}
+			]
+		},
+		{
+			"category": "VPS Hosting",
+			"category_id": "clud",
+			"selected": true,
+			"members": [
+				{
+					"name": "OpenStack",
+					"description": "Use OpenStack to host cloud services",
+					"required": false,
+					"selected": true,
+					"cluster": false,
+					"multiple": false,
+					"node_count": 1,
+					"operating_system": "openstack",
+					"requirements": [
+					],
+					"roles": [
+						"openstack"
+					]
+				}
+			]
+		}
+	]
+}

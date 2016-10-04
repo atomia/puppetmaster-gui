@@ -1,0 +1,10 @@
+{
+  "name": "Active directory",
+  "description": "Active directory is used to store information about users in the Atomia system",
+  "pretty_variables": [
+    {
+      "name" : "domain_name",
+      "pretty": "Active directory domain name"
+    }
+  ]
+}
