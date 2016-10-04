@@ -1,31 +1,25 @@
 {
-  "name": "app",
-  "version": "0.0.0",
-  "private": true,
-  "scripts": {
-    "start": "node ./bin/www",
-    "test": "jshint app.js */*.js"
-  },
+  "name": "atomia-installer",
+  "version": "2.0.0",
+  "description": "Installer for the Atomia Platform",
+  "main": "app.js",
   "dependencies": {
-    "body-parser": "^1.13.3",
-    "cookie-parser": "~1.3.5",
-    "debug": "~2.2.0",
-    "execSync": "^1.0.2",
-    "execsync": "0.0.6",
-    "express": "~4.13.1",
-    "jade": "~1.11.0",
-    "morgan": "~1.6.1",
-    "mysql": "^2.9.0",
-    "nconf": "^0.8.0",
-    "net-ping": "^1.1.12",
-    "serve-favicon": "~2.3.0",
-    "simple-ssh": "^0.8.6",
-    "socket.io": "^1.3.7",
-    "yamljs": "^0.2.4",
-    "q": "~1.4.1",
-    "ansi-to-html": "~0.4.1"
+    "express": "^4.14.0",
+    "express-handlebars": "^3.0.0",
+    "handlebars-json": "^1.0.1"
   },
-  "devDependencies": {
-    "jshint": "~2.9.2"
-  }
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atomia/puppetmaster-gui.git"
+  },
+  "author": "Stefan Mortensen <stefan.mortensen@atomia.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/atomia/puppetmaster-gui/issues"
+  },
+  "homepage": "https://github.com/atomia/puppetmaster-gui#readme"
 }

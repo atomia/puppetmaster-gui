@@ -1,0 +1,89 @@
+<script>
+$(document).ready(function(){
+	environmentModel = ko.mapping.fromJS({{{toJSON environment.servers}}})
+	ko.applyBindings(environmentModel, document.getElementById('mainView'))
+	ko.applyBindings(computedModel, document.getElementById('counterView'))
+
+})
+</script>
+<section class="Main"  >
+	<div class="Margins" style="min-height: 300px;">
+		<div class="Bar Bar-header" style="width:100%;">
+			<h4 class="Bar-title Bar-item">Select what options to install</h4>
+			<div class="Bar-item Bar-item--right ">
+				<button type="submit" class="Btn Btn--primary">Next</button>
+			</div>
+		</div>
+		<div class="Paper kss-paper" style="margin:0px;">
+			<div class="Grid">
+				<div class="Grid-column-4" id="mainView">
+
+					<h1>Type of environment</h1>
+					<div class="Grid">
+						{{#each environments}}
+						<div class="Grid-column-3">
+							<div class="Rounded-box" style="margin:0px;">
+								<h2>{{name}}</h2>
+								{{description}}
+							</div>
+						</div>
+						{{/each}}
+					</div>
+
+					<h1>Customization options</h1>
+
+					<div data-bind="template: {name: 'environment-template', foreach: environmentModel}"></div>
+
+					<script id="environment-template" type="text/html">
+
+						<div class="Rounded-box">
+							<h4 data-bind="text: category"></h4>
+							<label class="Switch" style="float:right;position:relative;top:-30px;right:30px;">
+								<input class="Switch-input" data-bind="checked: selected" type="checkbox">
+								<span class="Switch-click" data-on="Yes" data-off="No"></span>
+							</label>
+						</div>
+
+						<div data-bind="foreach: members">
+							<div data-bind="ifnot: required">
+
+								<div class="Rounded-box Child-box">
+									<h4 data-bind="text: name"></h4>
+									<p data-bind="text: description"></p>
+									<label class="Switch" style="float:right;position:relative;top:-30px;right:30px;">
+										<input class="Switch-input" data-bind="checked: selected" type="checkbox">
+										<span class="Switch-click" data-on="Yes" data-off="No"></span>
+									</label>
+									<div data-bind="if: multiple">
+										test
+									</div>
+								</div>
+
+							</div>
+						</div>
+
+					</script>
+
+				</div>
+				<div class="Grid-column-2">
+					<h4>Requirements</h4>
+					<p><strong>For this installation you will need:</strong></p>
+					<div id="counterView">
+						<p data-bind="if: countServers('windows')">
+							<span data-bind="text: countServers('windows')" ></span> Machines<br/>
+							Windows Server 2012
+						</p>
+						<p data-bind="if: countServers('ubuntu')">
+							<span data-bind="text: countServers('ubuntu')" ></span> Machines<br/>
+							Ubuntu 16.04
+						</p>
+						<p data-bind="if: countServers('openstack')">
+							Existing OpenStack installation
+						</p>
+						<p>View requirements list</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
