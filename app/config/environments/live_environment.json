@@ -18,24 +18,32 @@
 					"node_count": 1,
 					"operating_system": "windows",
 					"requirements": [
-							{
-								"check": "ram",
-								"value": "4",
-								"name": "%v GB RAM"
-							},
-							{
-								"check": "cpu",
-								"value": "1",
-								"name": "%v CPUs"
-							},
-							{
-								"check": "disk",
-								"value": "50",
-								"name": "%v GB disk space"
-							}
+						{
+							"check": "ram",
+							"value": "4",
+							"name": "%v GB RAM"
+						},
+						{
+							"check": "cpu",
+							"value": "1",
+							"name": "%v CPUs"
+						},
+						{
+							"check": "disk",
+							"value": "50",
+							"name": "%v GB disk space"
+						}
 					],
 					"roles": [
-						"active_directory"
+						{
+							"class": "active_directory",
+							"overrides": [
+								{
+									"variable": "$domain_name",
+									"value": "atomia.internal"
+								}
+							]
+						}
 					]
 				},
 				{
@@ -47,21 +55,21 @@
 					"multiple": false,
 					"node_count": 1,
 					"requirements": [
-							{
-								"check": "ram",
-								"value": "4",
-								"name": "%v GB RAM"
-							},
-							{
-								"check": "cpu",
-								"value": "1",
-								"name": "%v CPUs"
-							},
-							{
-								"check": "disk",
-								"value": "50",
-								"name": "%v GB disk space"
-							}
+						{
+							"check": "ram",
+							"value": "4",
+							"name": "%v GB RAM"
+						},
+						{
+							"check": "cpu",
+							"value": "1",
+							"name": "%v CPUs"
+						},
+						{
+							"check": "disk",
+							"value": "50",
+							"name": "%v GB disk space"
+						}
 					],
 					"operating_system": "windows",
 					"roles": [
@@ -79,21 +87,21 @@
 					"category": "system",
 					"operating_system": "ubuntu",
 					"requirements": [
-							{
-								"check": "ram",
-								"value": "1",
-								"name": "%v GB RAM"
-							},
-							{
-								"check": "cpu",
-								"value": "1",
-								"name": "%v CPUs"
-							},
-							{
-								"check": "disk",
-								"value": "10",
-								"name": "%v GB disk space"
-							}
+						{
+							"check": "ram",
+							"value": "1",
+							"name": "%v GB RAM"
+						},
+						{
+							"check": "cpu",
+							"value": "1",
+							"name": "%v CPUs"
+						},
+						{
+							"check": "disk",
+							"value": "10",
+							"name": "%v GB disk space"
+						}
 					],
 					"roles": [
 						"internal_dns"
@@ -110,21 +118,21 @@
 					"category": "system",
 					"operating_system": "ubuntu",
 					"requirements": [
-							{
-								"check": "ram",
-								"value": "2",
-								"name": "%v GB RAM"
-							},
-							{
-								"check": "cpu",
-								"value": "2",
-								"name": "%v CPUs"
-							},
-							{
-								"check": "disk",
-								"value": "50",
-								"name": "%v GB disk space"
-							}
+						{
+							"check": "ram",
+							"value": "2",
+							"name": "%v GB RAM"
+						},
+						{
+							"check": "cpu",
+							"value": "2",
+							"name": "%v CPUs"
+						},
+						{
+							"check": "disk",
+							"value": "50",
+							"name": "%v GB disk space"
+						}
 					],
 					"roles": [
 						"nagios"
@@ -140,21 +148,21 @@
 					"node_count": 1,
 					"operating_system": "ubuntu",
 					"requirements": [
-							{
-								"check": "ram",
-								"value": "8",
-								"name": "%v GB RAM"
-							},
-							{
-								"check": "cpu",
-								"value": "4",
-								"name": "%v CPUs"
-							},
-							{
-								"check": "disk",
-								"value": "100",
-								"name": "%v GB disk space"
-							}
+						{
+							"check": "ram",
+							"value": "8",
+							"name": "%v GB RAM"
+						},
+						{
+							"check": "cpu",
+							"value": "4",
+							"name": "%v CPUs"
+						},
+						{
+							"check": "disk",
+							"value": "100",
+							"name": "%v GB disk space"
+						}
 					],
 					"roles": [
 						"atomia_database"
@@ -170,21 +178,21 @@
 					"node_count": 1,
 					"operating_system": "ubuntu",
 					"requirements": [
-							{
-								"check": "ram",
-								"value": "1",
-								"name": "%v GB RAM"
-							},
-							{
-								"check": "cpu",
-								"value": "1",
-								"name": "%v CPUs"
-							},
-							{
-								"check": "disk",
-								"value": "10",
-								"name": "%v GB disk space"
-							}
+						{
+							"check": "ram",
+							"value": "1",
+							"name": "%v GB RAM"
+						},
+						{
+							"check": "cpu",
+							"value": "1",
+							"name": "%v CPUs"
+						},
+						{
+							"check": "disk",
+							"value": "10",
+							"name": "%v GB disk space"
+						}
 					],
 					"roles": [
 						"internal_mailserver"
@@ -200,21 +208,21 @@
 					"node_count": 1,
 					"operating_system": "windows",
 					"requirements": [
-							{
-								"check": "ram",
-								"value": "8",
-								"name": "%v GB RAM"
-							},
-							{
-								"check": "cpu",
-								"value": "4",
-								"name": "%v CPUs"
-							},
-							{
-								"check": "disk",
-								"value": "100",
-								"name": "%v GB disk space"
-							}
+						{
+							"check": "ram",
+							"value": "8",
+							"name": "%v GB RAM"
+						},
+						{
+							"check": "cpu",
+							"value": "4",
+							"name": "%v CPUs"
+						},
+						{
+							"check": "disk",
+							"value": "100",
+							"name": "%v GB disk space"
+						}
 					],
 					"roles": [
 						"internal_apps"
@@ -230,21 +238,21 @@
 					"node_count": 1,
 					"operating_system": "windows",
 					"requirements": [
-							{
-								"check": "ram",
-								"value": "8",
-								"name": "%v GB RAM"
-							},
-							{
-								"check": "cpu",
-								"value": "4",
-								"name": "%v CPUs"
-							},
-							{
-								"check": "disk",
-								"value": "100",
-								"name": "%v GB disk space"
-							}
+						{
+							"check": "ram",
+							"value": "8",
+							"name": "%v GB RAM"
+						},
+						{
+							"check": "cpu",
+							"value": "4",
+							"name": "%v CPUs"
+						},
+						{
+							"check": "disk",
+							"value": "100",
+							"name": "%v GB disk space"
+						}
 					],
 					"roles": [
 						"public_apps"
@@ -267,21 +275,21 @@
 					"node_count": 1,
 					"operating_system": "ubuntu",
 					"requirements": [
-							{
-								"check": "ram",
-								"value": "1",
-								"name": "%v GB RAM"
-							},
-							{
-								"check": "cpu",
-								"value": "1",
-								"name": "%v CPUs"
-							},
-							{
-								"check": "disk",
-								"value": "10",
-								"name": "%v GB disk space"
-							}
+						{
+							"check": "ram",
+							"value": "1",
+							"name": "%v GB RAM"
+						},
+						{
+							"check": "cpu",
+							"value": "1",
+							"name": "%v CPUs"
+						},
+						{
+							"check": "disk",
+							"value": "10",
+							"name": "%v GB disk space"
+						}
 					],
 					"roles": [
 						"atomiadns"
@@ -297,21 +305,21 @@
 					"node_count": 1,
 					"operating_system": "ubuntu",
 					"requirements": [
-							{
-								"check": "ram",
-								"value": "1",
-								"name": "%v GB RAM"
-							},
-							{
-								"check": "cpu",
-								"value": "1",
-								"name": "%v CPUs"
-							},
-							{
-								"check": "disk",
-								"value": "10",
-								"name": "%v GB disk space"
-							}
+						{
+							"check": "ram",
+							"value": "1",
+							"name": "%v GB RAM"
+						},
+						{
+							"check": "cpu",
+							"value": "1",
+							"name": "%v CPUs"
+						},
+						{
+							"check": "disk",
+							"value": "10",
+							"name": "%v GB disk space"
+						}
 					],
 					"roles": [
 						"atomiadns"
@@ -334,21 +342,21 @@
 					"node_count": 1,
 					"operating_system": "ubuntu",
 					"requirements": [
-							{
-								"check": "ram",
-								"value": "1",
-								"name": "%v GB RAM"
-							},
-							{
-								"check": "cpu",
-								"value": "1",
-								"name": "%v CPUs"
-							},
-							{
-								"check": "disk",
-								"value": "10",
-								"name": "%v GB disk space"
-							}
+						{
+							"check": "ram",
+							"value": "1",
+							"name": "%v GB RAM"
+						},
+						{
+							"check": "cpu",
+							"value": "1",
+							"name": "%v CPUs"
+						},
+						{
+							"check": "disk",
+							"value": "10",
+							"name": "%v GB disk space"
+						}
 					],
 					"roles": [
 						"fsagent"
@@ -364,21 +372,21 @@
 					"node_count": 1,
 					"operating_system": "ubuntu",
 					"requirements": [
-							{
-								"check": "ram",
-								"value": "1",
-								"name": "%v GB RAM"
-							},
-							{
-								"check": "cpu",
-								"value": "1",
-								"name": "%v CPUs"
-							},
-							{
-								"check": "disk",
-								"value": "20",
-								"name": "%v GB disk space"
-							}
+						{
+							"check": "ram",
+							"value": "1",
+							"name": "%v GB RAM"
+						},
+						{
+							"check": "cpu",
+							"value": "1",
+							"name": "%v CPUs"
+						},
+						{
+							"check": "disk",
+							"value": "20",
+							"name": "%v GB disk space"
+						}
 					],
 					"roles": [
 						"installatron"
@@ -394,21 +402,21 @@
 					"node_count": 1,
 					"operating_system": "ubuntu",
 					"requirements": [
-							{
-								"check": "ram",
-								"value": "1",
-								"name": "%v GB RAM"
-							},
-							{
-								"check": "cpu",
-								"value": "1",
-								"name": "%v CPUs"
-							},
-							{
-								"check": "disk",
-								"value": "10",
-								"name": "%v GB disk space"
-							}
+						{
+							"check": "ram",
+							"value": "1",
+							"name": "%v GB RAM"
+						},
+						{
+							"check": "cpu",
+							"value": "1",
+							"name": "%v CPUs"
+						},
+						{
+							"check": "disk",
+							"value": "10",
+							"name": "%v GB disk space"
+						}
 					],
 					"roles": [
 						"awstats"
@@ -424,21 +432,21 @@
 					"node_count": 1,
 					"operating_system": "ubuntu",
 					"requirements": [
-							{
-								"check": "ram",
-								"value": "1",
-								"name": "%v GB RAM"
-							},
-							{
-								"check": "cpu",
-								"value": "1",
-								"name": "%v CPUs"
-							},
-							{
-								"check": "disk",
-								"value": "10",
-								"name": "%v GB disk space"
-							}
+						{
+							"check": "ram",
+							"value": "1",
+							"name": "%v GB RAM"
+						},
+						{
+							"check": "cpu",
+							"value": "1",
+							"name": "%v CPUs"
+						},
+						{
+							"check": "disk",
+							"value": "10",
+							"name": "%v GB disk space"
+						}
 					],
 					"roles": [
 						"daggre"
@@ -454,21 +462,21 @@
 					"node_count": 1,
 					"operating_system": "ubuntu",
 					"requirements": [
-							{
-								"check": "ram",
-								"value": "1",
-								"name": "%v GB RAM"
-							},
-							{
-								"check": "cpu",
-								"value": "1",
-								"name": "%v CPUs"
-							},
-							{
-								"check": "disk",
-								"value": "20",
-								"name": "%v GB disk space"
-							}
+						{
+							"check": "ram",
+							"value": "1",
+							"name": "%v GB RAM"
+						},
+						{
+							"check": "cpu",
+							"value": "1",
+							"name": "%v CPUs"
+						},
+						{
+							"check": "disk",
+							"value": "20",
+							"name": "%v GB disk space"
+						}
 					],
 					"roles": [
 						"cronagent"
@@ -484,21 +492,21 @@
 					"node_count": 1,
 					"operating_system": "ubuntu",
 					"requirements": [
-							{
-								"check": "ram",
-								"value": "4",
-								"name": "%v GB RAM"
-							},
-							{
-								"check": "cpu",
-								"value": "4",
-								"name": "%v CPUs"
-							},
-							{
-								"check": "disk",
-								"value": "20",
-								"name": "%v GB disk space"
-							}
+						{
+							"check": "ram",
+							"value": "4",
+							"name": "%v GB RAM"
+						},
+						{
+							"check": "cpu",
+							"value": "4",
+							"name": "%v CPUs"
+						},
+						{
+							"check": "disk",
+							"value": "20",
+							"name": "%v GB disk space"
+						}
 					],
 					"roles": [
 						"apache"
@@ -514,21 +522,21 @@
 					"node_count": 1,
 					"operating_system": "windows",
 					"requirements": [
-							{
-								"check": "ram",
-								"value": "4",
-								"name": "%v GB RAM"
-							},
-							{
-								"check": "cpu",
-								"value": "4",
-								"name": "%v CPUs"
-							},
-							{
-								"check": "disk",
-								"value": "50",
-								"name": "%v GB disk space"
-							}
+						{
+							"check": "ram",
+							"value": "4",
+							"name": "%v GB RAM"
+						},
+						{
+							"check": "cpu",
+							"value": "4",
+							"name": "%v CPUs"
+						},
+						{
+							"check": "disk",
+							"value": "50",
+							"name": "%v GB disk space"
+						}
 					],
 					"roles": [
 						"iis"
@@ -544,21 +552,21 @@
 					"node_count": 1,
 					"operating_system": "ubuntu",
 					"requirements": [
-							{
-								"check": "ram",
-								"value": "1",
-								"name": "%v GB RAM"
-							},
-							{
-								"check": "cpu",
-								"value": "1",
-								"name": "%v CPUs"
-							},
-							{
-								"check": "disk",
-								"value": "10",
-								"name": "%v GB disk space"
-							}
+						{
+							"check": "ram",
+							"value": "1",
+							"name": "%v GB RAM"
+						},
+						{
+							"check": "cpu",
+							"value": "1",
+							"name": "%v CPUs"
+						},
+						{
+							"check": "disk",
+							"value": "10",
+							"name": "%v GB disk space"
+						}
 					],
 					"roles": [
 						"pureftpd"
@@ -574,21 +582,21 @@
 					"node_count": 1,
 					"operating_system": "ubuntu",
 					"requirements": [
-							{
-								"check": "ram",
-								"value": "2",
-								"name": "%v GB RAM"
-							},
-							{
-								"check": "cpu",
-								"value": "2",
-								"name": "%v CPUs"
-							},
-							{
-								"check": "disk",
-								"value": "20",
-								"name": "%v GB disk space"
-							}
+						{
+							"check": "ram",
+							"value": "2",
+							"name": "%v GB RAM"
+						},
+						{
+							"check": "cpu",
+							"value": "2",
+							"name": "%v CPUs"
+						},
+						{
+							"check": "disk",
+							"value": "20",
+							"name": "%v GB disk space"
+						}
 					],
 					"roles": [
 						"postfix"
@@ -604,21 +612,21 @@
 					"node_count": 1,
 					"operating_system": "ubuntu",
 					"requirements": [
-							{
-								"check": "ram",
-								"value": "1",
-								"name": "%v GB RAM"
-							},
-							{
-								"check": "cpu",
-								"value": "1",
-								"name": "%v CPUs"
-							},
-							{
-								"check": "disk",
-								"value": "10",
-								"name": "%v GB disk space"
-							}
+						{
+							"check": "ram",
+							"value": "1",
+							"name": "%v GB RAM"
+						},
+						{
+							"check": "cpu",
+							"value": "1",
+							"name": "%v CPUs"
+						},
+						{
+							"check": "disk",
+							"value": "10",
+							"name": "%v GB disk space"
+						}
 					],
 					"roles": [
 						"haproxy"
@@ -634,21 +642,21 @@
 					"node_count": 1,
 					"operating_system": "ubuntu",
 					"requirements": [
-							{
-								"check": "ram",
-								"value": "4",
-								"name": "%v GB RAM"
-							},
-							{
-								"check": "cpu",
-								"value": "4",
-								"name": "%v CPUs"
-							},
-							{
-								"check": "disk",
-								"value": "100",
-								"name": "%v GB disk space"
-							}
+						{
+							"check": "ram",
+							"value": "4",
+							"name": "%v GB RAM"
+						},
+						{
+							"check": "cpu",
+							"value": "4",
+							"name": "%v CPUs"
+						},
+						{
+							"check": "disk",
+							"value": "100",
+							"name": "%v GB disk space"
+						}
 					],
 					"roles": [
 						"mysql"
@@ -664,21 +672,21 @@
 					"node_count": 1,
 					"operating_system": "ubuntu",
 					"requirements": [
-							{
-								"check": "ram",
-								"value": "4",
-								"name": "%v GB RAM"
-							},
-							{
-								"check": "cpu",
-								"value": "4",
-								"name": "%v CPUs"
-							},
-							{
-								"check": "disk",
-								"value": "100",
-								"name": "%v GB disk space"
-							}
+						{
+							"check": "ram",
+							"value": "4",
+							"name": "%v GB RAM"
+						},
+						{
+							"check": "cpu",
+							"value": "4",
+							"name": "%v CPUs"
+						},
+						{
+							"check": "disk",
+							"value": "100",
+							"name": "%v GB disk space"
+						}
 					],
 					"roles": [
 						"postgres"
@@ -694,21 +702,21 @@
 					"node_count": 1,
 					"operating_system": "windows",
 					"requirements": [
-							{
-								"check": "ram",
-								"value": "4",
-								"name": "%v GB RAM"
-							},
-							{
-								"check": "cpu",
-								"value": "4",
-								"name": "%v CPUs"
-							},
-							{
-								"check": "disk",
-								"value": "100",
-								"name": "%v GB disk space"
-							}
+						{
+							"check": "ram",
+							"value": "4",
+							"name": "%v GB RAM"
+						},
+						{
+							"check": "cpu",
+							"value": "4",
+							"name": "%v CPUs"
+						},
+						{
+							"check": "disk",
+							"value": "100",
+							"name": "%v GB disk space"
+						}
 					],
 					"roles": [
 						"mssql"

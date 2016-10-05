@@ -4,9 +4,12 @@
   "description": "Installer for the Atomia Platform",
   "main": "app.js",
   "dependencies": {
+    "body-parser": "^1.15.2",
+    "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
     "express-handlebars": "^3.0.0",
-    "handlebars-json": "^1.0.1"
+    "handlebars-json": "^1.0.1",
+    "mysql": "^2.11.1"
   },
   "devDependencies": {},
   "scripts": {
@@ -20,6 +23,13 @@
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/atomia/puppetmaster-gui/issues"
+  },
+  "standard": {
+    "ignore": [
+      "public/js/jquery.js",
+      "public/js/knockout.js",
+      "public/js/knockout.mapping.js"
+    ]
   },
   "homepage": "https://github.com/atomia/puppetmaster-gui#readme"
 }
