@@ -33,3 +33,32 @@
   background-color: #F7F7F5;
   margin-top:5px;
 }
+
+.Flex-container {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+
+  -webkit-flex-flow: row wrap;
+  justify-content: space-around;
+}
+
+.Flex-item {
+  background: #c22042;
+  padding: 5px;
+  width: 200px;
+  height: 60px;
+  margin-top: 10px;
+
+  line-height: 50px;
+  color: white;
+  font-weight: bold;
+  font-size: 1em;
+  text-align: center;
+}

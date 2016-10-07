@@ -6,8 +6,10 @@ $(document).ready(function () {
   var new_environment_selectors = document.getElementsByClassName('new_environment_select')
   var existing_environment_selectors = document.getElementsByClassName('existing_environment_select')
   var create_environment_button = document.getElementById('create_environment_button')
+  var view_requirements_button = document.getElementById('viewRequirementsButton')
+  var change_environment_button = document.getElementById('changeEnvironmentButton')
 
-  if (typeof selectedEnvironmentData !== 'undefined') {
+  if (typeof selectedEnvironmentData !== 'undefined' && selectedEnvironmentData !== 'undefined' && selectedEnvironmentData !== '') {
     $('#currentEnvironmentTitle').html('Currently loaded environment: ' + selectedEnvironmentData)
     $('#currentEnvironmentBar').show()
     toggleEnvironmentSelector('#existing_environment_div', '#new_environment_div')
@@ -44,6 +46,18 @@ $(document).ready(function () {
   if (create_environment_button) {
     create_environment_button.addEventListener('click', function () {
       createEnvironment()
+    }, false)
+  }
+
+  if (view_requirements_button) {
+    view_requirements_button.addEventListener('click', function () {
+      viewRequirements()
+    }, false)
+  }
+
+  if (change_environment_button) {
+    change_environment_button.addEventListener('click', function () {
+      resetCookies()
     }, false)
   }
 
@@ -91,12 +105,35 @@ $(document).ready(function () {
             ko.applyBindings(environmentModel, document.getElementById('mainView'))
             ko.applyBindings(computedModel, document.getElementById('counterView'))
           },
-          data: { name: environmentName }
+          data: { name: environmentName, platformData: JSON.stringify(existingEnvironments[selectedId])}
         })
       }
     }
 
     $('#customization').show('slow')
     $('#requirements').show()
+  }
+
+  function viewRequirements () {
+    // Save changes to the cookie
+    console.log(JSON.stringify(ko.toJSON(environmentModel)))
+    $.ajax({
+      url: '',
+      type: 'PUT',
+      success: function () {
+        window.location.replace('/platform-options/requirements')
+      },
+      data: { platformData: JSON.stringify(ko.toJSON(environmentModel))}
+    })
+  }
+
+  function resetCookies () {
+    $.ajax({
+      url: '/platform-options/cookies',
+      type: 'DELETE',
+      success: function () {
+        window.location.replace('/platform-options')
+      }
+    })
   }
 })

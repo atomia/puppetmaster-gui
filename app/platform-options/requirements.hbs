@@ -1,0 +1,105 @@
+<script>
+
+</script>
+<section class="Main"  >
+  <div class="Margins" style="min-height: 300px;">
+    <div class="Bar Bar-header" style="width:100%;">
+      <h4 class="Bar-title Bar-item">Requirements</h4>
+      <div class="Bar-item Bar-item--right ">
+        <button type="submit" class="Btn Btn--primary">Back</button>
+      </div>
+    </div>
+    <div class="Paper kss-paper" style="margin:0px;">
+      <div class="Grid">
+        {{#each platformTree}}
+        <div class="Grid-column-6">
+
+          <div class="Rounded-box">
+            <h4>VLAN {{@index}}</h4>
+            {{#each this}}
+            <div class="Flex-container" >
+              {{#each this}}
+              <div>
+                <div class="Flex-item">{{name}}</div>
+              </div>
+              {{/each}}
+            </div>
+            {{/each}}
+          </div>
+        </div>
+        {{/each}}
+      </div>
+      <div class="Grid">
+        <div class="Grid-column-6">
+          <p>Total machines: <strong>25</strong></p>
+          <hr>
+        </div>
+      </div>
+      {{#each platformTree}}
+      {{#each this}}
+      {{#each this}}
+
+      <div class="Grid">
+        <div class="Grid-column-1">
+          <p><strong>1</strong></p>
+        </div>
+        <div class="Grid-column-1">
+          <p>
+            Server OS:<br/>
+            {{operating_system}}
+          </p>
+          <p>
+            Services:<br/>
+            {{name}}
+          </p>
+        </div>
+        <div class="Grid-column-4">
+          <p>
+            Name: <br/>
+            {{name}}
+          </p>
+          <p>
+            Description: <br/>
+            {{description}}
+          </p>
+          <p>
+            Recommended hardware: <br/>
+            <ul>
+              <li>2 CPUs</li>
+              <li>8GB RAM</li>
+              <li>50GB Disk space</li>
+            </ul>
+          </p>
+
+          <p>
+            Firewall rules:
+
+            <table>
+              <tr>
+                <th>Port</th>
+                <th>Function</th>
+                <th>Protocol</th>
+                <th>Source</th>
+              </tr>
+              {{#each roles}}
+                {{#with (lookup @root.roleData this.class)}}
+                  {{#each firewall}}
+                    <tr>
+                      <td>{{port}}</td>
+                      <td>{{function}}</td>
+                      <td>{{protocol}}</td>
+                      <td>{{source}}</td>
+                    </tr>
+                  {{/each}}
+                {{/with}}
+              {{/each}}
+            </table>
+          </p>
+        </div>
+      </div>
+      {{/each}}
+      {{/each}}
+      {{/each}}
+    </div>
+  </div>
+</section>

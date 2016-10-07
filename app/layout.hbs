@@ -3,12 +3,12 @@
   <title>Atomia Installer</title>
   <link rel="stylesheet" href="http://patternlibrary.atomia.com/css/pattern-library.css">
   <link rel="stylesheet" href="http://patternlibrary.atomia.com/css/main.css">
-  <link rel="stylesheet" href="css/installer.css">
-  <script type="text/javascript" src="js/knockout.js"></script>
-  <script type="text/javascript" src="js/knockout.mapping.js"></script>
-  <script type="text/javascript" src="js/jquery.js"></script>
-  <script type="text/javascript" src="js/view_models.js" defer="defer"></script>
-  <script type="text/javascript" src="js/platform-options.js" defer="defer"></script>
+  <link rel="stylesheet" href="/css/installer.css">
+  <script type="text/javascript" src="/js/knockout.js"></script>
+  <script type="text/javascript" src="/js/knockout.mapping.js"></script>
+  <script type="text/javascript" src="/js/jquery.js"></script>
+  <script type="text/javascript" src="/js/view_models.js" defer="defer"></script>
+  <script type="text/javascript" src="/js/platform-options.js" defer="defer"></script>
 </head>
 <body>
   <div class="wrapper">
@@ -50,7 +50,7 @@
       <div class="Bar Bar-Neutral" id="currentEnvironmentBar" style="background-color:#e5e3e0;display:none;">
         <h4 class="Bar-title Bar-item" id="currentEnvironmentTitle"></h4>
         <div class="Bar-item Bar-item--right">
-              <button class="Btn Btn--secondary ">Change</button>
+              <button class="Btn Btn--secondary" id="changeEnvironmentButton">Change</button>
           </div>
       </div>
     </header>

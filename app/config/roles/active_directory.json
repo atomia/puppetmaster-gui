@@ -1,6 +1,21 @@
 {
   "name": "Active directory",
+  "role_name": "active_directory",
   "description": "Active directory is used to store information about users in the Atomia system",
+  "firewall": [
+    {
+      "port": 80,
+      "function": "http",
+      "protocol": "tcp",
+      "source": "world"
+    },
+    {
+      "port": 443,
+      "function": "ssl",
+      "protocol": "tcp",
+      "source": "world"
+    }
+  ],
   "pretty_variables": [
     {
       "name" : "domain_name",
