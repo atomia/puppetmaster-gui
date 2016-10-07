@@ -59,7 +59,7 @@ PlatformOption.newEnvironment = function (name, template, callback, onError) {
 PlatformOption.getEnvironmentFromDatabase = function (name, callback, onError) {
   dbh.connect(function (data) {
     dbh.query('SELECT * FROM platform_data WHERE name = \'' + name + '\' ', function (result) {
-      callback(result)
+      callback(result[0])
     }, function (err) {
       onError(err)
     })
@@ -80,4 +80,62 @@ PlatformOption.getAllEnvironmentsFromDatabase = function (callback, onError) {
   })
 }
 
+PlatformOption.updateEnvironmentData = function (name, platformData, callback, onError) {
+  dbh.connect(function (data) {
+    dbh.query('UPDATE platform_data SET json_data = \'' + JSON.stringify(platformData) + '\' WHERE name = \'' + name + '\' ', function (result) {
+      callback(result)
+    }, function (err) {
+      onError(err)
+    })
+  }, function (err) {
+    onError(err)
+  })
+}
+
+PlatformOption.buildVlanTree = function (platform, callback, onError) {
+  var vlanTree = [];
+
+  for (var i = 1; i < 6; i++) {
+    vlanTree[i] = []
+  }
+
+console.log(platform)
+  for (var i = 0; i < platform.servers.length; i++) {
+    var p = platform.servers[i]
+    for (var a = 0; a < p.members.length; a++) {
+      var m = p.members[a]
+      if (m.selected) {
+        if(vlanTree[m.vlan].length == 0) {
+          var vlanOrder = []
+          vlanOrder[0] = m
+          vlanTree[m.vlan][m.graph_position] = vlanOrder
+        }
+        else {
+          if (typeof vlanTree[m.vlan][m.graph_position] === 'undefined') {
+            var vlanOrder = []
+            vlanOrder[0] = m
+            vlanTree[m.vlan][m.graph_position] = vlanOrder
+          } else {
+            vlanTree[m.vlan][m.graph_position].push(m)
+          }
+        }
+      }
+    }
+  }
+  callback(vlanTree)
+}
+
+PlatformOption.getAllRoles = function (callback, onError) {
+  var roles = []
+  fh.readFiles('config/roles/', function (filename, content, count, total) {
+    var role = JSON.parse(content)
+    roles[role.role_name] = role
+
+    if (count === total) {
+      callback(roles)
+    }
+  }, function (err) {
+    onError(err)
+  })
+}
 module.exports = PlatformOption

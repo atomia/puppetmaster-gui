@@ -17,6 +17,17 @@ app.engine('.hbs', exphbs({
   helpers: {
     toJSON: function (object) {
       return JSON.stringify(object)
+    },
+    debug: function(optionalValue) {
+      console.log("Current Context");
+      console.log("====================");
+      console.log(this);
+
+      if (optionalValue) {
+        console.log("Value");
+        console.log("====================");
+        console.log(optionalValue);
+      }
     }
   }
 }))
@@ -29,6 +40,7 @@ app.use(cookieParser())
 
 app.use('/', startController)
 app.use('/platform-options', platformOptionsController)
+
 
 // Default error handler
 app.use(function (err, req, res, next) {
