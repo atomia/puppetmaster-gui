@@ -1,3 +1,4 @@
+<!doctype html>
 <html>
 <head>
   <title>Atomia Installer</title>
@@ -9,6 +10,7 @@
   <script type="text/javascript" src="/js/jquery.js"></script>
   <script type="text/javascript" src="/js/view_models.js" defer="defer"></script>
   <script type="text/javascript" src="/js/platform-options.js" defer="defer"></script>
+  <script src="https://use.fontawesome.com/6a22df98aa.js"></script>
 </head>
 <body>
   <div class="wrapper">
@@ -19,38 +21,26 @@
       <div class="NavBar NavBar--sections">
         <ul class="Set Set--sections u-left ">
           <li class="Set-item">
-            <span class="Set-label Head-breadcrumb-action-active" href="#">Platform options</span>
+            <a class="Set-divider u-brand-color" href="#">Platform options</a>
           </li>
           <li class="Set-item">
-            <span class="Set-label Icon Icon--next Icon--standalone Head-breadcrumb-action"></span>
+            <a class="Set-divider" href="#">Servers</a>
           </li>
           <li class="Set-item">
-            <span class="Set-label Head-breadcrumb-action" href="#">Servers</span>
+            <a class="Set-divider" href="#">Configurations</a>
           </li>
           <li class="Set-item">
-            <span class="Set-label Icon Icon--next Icon--standalone Head-breadcrumb-action"></span>
+            <a class="Set-divider" href="#">Installation</a>
           </li>
           <li class="Set-item">
-            <span class="Set-label Head-breadcrumb-action" href="#">Configurations</span>
-          </li>
-          <li class="Set-item">
-            <span class="Set-label Icon Icon--next Icon--standalone Head-breadcrumb-action" ></span>
-          </li>
-          <li class="Set-item">
-            <span class="Set-label Head-breadcrumb-action" href="#">Installation</span>
-          </li>
-          <li class="Set-item">
-            <span class="Set-label Icon Icon--next Icon--standalone Head-breadcrumb-action"></span>
-          </li>
-          <li class="Set-item">
-            <span class="Set-label Head-breadcrumb-action" href="#">Finished</span>
+            <a class="Set-divider" href="#">Finished</a>
           </li>
         </ul>
       </div>
-      <div class="Bar Bar-Neutral" id="currentEnvironmentBar" style="background-color:#e5e3e0;display:none;">
-        <h4 class="Bar-title Bar-item" id="currentEnvironmentTitle"></h4>
+      <div class="Bar Bar--light" id="currentEnvironmentBar" style="display:none;">
+        <p class="Bar-title Bar-item" id="currentEnvironmentTitle"></p>
         <div class="Bar-item Bar-item--right">
-              <button class="Btn Btn--secondary" id="changeEnvironmentButton">Change</button>
+              <button class="Btn Btn--seethrough" id="changeEnvironmentButton">Change</button>
           </div>
       </div>
     </header>

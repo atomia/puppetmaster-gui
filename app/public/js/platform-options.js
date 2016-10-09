@@ -73,14 +73,14 @@ $(document).ready(function () {
   }
 
   function showNewEnvironmentOptions (selectorDiv) {
-    $('.Selected-box').removeClass('Selected-box')
-    $(selectorDiv).addClass('Selected-box')
+    $('.Box--selected').removeClass('Box--selected')
+    $(selectorDiv).addClass('Box--selected')
     $('#environment_name').show()
   }
 
   function createEnvironment () {
     var environmentName = $('#environment_name_input').val()
-    var templateName = $('.Selected-box').attr('id')
+    var templateName = $('.Box--selected').attr('id')
     if (environmentName !== '' && templateName !== '') {
       $.post('', {name: environmentName, template: templateName}, function (data) {
 
@@ -92,8 +92,8 @@ $(document).ready(function () {
 
   function loadEnvironment (environmentName) {
     var selectedId
-    $('.Selected-box').removeClass('Selected-box')
-    $("[id='" + environmentName + "']").addClass('Selected-box')
+    $('.Box--selected').removeClass('Box--selected')
+    $("[id='" + environmentName + "']").addClass('Box--selected')
     for (var i = 0; i < existingEnvironments.length; i++) {
       if (existingEnvironments[i].name === environmentName) {
         selectedId = i
