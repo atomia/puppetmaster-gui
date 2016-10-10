@@ -5,28 +5,28 @@ var selectedEnvironmentData = '{{selectedEnvironment}}'
 </script>
 <section class="Main"  >
   <div class="Margins" style="min-height: 300px;">
-    <div class="Bar Bar-header" style="width:100%;">
-      <h4 class="Bar-title Bar-item">Select what options to install</h4>
+    <div class="Bar Bar--light Bar--header">
+      <h5 class="Bar-title Bar-item">Select what options to install</h5>
       <div class="Bar-item Bar-item--right ">
-        <button type="submit" class="Btn Btn--primary">Next</button>
+        <button type="submit" class="Btn Btn--primary">Next <i class="fa-margin fa fa-angle-right"></i></button>
       </div>
     </div>
     <div class="Paper kss-paper" style="margin:0px;">
       <div class="Grid">
-        <div class="Grid-column-4" id="mainView">
+        <div class="Grid-column-5 u-no-margin-top" id="mainView">
           <div id="live_or_existing_div">
-            <h2>New or existing installation?</h2>
+            <h3 class="u-brand-color">New or existing installation?</h3>
             <a href="#" id="new_environment_button" class="Btn Btn--neutral">New environment</a>
             <a href="#" id="existing_environment_button" class="Btn Btn--neutral">Existing environment</a>
           </div>
 
           <div id="new_environment_div" style="display:none;">
-            <h1>New environment</h1>
+            <h3 class="u-brand-color">New environment</h3>
             Select one of the templates below to proceed
             <div class="Grid">
               {{#each environments}}
               <div class="Grid-column-3">
-                <div class="Rounded-box new_environment_select" id="{{name}}"style="margin:0px;">
+                <div class="Box Box--select new_environment_select" id="{{name}}"style="margin:0px;">
                   <h2>{{name}}</h2>
                   {{description}}
                 </div>
@@ -36,11 +36,11 @@ var selectedEnvironmentData = '{{selectedEnvironment}}'
           </div>
 
           <div id="existing_environment_div" style="display:none;">
-            <h1>Existing environment</h1>
+            <h3 class="u-brand-color">Existing environment</h3>
             <div class="Grid">
               {{#each existingEnvironments}}
               <div class="Grid-column-3">
-                <div class="Rounded-box existing_environment_select" id="{{name}}" style="margin:0px;">
+                <div class="Box Box--select existing_environment_select" id="{{name}}" style="margin:0px;">
                   <h2>{{name}}</h2>
                 </div>
               </div>
@@ -59,16 +59,16 @@ var selectedEnvironmentData = '{{selectedEnvironment}}'
             <button type="submit" class="Btn Btn--primary" id="create_environment_button">Create environment</button>
           </div>
 
-          <div id="customization" style="display:none;">
-            <h1>Customization options</h1>
+          <div id="customization" style="display:none;" class="u-margin-top">
+            <h3 class="u-brand-color">Customization options</h3>
 
             <div data-bind="template: {name: 'environment-template', foreach: environmentModel}"></div>
           </div>
           <script id="environment-template" type="text/html">
 
-            <div class="Rounded-box">
-              <h4 data-bind="text: category"></h4>
-              <label class="Switch" style="float:right;position:relative;top:-30px;right:30px;">
+            <div class="Box">
+              <h4 class="u-no-margin-bottom" data-bind="text: category"></h4>
+              <label class="Switch Switch--right">
                 <input class="Switch-input" data-bind="checked: selected" type="checkbox">
                 <span class="Switch-click" data-on="Yes" data-off="No"></span>
               </label>
@@ -77,10 +77,10 @@ var selectedEnvironmentData = '{{selectedEnvironment}}'
             <div data-bind="foreach: members">
               <div data-bind="ifnot: required">
 
-                <div class="Rounded-box Child-box">
+                <div class="Box Box--child">
                   <h4 data-bind="text: name"></h4>
                   <p data-bind="text: description"></p>
-                  <label class="Switch" style="float:right;position:relative;top:-30px;right:30px;">
+                  <label class="Switch Switch--right">
                     <input class="Switch-input" data-bind="checked: selected" type="checkbox">
                     <span class="Switch-click" data-on="Yes" data-off="No"></span>
                   </label>
@@ -95,8 +95,8 @@ var selectedEnvironmentData = '{{selectedEnvironment}}'
           </script>
 
         </div>
-        <div class="Grid-column-2" id="requirements" style="display:none;">
-          <h4>Requirements</h4>
+        <div class="Grid-column-1 u-no-margin-top" id="requirements" style="display:none;">
+          <h5 class="u-brand-color u-no-margin-top">Requirements</h5>
           <p><strong>For this installation you will need:</strong></p>
           <div id="counterView">
             <p data-bind="if: countServers('windows')">
@@ -111,8 +111,9 @@ var selectedEnvironmentData = '{{selectedEnvironment}}'
               Existing OpenStack installation
             </p>
             <p>
-              <button class="Btn Btn--neutral Btn--small" id="viewRequirementsButton">
-                View requirements list
+              <button class="Btn Btn--seethrough Req" id="viewRequirementsButton">
+              <i class="Req-icon fa fa-file-text-o"></i>
+                <span class="Req-label">View requirements list</span>
               </button>
             </p>
           </div>

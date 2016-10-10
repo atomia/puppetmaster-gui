@@ -3,76 +3,79 @@
 </script>
 <section class="Main"  >
   <div class="Margins" style="min-height: 300px;">
-    <div class="Bar Bar-header" style="width:100%;">
-      <h4 class="Bar-title Bar-item">Requirements</h4>
+    <div class="Bar Bar--light Bar--header">
+      <h5 class="Bar-title Bar-item">Requirements</h5>
       <div class="Bar-item Bar-item--right ">
-        <button type="submit" class="Btn Btn--primary">Back</button>
+        <button type="submit" class="Btn Btn--primary"><i class="fa-margin fa fa-angle-left"></i> Back</button>
       </div>
     </div>
     <div class="Paper kss-paper" style="margin:0px;">
       <div class="Grid">
         {{#each platformTree}}
-        <div class="Grid-column-6">
+        <div class="Grid-column-6 Box Box--child" style="padding-top: 60px">
 
-          <div class="Rounded-box">
-            <h4>VLAN {{@index}}</h4>
+            <h2 class="Box-title">VLAN {{@index}}</h2>
             {{#each this}}
             <div class="Flex-container" >
               {{#each this}}
-              <div>
-                <div class="Flex-item">{{name}}</div>
-              </div>
+                <a class="Flex-item" href="#{{name}}">{{name}}</a>
+
+                <!-- href = name is an ugly hack that should be fixed, since name contains spaces and therefore makes an illegal href (but it works in most browsers) -->
+
               {{/each}}
             </div>
             {{/each}}
-          </div>
+
         </div>
         {{/each}}
       </div>
-      <div class="Grid">
-        <div class="Grid-column-6">
-          <p>Total machines: <strong>25</strong></p>
-          <hr>
-        </div>
-      </div>
+      
+      <br>
+      <p class="u-large-text">Total machines: <strong>25</strong></p>
+      <hr>
+  
       {{#each platformTree}}
       {{#each this}}
       {{#each this}}
 
-      <div class="Grid">
-        <div class="Grid-column-1">
-          <p><strong>1</strong></p>
-        </div>
-        <div class="Grid-column-1">
-          <p>
-            Server OS:<br/>
-            {{operating_system}}
-          </p>
-          <p>
-            Services:<br/>
-            {{name}}
-          </p>
+      <div class="Grid" id="{{name}}">
+        <!-- id = name is an ugly hack that should be fixed, since name contains spaces and therefore makes an illegal html-id (but it works in most browsers) -->
+
+        <div class="Grid-column-2">
+          <section class="Machine-index">1</section>
+          
+          <section class="Machine-info">
+            <p>
+              Server OS:<br/>
+              <i class="fa fa-windows"></i> {{operating_system}}
+            </p>
+            <p>
+              Services:<br/>
+              <strong>{{name}}</strong>
+            </p>
+          </section>
         </div>
         <div class="Grid-column-4">
           <p>
-            Name: <br/>
+            <span class="Machine-title">Name:</span>
             {{name}}
           </p>
           <p>
-            Description: <br/>
+            <span class="Machine-title">Description:</span>
             {{description}}
           </p>
-          <p>
-            Recommended hardware: <br/>
-            <ul>
-              <li>2 CPUs</li>
-              <li>8GB RAM</li>
-              <li>50GB Disk space</li>
-            </ul>
+          <p class="u-no-margin-bottom">
+            <span class="Machine-title">Recommended hardware:</span>
           </p>
+          <ul>
+            <li>2 CPUs</li>
+            <li>8GB RAM</li>
+            <li>50GB Disk space</li>
+          </ul>
+          <br>
 
-          <p>
-            Firewall rules:
+          <section class="Machine-firewall">
+            <span class="Machine-title">Firewall rules:</span>
 
             <table>
               <tr>
@@ -94,9 +97,10 @@
                 {{/with}}
               {{/each}}
             </table>
-          </p>
+          </section>
         </div>
       </div>
+      <hr>
       {{/each}}
       {{/each}}
       {{/each}}
