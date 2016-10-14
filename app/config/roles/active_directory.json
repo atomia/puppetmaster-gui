@@ -16,6 +16,7 @@
       "source": "world"
     }
   ],
+  "global_firewall": [],
   "pretty_variables": [
     {
       "name" : "domain_name",

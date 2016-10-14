@@ -1,5 +1,7 @@
 var fh = require('../lib/file_helper')
 var dbh = require('../lib/database_helper')
+var fs = require('fs')
+
 var PlatformOption = function (data) {
   this.data = data
 }
@@ -138,4 +140,12 @@ PlatformOption.getAllRoles = function (callback, onError) {
     onError(err)
   })
 }
+
+PlatformOption.getRoleByName = function (name, callback, onError) {
+  fs.readFile('config/roles/' + name + '.json', 'utf8', function (err, data) {
+    if (err) throw err;
+    callback(JSON.parse(data));
+  });
+}
+
 module.exports = PlatformOption
