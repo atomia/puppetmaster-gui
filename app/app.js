@@ -8,6 +8,8 @@ var cookieParser = require('cookie-parser')
 // Controllers/routes
 var startController = require('./start/index')
 var platformOptionsController = require('./platform-options/index')
+var restateController = require('./restate-machine/index')
+var serverController = require('./servers/index')
 
 app.engine('.hbs', exphbs({
   defaultLayout: 'layout',
@@ -40,7 +42,8 @@ app.use(cookieParser())
 
 app.use('/', startController)
 app.use('/platform-options', platformOptionsController)
-
+app.use('/restate-machines', restateController)
+app.use('/servers', serverController)
 
 // Default error handler
 app.use(function (err, req, res, next) {

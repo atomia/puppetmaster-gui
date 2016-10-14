@@ -12,8 +12,10 @@ $(document).ready(function () {
   if (typeof selectedEnvironmentData !== 'undefined' && selectedEnvironmentData !== 'undefined' && selectedEnvironmentData !== '') {
     $('#currentEnvironmentTitle').html('Currently loaded environment: ' + selectedEnvironmentData)
     $('#currentEnvironmentBar').show()
-    toggleEnvironmentSelector('#existing_environment_div', '#new_environment_div')
-    loadEnvironment(selectedEnvironmentData)
+    if (window.location.href.includes('platform-options')) {
+      toggleEnvironmentSelector('#existing_environment_div', '#new_environment_div')
+      loadEnvironment(selectedEnvironmentData)
+    }
   }
   if (new_environment_button) {
     new_environment_button.addEventListener('click', function () {

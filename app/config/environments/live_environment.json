@@ -17,8 +17,13 @@
           "multiple": false,
           "node_count": 1,
           "operating_system": "windows",
+          "ami": "ami-9b81f8e8",
+          "ec2_type": "t2.micro",
           "vlan": 1,
           "graph_position": 0,
+          "provisioning_order": 0,
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -57,8 +62,14 @@
           "multiple": false,
           "node_count": 1,
           "operating_system": "windows",
+          "ami": "ami-9b81f8e8",
+          "ec2_type": "t2.micro",
+          "operating_system": "windows",
           "vlan": 1,
           "graph_position": 0,
+          "provisioning_order": 1,
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -88,10 +99,15 @@
           "cluster": false,
           "multiple": false,
           "node_count": 1,
+          "ami": "ami-ed82e39e",
+          "ec2_type": "t2.micro",
           "category": "system",
           "operating_system": "ubuntu",
           "vlan": 3,
           "graph_position": 0,
+          "provisioning_order": 3,
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -110,7 +126,15 @@
             }
           ],
           "roles": [
-            "internal_dns"
+            {
+              "class": "internaldns",
+              "overrides": [
+                {
+                  "variable": "$domain_name",
+                  "value": "atomia.internal"
+                }
+              ]
+            }
           ]
         },
         {
@@ -121,10 +145,15 @@
           "cluster": false,
           "multiple": false,
           "node_count": 1,
+          "ami": "ami-ed82e39e",
+          "ec2_type": "t2.micro",
           "category": "system",
           "operating_system": "ubuntu",
           "vlan": 3,
           "graph_position": 0,
+          "provisioning_order": 2,
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -154,9 +183,14 @@
           "cluster": false,
           "multiple": false,
           "node_count": 1,
+          "ami": "ami-ed82e39e",
+          "ec2_type": "t2.small",
           "operating_system": "ubuntu",
           "vlan": 1,
           "graph_position": 2,
+          "provisioning_order": 3,
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -186,9 +220,14 @@
           "cluster": false,
           "multiple": false,
           "node_count": 1,
+          "ami": "ami-ed82e39e",
+          "ec2_type": "t2.micro",
           "operating_system": "ubuntu",
           "vlan": 1,
           "graph_position": 1,
+          "provisioning_order": 3,
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -219,8 +258,14 @@
           "multiple": false,
           "node_count": 1,
           "operating_system": "windows",
+          "ami": "ami-9b81f8e8",
+          "ec2_type": "t2.medium",
+          "operating_system": "windows",
           "vlan": 1,
           "graph_position": 1,
+          "provisioning_order": 4,
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -250,9 +295,14 @@
           "cluster": false,
           "multiple": false,
           "node_count": 1,
+          "ami": "ami-9b81f8e8",
+          "ec2_type": "t2.medium",
           "operating_system": "windows",
           "vlan": 1,
           "graph_position": 1,
+          "provisioning_order": 4,
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -289,9 +339,14 @@
           "cluster": false,
           "multiple": false,
           "node_count": 1,
+          "ami": "ami-ed82e39e",
+          "ec2_type": "t2.micro",
           "operating_system": "ubuntu",
           "vlan": 2,
           "graph_position": 0,
+          "provisioning_order": 5,
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -321,9 +376,14 @@
           "cluster": false,
           "multiple": true,
           "node_count": 1,
+          "ami": "ami-ed82e39e",
+          "ec2_type": "t2.micro",
           "operating_system": "ubuntu",
           "vlan": 2,
           "graph_position": 0,
+          "provisioning_order": 6,
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -360,9 +420,14 @@
           "cluster": false,
           "multiple": false,
           "node_count": 1,
+          "ami": "ami-ed82e39e",
+          "ec2_type": "t2.micro",
           "operating_system": "ubuntu",
           "vlan": 4,
           "graph_position": 0,
+          "provisioning_order": 5,
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -392,9 +457,14 @@
           "cluster": false,
           "multiple": false,
           "node_count": 1,
+          "ami": "ami-ed82e39e",
+          "ec2_type": "t2.micro",
           "operating_system": "ubuntu",
           "vlan": 4,
           "graph_position": 0,
+          "provisioning_order": 5,
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -424,9 +494,14 @@
           "cluster": false,
           "multiple": false,
           "node_count": 1,
+          "ami": "ami-ed82e39e",
+          "ec2_type": "t2.micro",
           "operating_system": "ubuntu",
           "vlan": 4,
           "graph_position": 0,
+          "provisioning_order": 5,
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -456,9 +531,14 @@
           "cluster": false,
           "multiple": false,
           "node_count": 1,
+          "ami": "ami-ed82e39e",
+          "ec2_type": "t2.micro",
           "operating_system": "ubuntu",
           "vlan": 4,
           "graph_position": 0,
+          "provisioning_order": 5,
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -488,9 +568,14 @@
           "cluster": false,
           "multiple": false,
           "node_count": 1,
+          "ami": "ami-ed82e39e",
+          "ec2_type": "t2.micro",
           "operating_system": "ubuntu",
           "vlan": 4,
           "graph_position": 0,
+          "provisioning_order": 5,
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -520,9 +605,14 @@
           "cluster": true,
           "multiple": false,
           "node_count": 1,
+          "ami": "ami-ed82e39e",
+          "ec2_type": "t2.micro",
           "operating_system": "ubuntu",
           "vlan": 4,
           "graph_position": 0,
+          "provisioning_order": 6,
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -552,9 +642,14 @@
           "cluster": true,
           "multiple": false,
           "node_count": 1,
+          "ami": "ami-9b81f8e8",
+          "ec2_type": "t2.medium",
           "operating_system": "windows",
           "vlan": 4,
           "graph_position": 0,
+          "provisioning_order": 6,
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -584,9 +679,14 @@
           "cluster": true,
           "multiple": false,
           "node_count": 1,
+          "ami": "ami-ed82e39e",
+          "ec2_type": "t2.micro",
           "operating_system": "ubuntu",
           "vlan": 4,
           "graph_position": 0,
+          "provisioning_order": 6,
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -616,9 +716,14 @@
           "cluster": true,
           "multiple": false,
           "node_count": 1,
+          "ami": "ami-ed82e39e",
+          "ec2_type": "t2.micro",
           "operating_system": "ubuntu",
           "vlan": 4,
           "graph_position": 0,
+          "provisioning_order": 6,
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -648,9 +753,14 @@
           "cluster": false,
           "multiple": true,
           "node_count": 1,
+          "ami": "ami-ed82e39e",
+          "ec2_type": "t2.micro",
           "operating_system": "ubuntu",
           "vlan": 4,
           "graph_position": 0,
+          "provisioning_order": 7,
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -680,9 +790,14 @@
           "cluster": false,
           "multiple": false,
           "node_count": 1,
+          "ami": "ami-ed82e39e",
+          "ec2_type": "t2.micro",
           "operating_system": "ubuntu",
           "vlan": 4,
           "graph_position": 0,
+          "provisioning_order": 5,
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -712,9 +827,14 @@
           "cluster": false,
           "multiple": false,
           "node_count": 1,
+          "ami": "ami-ed82e39e",
+          "ec2_type": "t2.micro",
           "operating_system": "ubuntu",
           "vlan": 4,
           "graph_position": 0,
+          "provisioning_order": 5,
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -744,9 +864,14 @@
           "cluster": false,
           "multiple": false,
           "node_count": 1,
+          "ami": "ami-9b81f8e8",
+          "ec2_type": "t2.medium",
           "operating_system": "windows",
           "vlan": 4,
           "graph_position": 0,
+          "provisioning_order": 5,
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -772,7 +897,7 @@
     },
     {
       "category": "VPS Hosting",
-      "category_id": "clud",
+      "category_id": "cloud",
       "selected": true,
       "members": [
         {
@@ -786,6 +911,9 @@
           "operating_system": "openstack",
           "vlan": 5,
           "graph_position": 0,
+          "ec2_type": "t2.medium",
+          "hostname": "",
+          "provisioning_status": "",
           "requirements": [
           ],
           "roles": [

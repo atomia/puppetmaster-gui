@@ -1,0 +1,113 @@
+<script>
+
+var environmentModel;
+var existingEnvironments = {{{toJSON platformData}}}
+
+$(document).ready(function () {
+  environmentModel = ko.mapping.fromJS(existingEnvironments.servers)
+  ko.applyBindings(environmentModel, document.getElementById('mainView'))
+})
+</script>
+<section class="Main"  >
+  <div class="Margins" style="min-height: 300px;">
+    <div class="Bar Bar--light Bar--header">
+      <h5 class="Bar-title Bar-item">Servers</h5>
+      <div class="Bar-item Bar-item--right ">
+        <button type="submit" class="Btn Btn--neutral">Back <i class="fa-margin fa fa-angle-left"></i></button>
+        <button type="submit" class="Btn Btn--neutral"><i class="fa-margin fa fa-floppy-o"></i> Save</button>
+        <button type="submit" class="Btn Btn--primary">Next <i class="fa-margin fa fa-angle-right"></i></button>
+      </div>
+    </div>
+    <div class="Paper kss-paper" style="margin:0px;">
+      <div class="Grid">
+        <div class="Grid-column-3">
+          <div class="Box Box--select new_environment_select" id=""style="margin:0px;">
+            <h2>Local(Custom)</h2>
+            Provide hostnames where to install
+          </div>
+        </div>
+        <div class="Grid-column-3">
+          <div class="Box Box--select new_environment_select" id=""style="margin:0px;">
+            <h2>Amazon Web Services</h2>
+            Provide AWS credentials and we will set up everything
+          </div>
+        </div>
+      </div>
+
+      <div class="Grid">
+        <div class="Grid-column-6">
+          <h3 class="u-brand-color">Amazon Web Services</h3>
+          <div class="Message Message--info">
+            Running this action will provision all your machines on your Amazon Web Services account, please be aware that there is a cost related to this. You should always log in to your account afterwards and make sure that you are ok with the cost associated with your new environment. <br/><br/>
+            Before starting you should also make sure that you have completed all the <a href="#">pre requirements</a>
+
+          </div>
+          <div class="Formrow">
+            <label class="Formrow-label" for="name">AWS Region</label>
+            <div class="Formrow-offset">
+              <label class="Select ">
+                <select>
+                  <option>us-east-1 (N. Virginia)</option>
+                  <option>us-west-1 (N. California)</option>
+                  <option>us-west-2 (Oregon)</option>
+                  <option selected="selected">eu-west-1 (Ireland)</option>
+                  <option>eu-central-1 (Frankfurt)</option>
+                </select>
+              </label>
+              <br/>
+            </div>
+          </div>
+          <div class="Formrow">
+            <label class="Formrow-label" for="name">VPC id</label>
+            <div class="Formrow-offset">
+              <input id="environment_name_input" type="text" placeholder="Name" value=""/><br/>
+            </div>
+          </div>
+          <button type="submit" class="Btn Btn--primary" id="create_aws_environment_button">Create my environment</button>
+        </div>
+      </div>
+      <div class="Grid" id="mainView">
+        <div class="Grid-column-6">
+          <table class="Table ">
+            <thead>
+              <tr class="Table-row">
+                <th style="u-left-text" width="5%">#</th>
+                <th class="u-left-text" width="25%">Service</th>
+                <th class="u-left-text" width="30%">Hostname</th>
+                <th class="u-left-text" width="20%">Type</th>
+                <th class="u-left-text" width="20%">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- ko foreach: environmentModel -->
+              <!-- ko foreach: members -->
+              <!-- ko if: operating_system() !== 'openstack' -->
+              <tr class="Table-bodyrow">
+                <td>1</td>
+                <td>
+                  <!-- ko if: operating_system() === 'windows' -->
+                  <i class="fa fa-windows" aria-hidden="true"></i>
+                  <!-- /ko -->
+                  <!-- ko if: operating_system() === 'ubuntu' -->
+                  <i class="fa fa-linux" aria-hidden="true"></i>
+                  <!-- /ko -->
+                  <span data-bind="text: name"></span></td>
+                  <td data-bind="text: hostname">
+
+                  </td>
+                  <td data-bind="text: ec2_type"></td>
+                  <td data-bind="html: provisioning_status"></td>
+                </tr>
+                <!-- /ko -->
+                <!-- /ko -->
+                <!-- /ko -->
+              </tbody>
+  </tbody>
+  <tfoot>
+  </tfoot>
+</table>
+</div>
+</div>
+</div>
+</div>
+</section>
