@@ -77,13 +77,13 @@
 .Box--child-child {
     background: #edede8;
     margin: -5px auto 0;
-    border-top-left-radius: 0; 
-    border-top-right-radius: 0; 
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
 .Box-title {
     border-top-left-radius: 5px;
     border-bottom-right-radius: 5px;
-    padding: 1rem 2rem; 
+    padding: 1rem 2rem;
     background: #ececec;
     display: inline-block;
     position: absolute;
@@ -109,10 +109,10 @@
         height: 100%;
         font-size: 1rem !important;
         margin: -9px 0 0;
-        text-align: center; 
+        text-align: center;
         border: 1px solid #e3e3e3;
     }
-/* Example use of Counter component 
+/* Example use of Counter component
  *
  * <div class="Box Box--child-child">
  *    <div class="Counter">
@@ -121,7 +121,7 @@
  *        <button class="Counter-action fa fa-angle-right"></button>
  *    </div>
  * </div>
- * 
+ *
  * (But PLEASE consider using standard HTML5 instead, not as pretty but better accessability)
  * <input type="number" min="0" max="10" step="1">
  */
@@ -214,7 +214,7 @@
 }
 
 .Flex-item {
-  background: #e3e3e3; 
+  background: #e3e3e3;
   padding: 5px;
   width: 200px;
   height: 60px;
@@ -226,4 +226,11 @@
   text-align: center;
   display: block;
   color: #abaaab;
+}
+
+
+
+.Grid-column-3 {
+    width: 48%;
+    margin: 2% 2% 0 0;
 }

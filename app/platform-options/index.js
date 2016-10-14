@@ -29,6 +29,7 @@ router.post('/', function (req, res, next) {
   var platformName = req.body.name
   var platformTemplate = req.body.template
   PlatformOption.newEnvironment(platformName, platformTemplate, function (data) {
+    res.cookie('platformName', platformName)
     res.json({'status': 'ok'})
   },
   function (error) {
@@ -45,7 +46,9 @@ router.put('/', function (req, res, next) {
     res.cookie('platformName', platformName)
   }
   if (typeof platformData !== 'undefined' && platformData !== '' && platformData !== 'undefined') {
+    console.log("updating data")
     PlatformOption.updateEnvironmentData(platformName, platformData, function (data) {
+      console.log("updated")
       res.json({'status': 'ok'})
     },
     function (error) {

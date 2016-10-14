@@ -7,7 +7,7 @@ var existingEnvironments = {{{toJSON existingEnvironments}}}
     <div class="Bar Bar--light Bar--header">
       <h5 class="Bar-title Bar-item">Select what options to install</h5>
       <div class="Bar-item Bar-item--right ">
-        <button type="submit" class="Btn Btn--primary">Next <i class="fa-margin fa fa-angle-right"></i></button>
+        <a href="/servers"><button type="submit" class="Btn Btn--primary">Next <i class="fa-margin fa fa-angle-right"></i></button></a>
       </div>
     </div>
     <div class="Paper kss-paper" style="margin:0px;">
@@ -61,7 +61,7 @@ var existingEnvironments = {{{toJSON existingEnvironments}}}
           <div id="customization" style="display:none;" class="u-margin-top">
             <h3 class="u-brand-color">Customization options</h3>
 
-            <div data-bind="template: {name: 'environment-template', foreach: environmentModel}"></div>
+            <div data-bind="template: {name: 'environment-template', foreach: environmentModel.servers}"></div>
           </div>
           <script id="environment-template" type="text/html">
 

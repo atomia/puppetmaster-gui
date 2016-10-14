@@ -84,7 +84,9 @@ PlatformOption.getAllEnvironmentsFromDatabase = function (callback, onError) {
 
 PlatformOption.updateEnvironmentData = function (name, platformData, callback, onError) {
   dbh.connect(function (data) {
-    dbh.query('UPDATE platform_data SET json_data = \'' + JSON.stringify(platformData) + '\' WHERE name = \'' + name + '\' ', function (result) {
+    console.log(name)
+    dbh.query('UPDATE platform_data SET json_data = \'' + JSON.stringify(platformData).replace(/\\/g, '') + '\' WHERE name = \'' + name + '\' ', function (result) {
+      console.log(result)
       callback(result)
     }, function (err) {
       onError(err)
