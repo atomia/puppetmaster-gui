@@ -85,7 +85,7 @@ $(document).ready(function () {
     var templateName = $('.Box--selected').attr('id')
     if (environmentName !== '' && templateName !== '') {
       $.post('', {name: environmentName, template: templateName}, function (data) {
-
+        location.reload()
       })
     } else {
       alert('Please fill in a name for the new environment')

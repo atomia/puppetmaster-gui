@@ -29,6 +29,7 @@ router.post('/', function (req, res, next) {
   var platformName = req.body.name
   var platformTemplate = req.body.template
   PlatformOption.newEnvironment(platformName, platformTemplate, function (data) {
+    res.cookie('platformName', platformName)
     res.json({'status': 'ok'})
   },
   function (error) {

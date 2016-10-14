@@ -15,7 +15,12 @@
 </head>
 <body>
   <script>
+
   var selectedEnvironmentData = '{{selectedEnvironment}}'
+  $(document).ready(function () {
+    $('#platform-options-a').addClass((window.location.href.includes('platform-options') ? 'u-brand-color' : ''))
+    $('#servers-a').addClass((window.location.href.includes('servers') ? 'u-brand-color' : ''))
+  })
   </script>
   <div class="wrapper">
     <header>
@@ -25,10 +30,10 @@
       <div class="NavBar NavBar--sections">
         <ul class="Set Set--sections u-left ">
           <li class="Set-item">
-            <a class="Set-divider u-brand-color" href="#">Platform options</a>
+            <a id='platform-options-a' class="Set-divider" href="#">Platform options</a>
           </li>
           <li class="Set-item">
-            <a class="Set-divider" href="#">Servers</a>
+            <a id='servers-a' class="Set-divider" href="#">Servers</a>
           </li>
           <li class="Set-item">
             <a class="Set-divider" href="#">Configurations</a>
@@ -44,8 +49,8 @@
       <div class="Bar Bar--light" id="currentEnvironmentBar" style="display:none;">
         <p class="Bar-title Bar-item" id="currentEnvironmentTitle"></p>
         <div class="Bar-item Bar-item--right">
-              <button class="Btn Btn--seethrough" id="changeEnvironmentButton">Change</button>
-          </div>
+          <button class="Btn Btn--seethrough" id="changeEnvironmentButton">Change</button>
+        </div>
       </div>
     </header>
     {{{body}}}
