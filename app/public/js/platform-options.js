@@ -103,9 +103,23 @@ $(document).ready(function () {
           url: '',
           type: 'PUT',
           success: function () {
-            environmentModel = ko.mapping.fromJS(existingEnvironments[selectedId].servers)
+            environmentModel = ko.mapping.fromJS(existingEnvironments[selectedId])
             ko.applyBindings(environmentModel, document.getElementById('mainView'))
             ko.applyBindings(computedModel, document.getElementById('counterView'))
+            var switch_buttons = document.getElementsByClassName('Switch-input')
+              if (switch_buttons) {
+                for (var a = 0; a < switch_buttons.length; a++) {
+                  switch_buttons[a].addEventListener('click', function () {
+                    $.ajax({
+                      url: '',
+                      type: 'PUT',
+                      success: function () {
+                      },
+                      data: { name: environmentName, platformData: ko.toJSON(ko.mapping.toJS(environmentModel))}
+                    })
+                  }, false)
+                }
+              }
           },
           data: { name: environmentName, platformData: JSON.stringify(existingEnvironments[selectedId])}
         })
@@ -114,11 +128,13 @@ $(document).ready(function () {
 
     $('#customization').show('slow')
     $('#requirements').show()
+
+
+
   }
 
   function viewRequirements () {
     // Save changes to the cookie
-    console.log(JSON.stringify(ko.toJSON(environmentModel)))
     $.ajax({
       url: '',
       type: 'PUT',

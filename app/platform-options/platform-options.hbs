@@ -61,7 +61,7 @@ var existingEnvironments = {{{toJSON existingEnvironments}}}
           <div id="customization" style="display:none;" class="u-margin-top">
             <h3 class="u-brand-color">Customization options</h3>
 
-            <div data-bind="template: {name: 'environment-template', foreach: environmentModel}"></div>
+            <div data-bind="template: {name: 'environment-template', foreach: environmentModel.servers}"></div>
           </div>
           <script id="environment-template" type="text/html">
 

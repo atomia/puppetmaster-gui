@@ -46,7 +46,9 @@ router.put('/', function (req, res, next) {
     res.cookie('platformName', platformName)
   }
   if (typeof platformData !== 'undefined' && platformData !== '' && platformData !== 'undefined') {
+    console.log("updating data")
     PlatformOption.updateEnvironmentData(platformName, platformData, function (data) {
+      console.log("updated")
       res.json({'status': 'ok'})
     },
     function (error) {
