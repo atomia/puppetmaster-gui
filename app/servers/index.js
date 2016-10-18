@@ -54,7 +54,10 @@ router.post('/schedule', function (req, res, next) {
   var selectedEnvironmentData = req.cookies.platformName
   PlatformOption.getEnvironmentFromDatabase(req.cookies.platformName, function (data) {
     Server.scheduleEnvironmentFromJson(JSON.parse(data.json_data.replace(/(^")|("$)/g, "")), function(data) {
-
+      if (!res.headerSent) {
+        res.json({'status': 'ok'})
+        return
+      }
     })
   },
   function (error) {

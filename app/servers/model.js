@@ -7,12 +7,13 @@ var Server = function (data) {
 
 Server.prototype.data = {}
 
+// TODO: refactor this function
 Server.scheduleEnvironmentFromJson = function (data, callback, onError) {
   for (var i = 0; i < data.servers.length; i++) {
     for (var a = 0; a < data.servers[i].members.length; a++) {
       var curServer = data.servers[i].members[a]
       // Get all firewall rules for the roles of this server
-      if (curServer.name === 'Internal DNS') { // For testing
+      if (curServer.name === 'Active directory') { // For testing
         var security_groups = []
         var roleCount = 0
         for (var r = 0; r < curServer.roles.length; r++) {
@@ -33,7 +34,8 @@ Server.scheduleEnvironmentFromJson = function (data, callback, onError) {
                   ami: curServer.ami,
                   type: curServer.ec2_type,
                   security_groups: security_groups,
-                  existing_security_groups: ['default']
+                  existing_security_groups: ['default'],
+                  os: curServer.operating_system
                 }
                 var options = {
                   url: 'http://localhost:3000/restate-machines',
@@ -51,7 +53,7 @@ Server.scheduleEnvironmentFromJson = function (data, callback, onError) {
                   dbh.connect(function (data) {
                     // TODO: we should not allow duplicate task_ids for an environment
                     dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + "', '" + runId + "', '" + JSON.stringify(jobData) + "', null, 1)", function (result) {
-                      callback()
+                      callback() // Should be sent when all tasks are done....
                     }, function (err) {
                       console.log(err)
                     })
@@ -64,7 +66,6 @@ Server.scheduleEnvironmentFromJson = function (data, callback, onError) {
             })
           })(curServer)
         }
-        callback('foo')
       }
     }
   }
