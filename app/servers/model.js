@@ -7,6 +7,7 @@ var Server = function (data) {
 
 Server.prototype.data = {}
 
+// TODO: refactor this function
 Server.scheduleEnvironmentFromJson = function (data, callback, onError) {
   for (var i = 0; i < data.servers.length; i++) {
     for (var a = 0; a < data.servers[i].members.length; a++) {
@@ -52,7 +53,7 @@ Server.scheduleEnvironmentFromJson = function (data, callback, onError) {
                   dbh.connect(function (data) {
                     // TODO: we should not allow duplicate task_ids for an environment
                     dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + "', '" + runId + "', '" + JSON.stringify(jobData) + "', null, 1)", function (result) {
-                      callback()
+                      callback() // Should be sent when all tasks are done....
                     }, function (err) {
                       console.log(err)
                     })
@@ -65,7 +66,6 @@ Server.scheduleEnvironmentFromJson = function (data, callback, onError) {
             })
           })(curServer)
         }
-        callback('foo')
       }
     }
   }

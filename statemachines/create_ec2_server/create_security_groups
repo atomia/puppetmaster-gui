@@ -11,7 +11,7 @@ Error () {
         else
                 restatemachine_transition_to "stop"
         fi
-        restatemachine_transition_after_seconds "0"
+        restatemachine_transition_after_seconds "3"
         restatemachine_status_message "$1"
         exit 0
 }
@@ -53,5 +53,4 @@ done < <(echo "$INPUT" | jq -r '.security_groups[]|"\(.name) \(.rules)"') #Parse
 INPUT=`echo -n "$INPUT" | jq '.security_group_id = "'"$GROUP_ID"'"'`
 echo -n "$INPUT"
 restatemachine_transition_to "create_server"
-restatemachine_transition_after_seconds "0"
-restatemachine_status_message "$1"
+restatemachine_transition_after_second

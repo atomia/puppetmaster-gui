@@ -5,7 +5,7 @@ DIR=`dirname $0`
 INPUT=`cat`
 Error () {
         restatemachine_transition_to "stop"
-        restatemachine_transition_after_seconds "0"
+        restatemachine_transition_after_seconds "3"
         restatemachine_status_message "$1 $INPUT"
         exit 0
 }
@@ -43,5 +43,5 @@ if [ "$OS" == "windows" ]; then
 else
         restatemachine_transition_to "configure_server"
 fi
-restatemachine_transition_after_seconds "0"
+restatemachine_transition_after_seconds "3"
 restatemachine_status_message "$1"

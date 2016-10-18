@@ -34,6 +34,6 @@ fi
 INPUT=`echo -n "$INPUT" | sed  '$s/}/, "status":"ok" }/'`
 
 echo -n "$INPUT"
-restatemachine_transition_to "stop"
+restatemachine_transition_to "assign_ip"
 restatemachine_transition_after_seconds "0"
-restatemachine_status_message "{\"status\":\"done\"}"
+restatemachine_status_message "Configuration done"
