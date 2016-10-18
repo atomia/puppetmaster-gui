@@ -1,0 +1,57 @@
+#!/bin/bash
+DIR=`dirname $0`
+. /etc/restatemachine/shell_helpers.inc
+
+INPUT=`cat`
+RETRY=0
+Error () {
+        echo -n "$INPUT"
+        if [ "$RETRY" == "1" ]; then
+                restatemachine_transition_to "create_security_groups"
+        else
+                restatemachine_transition_to "stop"
+        fi
+        restatemachine_transition_after_seconds "0"
+        restatemachine_status_message "$1"
+        exit 0
+}
+VPC_ID=`echo "$INPUT" | jq -r '.vpc_id'`
+# Parse the security group name and rules
+while read group_name rules; do
+
+        RESULT=$(aws ec2 create-security-group --group-name="$group_name" --description="Created by Atomia installer" --vpc-id="$VPC_ID" 2>&1)
+        if [ "$?" != "0" ]; then
+                RES=`echo $RESULT | tr -d '\r'`
+                if [[ "$RES" == *"InvalidGroup.Duplicate"* ]]; then
+                        RETRY=1
+                        RESULT=$(aws ec2 describe-security-groups --filter="Name=vpc-id,Values=$VPC_ID,Name=group-name,Values=$group_name")
+                        GROUP_ID=`echo "$RESULT" | jq -r '.SecurityGroups[0]|.GroupId'`
+                else
+                        Error "{\"status\":\"failed\", \"message\":\"Failed to create security group the error was: $RES \"}"
+                fi
+        fi
+        if [ "$RETRY" != "1" ]; then
+                GROUP_ID=`echo "$RESULT" | jq -r '.GroupId'`
+        fi
+
+        # The security group is created proceed with adding the rules
+        while read rule_name protocol port cidr; do
+                RESULT=$(aws ec2 authorize-security-group-ingress --group-id "$GROUP_ID" --protocol "$protocol" --port "$port" --cidr "$cidr" 2>&1)
+                if [ "$?" != "0" ]; then
+                        if [[ "$RESULT" != *"InvalidPermission.Duplicate"* ]]; then
+                                # Failure to create rule so let's rollback the created group so we can retry
+                                DELETE=$(aws ec2 delete-security-group --group-id="$GROUP_ID" 2>&1)
+                                RES=`echo $RESULT | tr -d '\r'`
+                                Error "{\"status\":\"failed\", \"message\":\"Failed to create security group rule the error was: $RES, rolling back group $GROUP_ID, $DELETE \""
+                        fi
+                fi
+
+        done < <(echo "$rules" | jq -r '.[]|"\(.name) \(.protocol) \(.port) \(.cidr)"') # Parse the rules
+done < <(echo "$INPUT" | jq -r '.security_groups[]|"\(.name) \(.rules)"') #Parse security groups
+
+# Add Security group id to the input
+INPUT=`echo -n "$INPUT" | jq '.security_group_id = "'"$GROUP_ID"'"'`
+echo -n "$INPUT"
+restatemachine_transition_to "create_server"
+restatemachine_transition_after_seconds "0"
+restatemachine_status_message "$1"

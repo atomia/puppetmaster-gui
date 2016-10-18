@@ -18,7 +18,7 @@
           "node_count": 1,
           "operating_system": "windows",
           "ami": "ami-9b81f8e8",
-          "ec2_type": "t2.micro",
+          "ec2_type": "t2.small",
           "vlan": 1,
           "graph_position": 0,
           "provisioning_order": 0,
