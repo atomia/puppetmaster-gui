@@ -434,6 +434,8 @@ function validateConfigField(field) {
 		field_val = new RegExp('^(https?://).*', 'gi');
 	} else if ($('#' + field + '_validation').val() == '%hostname') {
 		field_val = new RegExp('^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?.)+[a-zA-Z]{2,6}$', 'g');
+	} else if ($('#' + field + '_validation').val() == '%fqdn') {
+		field_val = new RegExp('^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?.)+[a-zA-Z]{2,6}\.$', 'g');
 	} else if ($('#' + field + '_validation').val() == '%email') {
 		field_val = new RegExp('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$', 'g');
 	} else if ($('#' + field + '_validation').val() == '%ip') {
