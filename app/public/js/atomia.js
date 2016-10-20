@@ -442,6 +442,8 @@ function validateConfigField(field) {
 		field_val = new RegExp('^[0-9]+.[0-9]+.[0-9]+.[0-9]+$', 'g');
 	} else if ($('#' + field + '_validation').val() == '%apache_cluster_nodes') {
 		field_val = new RegExp('^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?.)+[a-zA-Z]{2,6}$', 'g');
+	} else if ($('#' + field + '_validation').val() == '%mail_cluster_nodes') {
+		field_val = new RegExp('^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?.)+[a-zA-Z]{2,6}$', 'g');
 	} else if ($('#' + field + '_validation').val() == '%iis_cluster_nodes') {
 		field_val = new RegExp('^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?.)+[a-zA-Z]{2,6}$', 'g');
 	} else if ($('#' + field + '_validation').val() == '%ftp_cluster_nodes') {
