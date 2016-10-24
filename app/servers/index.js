@@ -13,7 +13,8 @@ router.get('/', function (req, res, next) {
     PlatformOption.getEnvironmentFromDatabase(req.cookies.platformName, function (data) {
 
         PlatformOption.getAllRoles(function (roleData) {
-          var platData = JSON.parse(data.json_data.replace(/(^")|("$)/g, ""));
+          if(data)
+            var platData = JSON.parse(data.json_data.replace(/(^")|("$)/g, ""));
           res.render('servers/servers', { platformData: platData, roleData: roleData, selectedEnvironment: selectedEnvironmentData })
         },
         function (error) {
