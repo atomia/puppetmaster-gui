@@ -1,0 +1,25 @@
+{
+  "name": "Active directory replica",
+  "role_name": "active_directory_replica",
+  "description": "Active directory is used to store information about users in the Atomia system",
+  "firewall": [
+    {
+      "name": "Active_directory_replica",
+      "rules": [
+        {
+          "port": 3389,
+          "function": "rdp",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [""],
+  "pretty_variables": [
+    {
+      "name" : "domain_name",
+      "pretty": "Active directory domain name"
+    }
+  ]
+}

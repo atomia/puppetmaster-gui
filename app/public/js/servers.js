@@ -7,12 +7,17 @@ $(document).ready(function () {
       createAWSEnvironment()
     }, false)
   }
+  updateProvisioningStatus()
+  updateTimer = window.setInterval(updateProvisioningStatus, 2000)
 })
+
+var updateTimer
 
 function createAWSEnvironment () {
   // Schedule the jobs in the database
   $.post('/servers/schedule', {}, function (data) {
-
+    $('#create_aws_environment_button').hide()
+    $('#environment-loading').show()
   })
   /*
   {
@@ -40,6 +45,7 @@ function createAWSEnvironment () {
 
 function updateProvisioningStatus () {
   $.get('/servers/tasks', function (taskData) {
+
     for (var i = 0; i < taskData.length; i++) {
       var taskName = taskData[i].task_id
       var taskStatus = taskData[i].status
@@ -47,36 +53,50 @@ function updateProvisioningStatus () {
       var loading = '<span class="Icon Icon--loading Icon--small" style="color: #373333"><span class="Icon-label"></span></span>'
       var success = '<i class="fa fa-check" aria-hidden="true"></i>'
       var pending = '<i class="fa fa-clock-o" aria-hidden="true"></i>'
+
       // Match the task with the server in environmentModel
       for (var e = 0; e < environmentModel().length; e++) {
         for (var m = 0; m < environmentModel()[e].members().length; m++) {
           if (environmentModel()[e].members()[m].name() === taskName) {
-            if (taskStatus === 'done') {
-              environmentModel()[e].members()[m].provisioning_status(success + ' provisioning finished')
-              continue
-            }
             (function (taskData, e, m, i) {
               var runId = taskData[i].run_id
               $.get('/restate-machines/' + runId, function (data) {
                 var result = JSON.parse(data)
                 var status = JSON.parse(result.Input).status
-                if (typeof status === 'undefined') {
-                  switch (result.LastState) {
-                    case 'create_security_groups':
+                var hostname = JSON.parse(result.Input).public_dns
+                var password = JSON.parse(result.Input).password
+                if (taskStatus === 'done') {
+                  environmentModel()[e].members()[m].provisioning_status(success + ' provisioning finished')
+                  environmentModel()[e].members()[m].hostname(hostname)
+                  environmentModel()[e].members()[m].password(password)
+                  if (allDone) {
+                    $('#environment-loading').hide()
+                    $('#provisioning-complete').show()
+                    $('#create_aws_environment_button').hide()
+                    window.clearInterval(updateTimer)
+                  }
+                } else {
+
+                  if (typeof status === 'undefined') {
+                    switch (result.LastState) {
+                      case 'create_security_groups':
                       status = loading + ' creating security groups'
-                    case 'create_server':
+                      case 'create_server':
                       status = loading + ' creating the server'
                       break
-                    case 'configure_server':
+                      case 'configure_server':
                       status = loading + ' configuring server'
                       break
-                    default:
+                      case 'fetch_admin_password':
+                      status = loading + ' waiting for admin password'
+                      break
+                      default:
                       status = JSON.parse(data).LastState
+                    }
                   }
-                }
-                else {
-                  switch(status) {
-                    case 'ok':
+                  else {
+                    switch(status) {
+                      case 'ok':
                       status = success + ' provisioning finished'
                       // This is the first time we have noticed that provisioning is finished so let's update the task status
                       taskData[i].status = 'done'
@@ -85,10 +105,12 @@ function updateProvisioningStatus () {
                       })
                       break
                       default:
-                        status = 'provisioning not started'
+                      status = 'provisioning not started'
+                    }
                   }
                 }
                 environmentModel()[e].members()[m].provisioning_status(status)
+                environmentModel()[e].members()[m].hostname(hostname)
               })
             })(taskData, e, m, i)
           }
@@ -105,4 +127,24 @@ function updateProvisioningStatus () {
 
     }
   })
+}
+
+function allDone (envornmentModel){
+  var enabledServers = 0
+  var doneServers = 0
+  for (var e = 0; e < environmentModel().length; e++) {
+    for (var m = 0; m < environmentModel()[e].members().length; m++) {
+      if (environmentModel()[e].members()[m].selected() == true) {
+        enabledServers++
+        if(environmentModel()[e].members()[m].hostname !== '') {
+          doneServers++
+        }
+      }
+    }
+  }
+
+  if (enabledServers == doneServers)
+    return true
+
+  return false
 }

@@ -1,6 +1,7 @@
 var fs = require('fs')
 var FileHelper = function () { }
 
+// Read all files in a directory
 FileHelper.readFiles = function (dirname, onFileContent, onError) {
   var fileCount = 0
   fs.readdir(dirname, function (err, filenames) {

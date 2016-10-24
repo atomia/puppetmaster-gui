@@ -11,7 +11,6 @@ router.get('/', function (req, res, next) {
         for (var i = 0; i < existingEnvironments.length; i++) {
           existingEnvironmentsData.push(JSON.parse(existingEnvironments[i].json_data.replace(/(^")|("$)/g, "")))
         }
-        console.log(existingEnvironmentsData)
         res.render('platform-options/platform-options', { selectedEnvironment: selectedEnvironmentData, existingEnvironments: existingEnvironmentsData, environments: environmentTemplates.data })
       }, function (error) {
         error.message = 'Could not load existing environments from the database'
@@ -46,7 +45,6 @@ router.put('/', function (req, res, next) {
     res.cookie('platformName', platformName)
   }
   if (typeof platformData !== 'undefined' && platformData !== '' && platformData !== 'undefined') {
-    console.log("updating data")
     PlatformOption.updateEnvironmentData(platformName, platformData, function (data) {
       console.log("updated")
       res.json({'status': 'ok'})
