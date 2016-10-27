@@ -48,7 +48,7 @@ PuppetHelper.parseManifest = function (manifest, callback, onError) {
     var defaultValueRegexResult = line.match(defaultValueRegex)
     if (defaultValueRegexResult) {
       if (typeof variables[defaultValueRegexResult[1]] != 'undefined') {
-        variables[defaultValueRegexResult[1]].value = defaultValueRegexResult[2]
+        variables[defaultValueRegexResult[1]].value = defaultValueRegexResult[2].replace(/,\s*$/, "")
       }
     }
   })
@@ -59,14 +59,20 @@ PuppetHelper.parseManifest = function (manifest, callback, onError) {
     Object.keys(variables).forEach(function(key,index) {
       // Add pretty variable name from config
       if (typeof localConfig.pretty_variables[key] != 'undefined')
-        variables[key].pretty = localConfig.pretty_variables[key]
+      variables[key].pretty = localConfig.pretty_variables[key]
       else {
         variables[key].pretty = false
       }
       variables[key].rolePretty = localConfig.name
       variables[key].name = key
+      // Rewrite int_boolean strings to true/false
+      if (variables[key].value == '0')
+      variables[key].value = false;
+      if (variables[key].value == '1')
+      variables[key].value = true;
+
       if(typeof variables[key].advanced != 'undefined')
-        retArr.push(variables[key])
+      retArr.push(variables[key])
     });
 
     callback(retArr)

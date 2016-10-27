@@ -66,7 +66,15 @@ $(document).ready(function () {
                 <!-- /ko -->
               </div>
               <div class="Grid-column-3">
+                <!-- ko if: item.validation() === '%int_boolean' -->
+                <label class="Switch">
+                  <input class="Switch-input" data-bind="checked: item.value" type="checkbox">
+                  <span class="Switch-click" data-on="On" data-off="Off"></span>
+                </label>
+                <!-- /ko -->
+                <!-- ko else -->
                 <input class="Formrow-input" type="text" id="email" data-bind="value: item.value" style="display:table-cell; width:100%; height:22px;">
+                <!-- /ko -->
               </div>
 
               <div class="Grid-column-6 u-no-margin-top">
