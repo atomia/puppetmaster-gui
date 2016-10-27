@@ -229,8 +229,33 @@
 }
 
 
+.Grid-column-1 {
+    width: 14%;
+    margin: 2% 2% 0 0;
+}
+
+.Grid-column-2 {
+    width: 31%;
+    margin: 2% 2% 0 0;
+}
 
 .Grid-column-3 {
     width: 48%;
     margin: 2% 2% 0 0;
+}
+
+.Box--config {
+  margin-top: 0px;
+  border-radius: 0px;
+}
+
+.Box--config--header {
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-top-right-radius: : 5px;
+  border-top-left-radius: : 5px;
+}
+
+.Config--var {
+  font-weight: bold;
 }

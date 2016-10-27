@@ -1,0 +1,31 @@
+{
+  "name": "Cron agent",
+  "role_name": "cronagent",
+  "description": "Create and manages scheduled tasks",
+  "firewall": [
+    {
+      "name": "Active_directory",
+      "rules": [
+        {
+          "port": 3389,
+          "function": "rdp",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [],
+  "pretty_variables": {
+    "mail_from" :  "Sender address",
+    "global_auth_token" : "Authentication token",
+    "min_part": "Min tasks",
+    "max_part": "Max tasks",
+    "mail_host": "Mailserver host",
+    "mail_port": "Mailserver port",
+    "mail_user": "Mailserver user",
+    "mail_pass": "Mailserver password",
+    "base_url": "Base URL",
+    "mail_ssl": "Mailserver SSL"
+  }
+}

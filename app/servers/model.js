@@ -16,7 +16,6 @@ Server.scheduleEnvironmentFromJson = function (data, callback, onError) {
   for (var memberId = 0; memberId < servers.length; memberId++) {
 
     (function (curServer) {
-      console.log("fooo")
       var roleCount = 0
       var security_groups = []
       for (var roleId = 0; roleId < curServer.roles.length; roleId++) {
@@ -47,7 +46,6 @@ Server.scheduleEnvironmentFromJson = function (data, callback, onError) {
               body: jobData,
               json: true
             }
-            console.log(jobData)
             request(options, function (error, response, body) {
               if (error) {
                 console.log('ERROR: ' + error.message)
@@ -58,6 +56,7 @@ Server.scheduleEnvironmentFromJson = function (data, callback, onError) {
                 // TODO: we should not allow duplicate task_ids for an environment
                 dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + "', '" + runId + "', '" + JSON.stringify(jobData) + "', null, 1)",
                 function (result) {
+                  dbh.release()
                   scheduledServers++
                   if (scheduledServers == servers.length)
                     callback()
@@ -94,6 +93,7 @@ Server.filterSelectedServers = function (servers) {
 Server.getAllTasks = function (callback, onError) {
   dbh.connect(function () {
     dbh.query('SELECT * from tasks', function (result) {
+      dbh.release()
       callback(result)
     }, function (err) {
       onError(err)
@@ -106,6 +106,7 @@ Server.getAllTasks = function (callback, onError) {
 Server.updateTask = function (task, callback, onError) {
   dbh.connect(function () {
     dbh.query("UPDATE tasks SET status = '" + task.status + "' WHERE id = " + task.id, function (result) {
+      dbh.release()
       callback(true)
     }, function (err) {
       onError(err)

@@ -1,0 +1,26 @@
+{
+  "name": "MySQL databases",
+  "role_name": "mysql",
+  "description": "Host databases with MySQL",
+  "firewall": [
+    {
+      "name": "Active_directory",
+      "rules": [
+        {
+          "port": 3389,
+          "function": "rdp",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [],
+  "pretty_variables": {
+    "server_ips" :  "Server IPs",
+    "mysql_username" : "MySQL username",
+    "mysql_password": "MySQL password",
+    "mysql_root_password": "MySQL root password",
+    "provisioning_host": "Provisioning host"
+  }
+}

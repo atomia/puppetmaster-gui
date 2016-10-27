@@ -22,10 +22,8 @@
     }
   ],
   "global_firewall": [],
-  "pretty_variables": [
-    {
-      "name" : "domain_name",
-      "pretty": "Active directory domain name"
-    }
-  ]
+  "pretty_variables": {
+    "username" :  "Username",
+    "password" : "Password"
+  }
 }

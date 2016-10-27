@@ -182,7 +182,7 @@
           ],
           "roles": [
             {
-              "class": "nagios",
+              "class": "nagios_server",
               "overrides": [
               ]
             }
@@ -937,7 +937,7 @@
           ],
           "roles": [
             {
-              "class": "postgres",
+              "class": "postgresql",
               "overrides": [
               ]
             }

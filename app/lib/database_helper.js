@@ -35,4 +35,8 @@ DatabaseHelper.query = function (query, callback, onError) {
   })
 }
 
+DatabaseHelper.release = function () {
+  this.connection.destroy()
+}
+
 module.exports = DatabaseHelper

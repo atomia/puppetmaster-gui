@@ -10,6 +10,7 @@ var startController = require('./start/index')
 var platformOptionsController = require('./platform-options/index')
 var restateController = require('./restate-machine/index')
 var serverController = require('./servers/index')
+var puppetController = require('./puppet-config/index')
 
 app.engine('.hbs', exphbs({
   defaultLayout: 'layout',
@@ -44,6 +45,7 @@ app.use('/', startController)
 app.use('/platform-options', platformOptionsController)
 app.use('/restate-machines', restateController)
 app.use('/servers', serverController)
+app.use('/puppet-config', puppetController)
 
 // Default error handler
 app.use(function (err, req, res, next) {

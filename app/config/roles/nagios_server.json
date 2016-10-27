@@ -1,0 +1,23 @@
+{
+  "name": "Nagios",
+  "role_name": "nagios_server",
+  "description": "Monitors your environment",
+  "firewall": [
+    {
+      "name": "Active_directory",
+      "rules": [
+        {
+          "port": 3389,
+          "function": "rdp",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [],
+  "pretty_variables": {
+    "username" :  "Username",
+    "password" : "Password"
+  }
+}

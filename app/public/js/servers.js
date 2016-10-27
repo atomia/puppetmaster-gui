@@ -7,8 +7,10 @@ $(document).ready(function () {
       createAWSEnvironment()
     }, false)
   }
-  updateProvisioningStatus()
-  updateTimer = window.setInterval(updateProvisioningStatus, 2000)
+  if (window.location.href.includes('servers')) {
+    updateProvisioningStatus()
+    updateTimer = window.setInterval(updateProvisioningStatus, 2000)
+  }
 })
 
 var updateTimer
@@ -144,7 +146,7 @@ function allDone (envornmentModel){
   }
 
   if (enabledServers == doneServers)
-    return true
+  return true
 
   return false
 }
