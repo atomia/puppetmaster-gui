@@ -16,10 +16,13 @@
     }
   ],
   "global_firewall": [],
-  "pretty_variables": [
-    {
-      "name" : "domain_name",
-      "pretty": "Active directory domain name"
-    }
-  ]
+  "pretty_variables": {
+    "domain_name" :  "Domain Name",
+    "netbios_domain_name" : "NetBios name",
+    "restore_password": "Restore password",
+    "app_password": "Pool user password",
+    "bind_password": "Posix user password",
+    "windows_admin_password": "Win admin password",
+    "master_ip": "Server IP"
+  }
 }

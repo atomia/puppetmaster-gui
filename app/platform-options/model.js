@@ -46,6 +46,7 @@ PlatformOption.newEnvironment = function (name, template, callback, onError) {
     dbh.connect(function (data) {
       templateData.name = name
       dbh.query("INSERT INTO platform_data VALUES(null,'" + template + "', '" + JSON.stringify(templateData) + "', '" + name + "')", function (result) {
+        dbh.release()
         callback()
       }, function (err) {
         onError(err)
@@ -61,6 +62,7 @@ PlatformOption.newEnvironment = function (name, template, callback, onError) {
 PlatformOption.getEnvironmentFromDatabase = function (name, callback, onError) {
   dbh.connect(function (data) {
     dbh.query('SELECT * FROM platform_data WHERE name = \'' + name + '\' ', function (result) {
+      dbh.release()
       callback(result[0])
     }, function (err) {
       onError(err)
@@ -73,6 +75,7 @@ PlatformOption.getEnvironmentFromDatabase = function (name, callback, onError) {
 PlatformOption.getAllEnvironmentsFromDatabase = function (callback, onError) {
   dbh.connect(function (data) {
     dbh.query('SELECT * FROM platform_data', function (result) {
+      dbh.release()
       callback(result)
     }, function (err) {
       onError(err)
@@ -84,9 +87,8 @@ PlatformOption.getAllEnvironmentsFromDatabase = function (callback, onError) {
 
 PlatformOption.updateEnvironmentData = function (name, platformData, callback, onError) {
   dbh.connect(function (data) {
-    console.log(name)
     dbh.query('UPDATE platform_data SET json_data = \'' + JSON.stringify(platformData).replace(/\\/g, '') + '\' WHERE name = \'' + name + '\' ', function (result) {
-      console.log(result)
+      dbh.release()
       callback(result)
     }, function (err) {
       onError(err)

@@ -1,0 +1,30 @@
+{
+  "name": "Awstats",
+  "role_name": "awstats",
+  "description": "Statistics login for web sites",
+  "firewall": [
+    {
+      "name": "Active_directory",
+      "rules": [
+        {
+          "port": 3389,
+          "function": "rdp",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [],
+  "pretty_variables": {
+    "agent_user" :  "Agent username",
+    "agent_password" : "Agent password",
+    "ssl_enabled" : "Enable SSL",
+    "content_share_nfs_location": "Content NFS share",
+    "configuration_share_nfs_location": "Configuration NFS share",
+    "skip_mount": "Skip mount",
+    "ssl_cert_key": "Certificate key",
+    "ssl_cert_file": "Certificate file",
+    "server_ip": "Server IP"
+  }
+}

@@ -16,10 +16,7 @@
     }
   ],
   "global_firewall": [""],
-  "pretty_variables": [
-    {
-      "name" : "domain_name",
-      "pretty": "Active directory domain name"
-    }
-  ]
+  "pretty_variables": {
+    "replica_ip" :  "Server IP"
+  }
 }

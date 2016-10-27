@@ -1,0 +1,23 @@
+{
+  "name": "PostgreSQL databases",
+  "role_name": "postgresql",
+  "description": "Host databases with PostgreSQL",
+  "firewall": [
+    {
+      "name": "Active_directory",
+      "rules": [
+        {
+          "port": 3389,
+          "function": "rdp",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [],
+  "pretty_variables": {
+    "postgresql_username" :  "PostgreSQL username",
+    "postgresql_password" : "PostgreSQL password"
+  }
+}
