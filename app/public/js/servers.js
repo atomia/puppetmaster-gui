@@ -65,20 +65,22 @@ function updateProvisioningStatus () {
               $.get('/restate-machines/' + runId, function (data) {
                 var result = JSON.parse(data)
                 var status = JSON.parse(result.Input).status
+
                 var hostname = JSON.parse(result.Input).public_dns
                 var password = JSON.parse(result.Input).password
                 if (taskStatus === 'done') {
                   environmentModel()[e].members()[m].provisioning_status(success + ' provisioning finished')
                   environmentModel()[e].members()[m].hostname(hostname)
-                  environmentModel()[e].members()[m].password(password)
-                  if (allDone) {
+                  if(typeof password != 'undefined') {
+                    environmentModel()[e].members()[m].password(password)
+                  }
+                  if (allDone()) {
                     $('#environment-loading').hide()
                     $('#provisioning-complete').show()
                     $('#create_aws_environment_button').hide()
                     window.clearInterval(updateTimer)
                   }
                 } else {
-
                   if (typeof status === 'undefined') {
                     switch (result.LastState) {
                       case 'create_security_groups':

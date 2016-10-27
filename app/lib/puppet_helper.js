@@ -65,11 +65,19 @@ PuppetHelper.parseManifest = function (manifest, callback, onError) {
       }
       variables[key].rolePretty = localConfig.name
       variables[key].name = key
+
       // Rewrite int_boolean strings to true/false
-      if (variables[key].value == '0')
-      variables[key].value = false;
-      if (variables[key].value == '1')
-      variables[key].value = true;
+      if (variables[key].value === '0'){
+        variables[key].value = false;
+      }
+      if (variables[key].value === '1') {
+        variables[key].value = true;
+      }
+
+      // Generate passwords for password fields
+      if (variables[key].validation === '%password' && variables[key].value === '') {
+        variables[key].value = PuppetHelper.generatePassword()
+      }
 
       if(typeof variables[key].advanced != 'undefined')
       retArr.push(variables[key])
@@ -77,8 +85,37 @@ PuppetHelper.parseManifest = function (manifest, callback, onError) {
 
     callback(retArr)
   })
+}
 
+String.prototype.replaceAt=function(index, character) {
+    return this.substr(0, index) + character + this.substr(index+character.length);
+}
 
+PuppetHelper.generatePassword = function () {
+
+  var length = 12;
+  var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVXYZ1234567890';
+  var lowerCase = 'abcdefghijklmnopqrstuvwxyz';
+  var upperCase = 'ABCDEFGHIJKLMNOPQRSTUVXYZ';
+  var numbers = '1234567890';
+  var pass = '';
+  for (var x = 0; x < length; x++) {
+    var i = Math.floor(Math.random() * chars.length);
+    pass += chars.charAt(i);
+  }
+  var arr = []
+  while(arr.length < 3){
+    var randomnumber=Math.ceil(Math.random()*(length - 1));
+    var found=false;
+    for(var a=0;a<arr.length;a++){
+      if(arr[a]==randomnumber){found=true;break;}
+    }
+    if(!found)arr[arr.length]=randomnumber;
+  }
+  pass = pass.replaceAt(arr[0], lowerCase.charAt(Math.floor(Math.random() * lowerCase.length)));
+  pass = pass.replaceAt(arr[1], upperCase.charAt(Math.floor(Math.random() * upperCase.length)));
+  pass = pass.replaceAt(arr[2], numbers.charAt(Math.floor(Math.random() * numbers.length)));
+  return (pass)
 
 }
 

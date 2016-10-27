@@ -56,10 +56,11 @@ Server.scheduleEnvironmentFromJson = function (data, callback, onError) {
                 // TODO: we should not allow duplicate task_ids for an environment
                 dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + "', '" + runId + "', '" + JSON.stringify(jobData) + "', null, 1)",
                 function (result) {
-                  dbh.release()
                   scheduledServers++
-                  if (scheduledServers == servers.length)
+                  if (scheduledServers == servers.length) {
+                    dbh.release()
                     callback()
+                  }
                 }, function (err) {
                   // dbh.query failed
                   console.log(err)
