@@ -18,7 +18,7 @@ KEY=`echo "$INPUT" | jq -r '.key'`
 OS=`echo "$INPUT" | jq -r '.os'`
 
 if [ "$OS" == "linux" ]; then
-	if [ "$KEY" != "" ]; then
+	if [ -n "$KEY" ]; then
 		REPO=`ssh -oStrictHostKeyChecking=no -i "$KEY" "$USERNAME"@"$HOSTNAME" -q 'curl -m 5 --output /dev/null --silent --head --fail http://apt.atomia.com'`
 		if [ "$?" != "0" ]; then
 			Error "{\"status\":\"failed\", \"message\":\"Can not access apt.atomia.com, request access at support@atomia.com \"}"

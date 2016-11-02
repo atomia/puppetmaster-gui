@@ -2,6 +2,7 @@ var config = require('../config/config.json')
 var fs = require('fs')
 var readline = require('readline')
 var fh = require('../lib/file_helper')
+var dbh = require('../lib/database_helper')
 
 var PuppetHelper = function (connection) {
   this.connection = connection
@@ -65,6 +66,7 @@ PuppetHelper.parseManifest = function (manifest, callback, onError) {
       }
       variables[key].rolePretty = localConfig.name
       variables[key].name = key
+      variables[key].namespace = manifest.class
 
       // Rewrite int_boolean strings to true/false
       if (variables[key].value === '0'){
@@ -87,13 +89,13 @@ PuppetHelper.parseManifest = function (manifest, callback, onError) {
   })
 }
 
-String.prototype.replaceAt=function(index, character) {
+String.prototype.replaceAt = function(index, character) {
     return this.substr(0, index) + character + this.substr(index+character.length);
 }
 
 PuppetHelper.generatePassword = function () {
 
-  var length = 12;
+  var length = 16;
   var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVXYZ1234567890';
   var lowerCase = 'abcdefghijklmnopqrstuvwxyz';
   var upperCase = 'ABCDEFGHIJKLMNOPQRSTUVXYZ';

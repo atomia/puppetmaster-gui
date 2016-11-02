@@ -1,3 +1,4 @@
+#!/bin/bash
 DIR=`dirname $0`
 . /etc/restatemachine/shell_helpers.inc
 
@@ -17,10 +18,17 @@ KEY=`echo "$INPUT" | jq -r '.key'`
 USER=`echo "$INPUT" | jq -r '.username'`
 
 if [ "$OS" == "linux" ];  then
-	OS_VERSION=`ssh -i $KEY $USER@$HOSTNAME 'cat /etc/lsb-release 2>&1 | grep DISTRIB_RELEASE | sed s/DISTRIB_RELEASE=//'`
-	if [ "$?" != "0" ]; then
-		Error "{\"status\":\"failed\", \"message\":\"Operating system is not supported, expecting Ubuntu\"}"
-	fi
+	if [ -n "$KEY" ]; then
+		OS_VERSION=`ssh -i $KEY $USER@$HOSTNAME 'cat /etc/lsb-release 2>&1 | grep DISTRIB_RELEASE | sed s/DISTRIB_RELEASE=//'`
+		if [ "$?" != "0" ]; then
+			Error "{\"status\":\"failed\", \"message\":\"Operating system is not supported, expecting Ubuntu\"}"
+		fi
+  else
+    LOGIN=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no "$USERNAME"@"$HOSTNAME" -q 'cat /etc/lsb-release 2>&1 | grep DISTRIB_RELEASE | sed s/DISTRIB_RELEASE=//'`
+    if [ "$?" != "0" ]; then
+      Error "{\"status\":\"failed\", \"message\":\"Operating system is not supported, expecting Ubuntu\"}"
+    fi
+  fi
 
 	if [ "$OS_VERSION" != "16.04" ]; then
 		Error "{\"status\":\"failed\", \"message\":\"Operating system version is not supported, expecting Ubuntu 16.04 but found $OS_VERSION \"}"

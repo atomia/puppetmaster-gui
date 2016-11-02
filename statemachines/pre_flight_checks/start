@@ -6,8 +6,8 @@ if [ x"$1" = x"--help" ]; then
         cat <<ENDOFUSAGE
 This statemachine will perform a series of tests to ensure compliance with the Atomia platform
 
-Requirments:
-apt-get install sshpass
+Requirements:
+apt-get install sshpass jq
 pip install pywinrm
 
 Expected input:
@@ -32,4 +32,3 @@ cat
 restatemachine_transition_to "test_hostname_resolves"
 restatemachine_transition_after_seconds "0"
 restatemachine_status_message "Test: hostname resolves"
-

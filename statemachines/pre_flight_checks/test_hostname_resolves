@@ -13,7 +13,7 @@ Error () {
 
 HOSTNAME=`echo "$INPUT" | jq -r '.hostname'`
 
-RESOLVES=`dig "$HOSTNAME" @8.8.8.8 | grep -q 'NXDOMAIN'`
+RESOLVES=`if ! dig "$HOSTNAME" @8.8.8.8 | tr "\n" " " | grep -q '"'"'status:[[:space:]]*NOERROR.*[[:space:]]ANSWER:[[:space:]]*[1-9]'"'"';  then exit 1; fi`
 if [ "$?" != "1" ]; then
 	Error "{\"status\":\"failed\", \"message\":\"The hostname of the server does not resolve in public dns\"}"
 fi

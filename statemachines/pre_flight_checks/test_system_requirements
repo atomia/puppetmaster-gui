@@ -22,7 +22,7 @@ DISK=`echo "$INPUT" | jq -r '.system_requirements.disk'`
 
 MESSAGE="{\"status\":\"failed\""
 if [ "$OS" == "linux" ]; then
-	if [ "$KEY" != "" ]; then
+	if [ -n "$KEY" ]; then
 		AVAILABLE_RAM=`ssh -oStrictHostKeyChecking=no -i "$KEY" "$USERNAME"@"$HOSTNAME" -q 'sudo dmidecode -t 17 2>&1 | awk '"'"'( /Size/ && $2 ~ /^[0-9]+$/ ) { x+=$2 } END{ print x }'"'"''`
 		if [ "$?" != "0" ]; then
 			Error "{\"status\":\"failed\", \"message\":\"Could not verify RAM requirement\"}"
@@ -55,20 +55,20 @@ if [ "$OS" == "linux" ]; then
 	fi
 
 	HAS_ERRORS=0
-	if [[ $AVAILABLE_RAM -lt $RAM ]]; then
+	if [[ "$AVAILABLE_RAM" -lt "$RAM" ]]; then
 		MESSAGE="$MESSAGE,\"ram\":\"Not enough ram, requires $RAM but found $AVAILABLE_RAM\""
 		HAS_ERRORS=1
 	fi
-	if [[ $AVAILABLE_CPU -lt $CPU ]]; then
+	if [[ "$AVAILABLE_CPU" -lt "$CPU" ]]; then
 		MESSAGE="$MESSAGE,\"cpu\":\"Not enough cpus, requires $CPU but found $AVAILABLE_CPU\""
 		HAS_ERRORS=1
 	fi
-	if [[ ${AVAILABLE_DISK%.*} -lt $DISK ]]; then
+	if [[ "${AVAILABLE_DISK%.*}" -lt "$DISK" ]]; then
 		MESSAGE="$MESSAGE,\"disk\":\"Not enough disk space on /, requires $DISK gb but found $AVAILABLE_DISK gb\""
 		HAS_ERRORS=1
 	fi
 
-	if [[ $HAS_ERRORS -eq 1 ]]; then
+	if [[ "$HAS_ERRORS" -eq 1 ]]; then
 		MESSAGE="$MESSAGE }"
 		Error "$MESSAGE"
 	fi
@@ -84,15 +84,15 @@ elif [ "$OS" == "windows" ]; then
 	AVAILABLE_DISK=`echo "$AVAILABLE" | jq -r '.disk'`
 
 	HAS_ERRORS=0
-	if [ $AVAILABLE_CPU -lt $CPU ]; then
+	if [ "$AVAILABLE_CPU" -lt "$CPU" ]; then
 		MESSAGE="$MESSAGE,\"cpu\":\"Not enough cpus, requires $CPU but found $AVAILABLE_CPU\""
 		HAS_ERRORS=1
 	fi
-	if [ $AVAILABLE_RAM -lt $RAM ]; then
+	if [ "$AVAILABLE_RAM" -lt "$RAM" ]; then
 		MESSAGE="$MESSAGE,\"ram\":\"Not enough ram, requires $RAM but found $AVAILABLE_RAM\""
 		HAS_ERRORS=1
 	fi
-	if [ $AVAILABLE_DISK -lt $DISK ]; then
+	if [ "${AVAILABLE_DISK%.*}" -lt "$DISK" ]; then
 		MESSAGE="$MESSAGE,\"disk\":\"Not enough disk space on /, requires $DISK gb but found $AVAILABLE_DISK gb\""
 		HAS_ERRORS=1
 	fi
