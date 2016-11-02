@@ -1,0 +1,35 @@
+#!/bin/sh
+
+. /etc/restatemachine/shell_helpers.inc
+
+if [ x"$1" = x"--help" ]; then
+        cat <<ENDOFUSAGE
+This statemachine will perform a series of tests to ensure compliance with the Atomia platform
+
+Requirments:
+apt-get install sshpass
+pip install pywinrm
+
+Expected input:
+{
+	"system_requirements" : {
+		"cpu" : 2,
+		"disk" : 10,
+		"ram" : 1024
+	},
+	"os": "windows/linux",
+	"hostname": "server_to_test_hostname",
+	"username": "username",
+	"password": "password",
+	"key": "private_key_name",
+}
+ENDOFUSAGE
+
+        exit 0
+fi
+
+cat
+restatemachine_transition_to "test_hostname_resolves"
+restatemachine_transition_after_seconds "0"
+restatemachine_status_message "Test: hostname resolves"
+

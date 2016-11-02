@@ -1,0 +1,40 @@
+DIR=`dirname $0`
+. /etc/restatemachine/shell_helpers.inc
+
+INPUT=`cat`
+
+Error () {
+        echo -n "$INPUT"
+        restatemachine_transition_to "test_operating_system"
+        restatemachine_transition_after_seconds "60"
+        restatemachine_status_message "$1"
+        exit 0
+}
+
+OS=`echo "$INPUT" | jq -r '.os'`
+HOSTNAME=`echo "$INPUT" | jq -r '.hostname'`
+KEY=`echo "$INPUT" | jq -r '.key'`
+USER=`echo "$INPUT" | jq -r '.username'`
+
+if [ "$OS" == "linux" ];  then
+	OS_VERSION=`ssh -i $KEY $USER@$HOSTNAME 'cat /etc/lsb-release 2>&1 | grep DISTRIB_RELEASE | sed s/DISTRIB_RELEASE=//'`
+	if [ "$?" != "0" ]; then
+		Error "{\"status\":\"failed\", \"message\":\"Operating system is not supported, expecting Ubuntu\"}"
+	fi
+
+	if [ "$OS_VERSION" != "16.04" ]; then
+		Error "{\"status\":\"failed\", \"message\":\"Operating system version is not supported, expecting Ubuntu 16.04 but found $OS_VERSION \"}"
+	fi
+elif [ "$OS" == "windows" ]; then
+        OS_VERSION=`./winrm/test_os.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
+        if [ "$?" != "0" ]; then
+                Error "$OS_VERSION"
+        fi
+else
+        Error "{\"status\":\"failed\", \"message\":\"Unknown operating system $OS \"}"
+fi
+
+echo -n "$INPUT"
+restatemachine_transition_to "test_system_requirements"
+restatemachine_transition_after_seconds "0"
+restatemachine_status_message "Test: system requirements"
