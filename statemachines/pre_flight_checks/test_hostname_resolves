@@ -1,0 +1,24 @@
+#!/bin/bash
+DIR=`dirname $0`
+. /etc/restatemachine/shell_helpers.inc
+
+INPUT=`cat`
+Error () {
+        echo -n "$INPUT"
+        restatemachine_transition_to "test_hostname_resolves"
+        restatemachine_transition_after_seconds "60"
+        restatemachine_status_message "$1"
+        exit 0
+}
+
+HOSTNAME=`echo "$INPUT" | jq -r '.hostname'`
+
+RESOLVES=`if ! dig "$HOSTNAME" @8.8.8.8 | tr "\n" " " | grep -q '"'"'status:[[:space:]]*NOERROR.*[[:space:]]ANSWER:[[:space:]]*[1-9]'"'"';  then exit 1; fi`
+if [ "$?" != "1" ]; then
+	Error "{\"status\":\"failed\", \"message\":\"The hostname of the server does not resolve in public dns\"}"
+fi
+
+echo -n "$INPUT"
+restatemachine_transition_to "test_login"
+restatemachine_transition_after_seconds "0"
+restatemachine_status_message "Test: login"
