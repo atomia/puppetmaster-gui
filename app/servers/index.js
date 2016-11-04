@@ -39,7 +39,7 @@ router.get('/tasks', function (req, res, next) {
   })
 })
 
-router.post('/tasks/:id', function (req, res, next) {
+router.post('/tasks', function (req, res, next) {
   var taskData = JSON.parse(req.body.task)
   console.log(taskData)
   Server.updateTask(taskData, function (result) {

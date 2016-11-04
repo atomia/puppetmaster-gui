@@ -64,10 +64,12 @@ Server.scheduleEnvironmentFromJson = function (data, callback, onError) {
                 }, function (err) {
                   // dbh.query failed
                   console.log(err)
+                  onError(err)
                 })
               }, function (err) {
                 // dbh.connect failed
                 console.log(err)
+                onError(err)
               })
 
               console.log(body)

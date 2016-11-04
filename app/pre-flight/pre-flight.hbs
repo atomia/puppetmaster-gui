@@ -1,0 +1,63 @@
+<script>
+
+var environmentModel;
+var existingEnvironments = {{{toJSON platformData}}}
+$(document).ready(function () {
+  environmentModel = ko.mapping.fromJS(existingEnvironments)
+  ko.applyBindings(environmentModel, document.getElementById('mainView'))
+})
+
+</script>
+<section class="Main" id="mainView" >
+  <div class="Margins" style="min-height: 300px;">
+    <div class="Bar Bar--light Bar--header">
+      <h5 class="Bar-title Bar-item">Server pre-flight checks</h5>
+      <div class="Bar-item Bar-item--right ">
+        <a href="/pre-flight"><button type="submit" class="Btn Btn--primary">Next <i class="fa-margin fa fa-angle-right"></i></button></a>
+      </div>
+    </div>
+    <div class="Paper kss-paper" style="margin:0px;" id="mainView">
+      <button type="submit" class="Btn Btn--primary" id="start_pre_flight_button">Start pre flight checks</button>
+      <!-- ko foreach: environmentModel.servers() -->
+      <!-- ko foreach: members -->
+      <!-- ko if: operating_system() !== 'openstack' -->
+      <!-- ko if: selected() == true -->
+      <div class="Box pre-flight-box">
+        <div class="Grid ">
+          <div class="Grid-column-3 pre-flight-box">
+            <span data-bind="text: hostname"></span>
+          </div>
+          <div class="Grid-column-2 pre-flight-box">
+            <!-- ko if: operating_system() === 'windows' -->
+            <i class="fa fa-windows fa-lg" aria-hidden="true"></i>
+            <!-- /ko -->
+            <!-- ko if: operating_system() === 'ubuntu' -->
+            <i class="fa fa-linux fa-lg" aria-hidden="true"></i>
+            <!-- /ko -->
+            <span data-bind="text: name"></span>
+          </div>
+          <div class="Grid-column-2 pre-flight-box" style="text-align:right;">
+            <!-- ko if: preflight_status().status == 'error' -->
+            <i class="fa fa-exclamation-circle fa-lg" aria-hidden="true" style="color:#d11717;float:right;"></i>
+            <!-- /ko -->
+            <!-- ko elseif: preflight_status().status != '' -->
+            <span class="Icon Icon--loading Icon--small" style="color: #373333"><span class="Icon-label"></span></span> <i class="fa fa-check-circle fa-lg" aria-hidden="true" style="color:#2daa29;"></i>
+            <!-- /ko -->
+            <div class="error-wrap">
+              <span data-bind="text: preflight_status().message"></span>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <!-- /ko -->
+      <!-- /ko -->
+      <!-- /ko -->
+      <!-- /ko -->
+
+
+    </div>
+
+  </div>
+</section>

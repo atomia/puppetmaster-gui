@@ -17,7 +17,7 @@ PASSWORD=`echo "$INPUT" | jq -r '.password'`
 KEY=`echo "$INPUT" | jq -r '.key'`
 OS=`echo "$INPUT" | jq -r '.os'`
 
-if [ "$OS" == "linux" ]; then
+if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
 	if [ -n "$KEY" ]; then
 		echo "logging in..."
 		DNS=`ssh -oStrictHostKeyChecking=no -i "$KEY" "$USERNAME"@"$HOSTNAME" -q 'dig -q atomia.com'`
@@ -31,7 +31,7 @@ if [ "$OS" == "linux" ]; then
 		fi
 	fi
 elif [ "$OS" == "windows" ]; then
-	DNS=`./winrm/test_dns.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
+	DNS=`./etc/restatemachine/statemachines/pre_flight_checks/winrm/test_dns.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
 	if [ "$?" != "0" ]; then
 		Error "$DNS"
 	fi

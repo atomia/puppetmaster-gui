@@ -21,7 +21,7 @@ RAM=`echo "$INPUT" | jq -r '.system_requirements.ram'`
 DISK=`echo "$INPUT" | jq -r '.system_requirements.disk'`
 
 MESSAGE="{\"status\":\"failed\""
-if [ "$OS" == "linux" ]; then
+if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
 	if [ -n "$KEY" ]; then
 		AVAILABLE_RAM=`ssh -oStrictHostKeyChecking=no -i "$KEY" "$USERNAME"@"$HOSTNAME" -q 'sudo dmidecode -t 17 2>&1 | awk '"'"'( /Size/ && $2 ~ /^[0-9]+$/ ) { x+=$2 } END{ print x }'"'"''`
 		if [ "$?" != "0" ]; then
@@ -75,7 +75,7 @@ if [ "$OS" == "linux" ]; then
 
 
 elif [ "$OS" == "windows" ]; then
-	AVAILABLE=`./winrm/test_requirements.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
+	AVAILABLE=`./etc/restatemachine/statemachines/pre_flight_checks/winrm/test_requirements.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
 	if [ "$?" != "0" ]; then
 		Error "$AVAILABLE"
 	fi

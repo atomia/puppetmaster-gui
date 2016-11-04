@@ -17,7 +17,7 @@ PASSWORD=`echo "$INPUT" | jq -r '.password'`
 KEY=`echo "$INPUT" | jq -r '.key'`
 OS=`echo "$INPUT" | jq -r '.os'`
 
-if [ "$OS" == "linux" ]; then
+if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
 	if [ -n "$KEY" ]; then
 		LOGIN=`ssh -oStrictHostKeyChecking=no -i "$KEY" "$USERNAME"@"$HOSTNAME" -q exit`
 		if [ "$?" != "0" ]; then
@@ -30,7 +30,7 @@ if [ "$OS" == "linux" ]; then
 		fi
 	fi
 elif [ "$OS" == "windows" ]; then
-	LOGIN=`./winrm/test_winrm.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
+	LOGIN=`./etc/restatemachine/statemachines/pre_flight_checks/winrm/test_winrm.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
 	if [ "$?" != "0" ]; then
 		Error "$LOGIN"
 	fi

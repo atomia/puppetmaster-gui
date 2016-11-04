@@ -17,7 +17,7 @@ PASSWORD=`echo "$INPUT" | jq -r '.password'`
 KEY=`echo "$INPUT" | jq -r '.key'`
 OS=`echo "$INPUT" | jq -r '.os'`
 
-if [ "$OS" == "linux" ]; then
+if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
 	if [ -n "$KEY" ]; then
 		REPO=`ssh -oStrictHostKeyChecking=no -i "$KEY" "$USERNAME"@"$HOSTNAME" -q 'curl -m 5 --output /dev/null --silent --head --fail http://apt.atomia.com'`
 		if [ "$?" != "0" ]; then

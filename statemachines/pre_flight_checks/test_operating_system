@@ -17,7 +17,7 @@ HOSTNAME=`echo "$INPUT" | jq -r '.hostname'`
 KEY=`echo "$INPUT" | jq -r '.key'`
 USER=`echo "$INPUT" | jq -r '.username'`
 
-if [ "$OS" == "linux" ];  then
+if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
 	if [ -n "$KEY" ]; then
 		OS_VERSION=`ssh -i $KEY $USER@$HOSTNAME 'cat /etc/lsb-release 2>&1 | grep DISTRIB_RELEASE | sed s/DISTRIB_RELEASE=//'`
 		if [ "$?" != "0" ]; then
@@ -34,7 +34,7 @@ if [ "$OS" == "linux" ];  then
 		Error "{\"status\":\"failed\", \"message\":\"Operating system version is not supported, expecting Ubuntu 16.04 but found $OS_VERSION \"}"
 	fi
 elif [ "$OS" == "windows" ]; then
-        OS_VERSION=`./winrm/test_os.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
+        OS_VERSION=`./etc/restatemachine/statemachines/pre_flight_checks/winrm/test_os.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
         if [ "$?" != "0" ]; then
                 Error "$OS_VERSION"
         fi

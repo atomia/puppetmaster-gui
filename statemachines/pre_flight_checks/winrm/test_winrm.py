@@ -16,15 +16,14 @@ def main():
 		r = s.run_cmd('ipconfig', ['/all'])
 		exit(0)
 	except requests.exceptions.ConnectionError:
-		print "{\"status\" : \"error\", \"message\" : \"Could not connect to server via winrm. Could not reach hostname or ip, make sure all pre requirements are met\"}"
+		print "{\"status\" : \"failed\", \"message\" : \"Could not connect to server via winrm. Could not reach hostname or ip, make sure all pre requirements are met\"}"
 		exit(1)
 	except requests.exceptions.ConnectTimeout:
-		print "{\"status\" : \"error\", \"message\" : \"Could not connect to server via winrm. Make sure that all pre requirements are met\"}"
+		print "{\"status\" : \"failed\", \"message\" : \"Could not connect to server via winrm. Make sure that all pre requirements are met\"}"
 		exit(1)
 	except winrm.exceptions.InvalidCredentialsError:
-		print "{\"status\" : \"error\", \"message\" : \"Could not login to server via winrm. Invalid credentials\"}"
+		print "{\"status\" : \"failed\", \"message\" : \"Could not login to server via winrm. Invalid credentials\"}"
 		exit(1)
 
 if __name__ == "__main__":
     main()
-
