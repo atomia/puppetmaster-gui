@@ -37,4 +37,4 @@ fi
 echo -n "$INPUT"
 restatemachine_transition_to "stop"
 restatemachine_transition_after_seconds "0"
-restatemachine_status_message "done"
+restatemachine_status_message "{\"status\":\"done\", \"message\":\"Passed all tests\"}"

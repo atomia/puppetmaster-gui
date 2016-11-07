@@ -21,4 +21,4 @@ fi
 echo -n "$INPUT"
 restatemachine_transition_to "test_login"
 restatemachine_transition_after_seconds "0"
-restatemachine_status_message "Test: login"
+restatemachine_status_message "{\"status\":\"pending\", \"message\":\"Testing login\"}"

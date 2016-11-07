@@ -31,4 +31,4 @@ fi
 cat
 restatemachine_transition_to "test_hostname_resolves"
 restatemachine_transition_after_seconds "0"
-restatemachine_status_message "Test: hostname resolves"
+restatemachine_status_message "{\"status\":\"pending\", \"message\":\"Testing hostname\"}"

@@ -108,4 +108,4 @@ fi
 echo -n "$INPUT"
 restatemachine_transition_to "test_dns"
 restatemachine_transition_after_seconds "0"
-restatemachine_status_message "Test: dns"
+restatemachine_status_message "{\"status\":\"pending\", \"message\":\"Testing DNS\"}"

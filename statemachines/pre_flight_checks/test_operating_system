@@ -15,11 +15,12 @@ Error () {
 OS=`echo "$INPUT" | jq -r '.os'`
 HOSTNAME=`echo "$INPUT" | jq -r '.hostname'`
 KEY=`echo "$INPUT" | jq -r '.key'`
-USER=`echo "$INPUT" | jq -r '.username'`
+USERNAME=`echo "$INPUT" | jq -r '.username'`
+PASSWORD=`echo "$INPUT" | jq -r '.password'`
 
 if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
 	if [ -n "$KEY" ]; then
-		OS_VERSION=`ssh -i $KEY $USER@$HOSTNAME 'cat /etc/lsb-release 2>&1 | grep DISTRIB_RELEASE | sed s/DISTRIB_RELEASE=//'`
+		OS_VERSION=`ssh -i $KEY $USERNAME@$HOSTNAME 'cat /etc/lsb-release 2>&1 | grep DISTRIB_RELEASE | sed s/DISTRIB_RELEASE=//'`
 		if [ "$?" != "0" ]; then
 			Error "{\"status\":\"failed\", \"message\":\"Operating system is not supported, expecting Ubuntu\"}"
 		fi
@@ -45,4 +46,4 @@ fi
 echo -n "$INPUT"
 restatemachine_transition_to "test_system_requirements"
 restatemachine_transition_after_seconds "0"
-restatemachine_status_message "Test: system requirements"
+restatemachine_status_message "{\"status\":\"pending\", \"message\":\"Testing system requirements\"}"

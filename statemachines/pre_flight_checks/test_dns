@@ -43,4 +43,4 @@ fi
 echo -n "$INPUT"
 restatemachine_transition_to "test_root"
 restatemachine_transition_after_seconds "0"
-restatemachine_status_message "Test: root/administrator"
+restatemachine_status_message "{\"status\":\"pending\", \"message\":\"Testing root access\"}"
