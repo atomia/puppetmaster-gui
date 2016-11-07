@@ -18,6 +18,10 @@ $(document).ready(function () {
     </div>
     <div class="Paper kss-paper" style="margin:0px;" id="mainView">
       <button type="submit" class="Btn Btn--primary" id="start_pre_flight_button">Start pre flight checks</button>
+      <button type="submit" class="Btn Btn--primary" id="start_pre_flight_button">Retry pre flight checks</button>
+      <div class="Message Message--error" id="pre-flight-failed" style="display:none;">
+        One or more of the pre flight checks failed, the failed checks will automatically retry once every 60 seconds so once you have fixed the errors reported check back for an update
+      </div>
       <!-- ko foreach: environmentModel.servers() -->
       <!-- ko foreach: members -->
       <!-- ko if: operating_system() !== 'openstack' -->
@@ -37,11 +41,21 @@ $(document).ready(function () {
             <span data-bind="text: name"></span>
           </div>
           <div class="Grid-column-2 pre-flight-box" style="text-align:right;">
-            <!-- ko if: preflight_status().status == 'error' -->
-            <i class="fa fa-exclamation-circle fa-lg" aria-hidden="true" style="color:#d11717;float:right;"></i>
+            <!-- ko if: preflight_status().status === 'failed' -->
+            <div style="float:right;">
+              <i class="fa fa-exclamation-circle fa-lg" aria-hidden="true" style="color:#d11717;"></i><br/>
+              <span class="Icon Icon--loading Icon--small" style="color: #373333"><span class="Icon-label"></span></span>
+            </div>
             <!-- /ko -->
-            <!-- ko elseif: preflight_status().status != '' -->
-            <span class="Icon Icon--loading Icon--small" style="color: #373333"><span class="Icon-label"></span></span> <i class="fa fa-check-circle fa-lg" aria-hidden="true" style="color:#2daa29;"></i>
+            <!-- ko if: preflight_status().status === 'pending' -->
+            <div style="float:right;">
+              <span class="Icon Icon--loading Icon--small" style="color: #373333"><span class="Icon-label"></span></span>
+            </div>
+            <!-- /ko -->
+            <!-- ko if: preflight_status().status === 'done' -->
+            <div style="float:right;">
+              <i class="fa fa-check-circle fa-lg" aria-hidden="true" style="color:#2daa29;"></i>
+            </div>
             <!-- /ko -->
             <div class="error-wrap">
               <span data-bind="text: preflight_status().message"></span>

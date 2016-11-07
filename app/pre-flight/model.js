@@ -19,7 +19,7 @@ PreFlight.schedulePreFlightFromJson = function (data, callback, onError) {
       // Schedule the job
       var jobData = {}
       var requirementsData = {}
-      for (var rId = 0; rId < curServer.requirements; rId++) {
+      for (var rId = 0; rId < curServer.requirements.length; rId++) {
         requirementsData[curServer.requirements[rId].check] = curServer.requirements[rId].value
       }
       var roleData = []
@@ -36,7 +36,6 @@ PreFlight.schedulePreFlightFromJson = function (data, callback, onError) {
         key: '/root/.ssh/' + 'stefan-test-aws.pem', //TODO: This should not be hardcoded!
         roles: roleData
       }
-
       var options = {
         url: 'http://localhost:3000/restate-machines',
         method: 'POST',
