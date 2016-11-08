@@ -4,6 +4,6 @@ cache:
         directories:
                 - app/node_modules
 node_js:
-        - "0.10"
+        - "7.0.0"
 before_install:
         - "cd app"
