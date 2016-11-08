@@ -1,15 +1,13 @@
 var config = require('../config/config.json')
 var fs = require('fs')
 var readline = require('readline')
-var fh = require('../lib/file_helper')
-var dbh = require('../lib/database_helper')
 
 var PuppetHelper = function (connection) {
   this.connection = connection
 }
 
 
-PuppetHelper.parseManifest = function (manifest, callback, onError) {
+PuppetHelper.parseManifest = function (manifest, callback) {
   var manifestPath = config.main.module_path
   var variables = {}
   var classPath = manifest.class
@@ -57,7 +55,9 @@ PuppetHelper.parseManifest = function (manifest, callback, onError) {
   rd.on ('close', function() {
     var retArr = []
     var localConfig = require('../config/roles/' + manifest.class + '.json')
-    Object.keys(variables).forEach(function(key,index) {
+    /* eslint-disable no-unused-vars */
+    Object.keys(variables).forEach(function(key, index) {
+      /* eslint-enable no-unused-vars */
       // Add pretty variable name from config
       if (typeof localConfig.pretty_variables[key] != 'undefined')
       variables[key].pretty = localConfig.pretty_variables[key]

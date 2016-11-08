@@ -1,6 +1,5 @@
 var dbh = require('../lib/database_helper')
 var request = require('request')
-var PlatformOption = require('../platform-options/model')
 var Servers = require('../servers/model')
 var PreFlight = function (data) {
   this.data = data
@@ -44,14 +43,14 @@ PreFlight.schedulePreFlightFromJson = function (data, callback, onError) {
       }
       request(options, function (error, response, body) {
         if (error) {
-          console.log('ERROR: ' + error.message)
+          // Handle error here
         }
         var runId = JSON.parse(body).Id
         // Run scheduled add a reference to the database
-        dbh.connect(function (data) {
+        dbh.connect(function () {
           // TODO: we should not allow duplicate task_ids for an environment
           dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + " pre-flight', '" + runId + "', '" + JSON.stringify(jobData) + "', null, 1, 'pre_flight')",
-          function (result) {
+          function () {
             scheduledServers++
             if (scheduledServers == servers.length) {
               dbh.release()
@@ -59,16 +58,12 @@ PreFlight.schedulePreFlightFromJson = function (data, callback, onError) {
             }
           }, function (err) {
             // dbh.query failed
-            console.log(err)
             onError(err)
           })
         }, function (err) {
           // dbh.connect failed
-          console.log(err)
           onError(err)
         })
-
-        console.log(body)
       })
     })(servers[memberId])
 
@@ -90,7 +85,7 @@ PreFlight.getAllTasks = function (callback, onError) {
 
 PreFlight.updateTask = function (task, callback, onError) {
   dbh.connect(function () {
-    dbh.query("UPDATE tasks SET status = '" + task.status + "' WHERE id = " + task.id, function (result) {
+    dbh.query("UPDATE tasks SET status = '" + task.status + "' WHERE id = " + task.id, function () {
       dbh.release()
       callback(true)
     }, function (err) {

@@ -43,9 +43,9 @@ PlatformOption.getTemplateByName = function (name, callback, onError) {
 PlatformOption.newEnvironment = function (name, template, callback, onError) {
   // Get the chosen template
   this.getTemplateByName(template, function (templateData) {
-    dbh.connect(function (data) {
+    dbh.connect(function () {
       templateData.name = name
-      dbh.query("INSERT INTO platform_data VALUES(null,'" + template + "', '" + JSON.stringify(templateData) + "', '" + name + "')", function (result) {
+      dbh.query("INSERT INTO platform_data VALUES(null,'" + template + "', '" + JSON.stringify(templateData) + "', '" + name + "')", function () {
         dbh.release()
         callback()
       }, function (err) {
@@ -60,7 +60,7 @@ PlatformOption.newEnvironment = function (name, template, callback, onError) {
 }
 
 PlatformOption.getEnvironmentFromDatabase = function (name, callback, onError) {
-  dbh.connect(function (data) {
+  dbh.connect(function () {
     dbh.query('SELECT * FROM platform_data WHERE name = \'' + name + '\' ', function (result) {
       dbh.release()
       callback(result[0])
@@ -73,7 +73,7 @@ PlatformOption.getEnvironmentFromDatabase = function (name, callback, onError) {
 }
 
 PlatformOption.getAllEnvironmentsFromDatabase = function (callback, onError) {
-  dbh.connect(function (data) {
+  dbh.connect(function () {
     dbh.query('SELECT * FROM platform_data', function (result) {
       dbh.release()
       callback(result)
@@ -86,7 +86,7 @@ PlatformOption.getAllEnvironmentsFromDatabase = function (callback, onError) {
 }
 
 PlatformOption.updateEnvironmentData = function (name, platformData, callback, onError) {
-  dbh.connect(function (data) {
+  dbh.connect(function () {
     dbh.query('UPDATE platform_data SET json_data = \'' + JSON.stringify(platformData).replace(/\\/g, '') + '\' WHERE name = \'' + name + '\' ', function (result) {
       dbh.release()
       callback(result)
@@ -98,27 +98,27 @@ PlatformOption.updateEnvironmentData = function (name, platformData, callback, o
   })
 }
 
-PlatformOption.buildVlanTree = function (platform, callback, onError) {
-  var vlanTree = [];
+PlatformOption.buildVlanTree = function (platform, callback) {
+  var vlanTree = []
+  var vlanOrder = []
 
-  for (var i = 1; i < 6; i++) {
-    vlanTree[i] = []
+  for (var treeId = 1; treeId < 6; i++) {
+    vlanTree[treeId] = []
   }
 
-console.log(platform)
   for (var i = 0; i < platform.servers.length; i++) {
     var p = platform.servers[i]
     for (var a = 0; a < p.members.length; a++) {
       var m = p.members[a]
       if (m.selected) {
         if(vlanTree[m.vlan].length == 0) {
-          var vlanOrder = []
+          vlanOrder = []
           vlanOrder[0] = m
           vlanTree[m.vlan][m.graph_position] = vlanOrder
         }
         else {
           if (typeof vlanTree[m.vlan][m.graph_position] === 'undefined') {
-            var vlanOrder = []
+            vlanOrder = []
             vlanOrder[0] = m
             vlanTree[m.vlan][m.graph_position] = vlanOrder
           } else {
@@ -145,7 +145,7 @@ PlatformOption.getAllRoles = function (callback, onError) {
   })
 }
 
-PlatformOption.getRoleByName = function (name, callback, onError) {
+PlatformOption.getRoleByName = function (name, callback) {
   fs.readFile('config/roles/' + name + '.json', 'utf8', function (err, data) {
     if (err) throw err;
     callback(JSON.parse(data));

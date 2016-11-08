@@ -16,7 +16,7 @@ DatabaseHelper.connect = function (callback, onError) {
   this.connection.connect()
 
   // Verify that connection is done by performing a query
-  this.connection.query('SELECT 1', function (err, rows) {
+  this.connection.query('SELECT 1', function (err) {
     if (err) {
       onError(err)
     } else {

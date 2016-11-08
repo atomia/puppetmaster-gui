@@ -1,6 +1,5 @@
 var express = require('express')
 var router = express.Router()
-var request = require('request')
 var PlatformOption = require('../platform-options/model')
 var PreFlight = require('./model')
 router.get('/', function (req, res, next) {
@@ -26,9 +25,8 @@ router.get('/', function (req, res, next) {
 })
 
 router.post('/schedule', function (req, res, next) {
-  var selectedEnvironmentData = req.cookies.platformName
   PlatformOption.getEnvironmentFromDatabase(req.cookies.platformName, function (data) {
-    PreFlight.schedulePreFlightFromJson(JSON.parse(data.json_data.replace(/(^")|("$)/g, "")), function(data) {
+    PreFlight.schedulePreFlightFromJson(JSON.parse(data.json_data.replace(/(^")|("$)/g, "")), function() {
       if (!res.headerSent) {
         res.json({'status': 'ok'})
         return

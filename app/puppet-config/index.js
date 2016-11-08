@@ -1,7 +1,5 @@
 var express = require('express')
 var router = express.Router()
-var request = require('request')
-var config = require('../config/config.json')
 var PuppetConfig = require('./model')
 var PlatformOption = require('../platform-options/model')
 
@@ -23,12 +21,12 @@ router.get('/', function (req, res, next) {
   })
 })
 
-router.post('/', function (req, res, next) {
+router.post('/', function (req) {
   var configurationData = JSON.parse(req.body.configuration)
-  PuppetConfig.updateData(configurationData, function(result) {
-    console.log("updated")
-  }, function(error) {
-    console.log(error)
+  PuppetConfig.updateData(configurationData, function() {
+
+  }, function() {
+    // Handle error here
   })
 })
 

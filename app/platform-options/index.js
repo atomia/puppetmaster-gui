@@ -27,7 +27,7 @@ router.get('/', function (req, res, next) {
 router.post('/', function (req, res, next) {
   var platformName = req.body.name
   var platformTemplate = req.body.template
-  PlatformOption.newEnvironment(platformName, platformTemplate, function (data) {
+  PlatformOption.newEnvironment(platformName, platformTemplate, function () {
     res.cookie('platformName', platformName)
     res.json({'status': 'ok'})
   },
@@ -45,8 +45,7 @@ router.put('/', function (req, res, next) {
     res.cookie('platformName', platformName)
   }
   if (typeof platformData !== 'undefined' && platformData !== '' && platformData !== 'undefined') {
-    PlatformOption.updateEnvironmentData(platformName, platformData, function (data) {
-      console.log("updated")
+    PlatformOption.updateEnvironmentData(platformName, platformData, function () {
       res.json({'status': 'ok'})
     },
     function (error) {
@@ -81,7 +80,7 @@ router.get('/requirements', function (req, res, next) {
 
 })
 
-router.delete('/cookies', function (req, res, next) {
+router.delete('/cookies', function (req, res) {
   res.clearCookie('platformName')
   res.clearCookie('currentPlatform')
   res.json({'status': 'ok'})

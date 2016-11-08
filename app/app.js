@@ -23,6 +23,7 @@ app.engine('.hbs', exphbs({
       return JSON.stringify(object)
     },
     debug: function(optionalValue) {
+      /* eslint-disable no-console */
       console.log("Current Context");
       console.log("====================");
       console.log(this);
@@ -32,6 +33,7 @@ app.engine('.hbs', exphbs({
         console.log("====================");
         console.log(optionalValue);
       }
+      /* eslint-enable no-console */
     }
   }
 }))
@@ -50,17 +52,18 @@ app.use('/puppet-config', puppetController)
 app.use('/pre-flight', preFlightController)
 
 // Default error handler
-app.use(function (err, req, res, next) {
+app.use(function (err, req, res) {
   var errorMessage
   if (err.message) {
     errorMessage = '<h3>' + err.message + '</h3>'
   }
 
   errorMessage = errorMessage + err.stack
-  console.error(err)
   res.status(500).send(errorMessage)
 })
 
 app.listen(3000, function () {
+  /* eslint-disable no-console */
   console.log('Example app listening on port 3000!')
+  /* eslint-enable no-console */
 })
