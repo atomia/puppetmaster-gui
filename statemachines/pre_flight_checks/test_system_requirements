@@ -20,35 +20,35 @@ CPU=`echo "$INPUT" | jq -r '.system_requirements.cpu'`
 RAM=`echo "$INPUT" | jq -r '.system_requirements.ram'`
 DISK=`echo "$INPUT" | jq -r '.system_requirements.disk'`
 
-MESSAGE="{\"status\":\"failed\""
-if [ "$OS" == "linux" ]; then
+MESSAGE="{\"status\":\"failed\",\"message\":\""
+if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
 	if [ -n "$KEY" ]; then
-		AVAILABLE_RAM=`ssh -oStrictHostKeyChecking=no -i "$KEY" "$USERNAME"@"$HOSTNAME" -q 'sudo dmidecode -t 17 2>&1 | awk '"'"'( /Size/ && $2 ~ /^[0-9]+$/ ) { x+=$2 } END{ print x }'"'"''`
+		AVAILABLE_RAM=`ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "$KEY" "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'sudo dmidecode -t 17 2>&1 | awk '"'"'( /Size/ && $2 ~ /^[0-9]+$/ ) { x+=$2 } END{ print x }'"'"''`
 		if [ "$?" != "0" ]; then
 			Error "{\"status\":\"failed\", \"message\":\"Could not verify RAM requirement\"}"
 		fi
 
-		AVAILABLE_CPU=`ssh -oStrictHostKeyChecking=no -i "$KEY" "$USERNAME"@"$HOSTNAME" -q ' grep -c '"'"'^processor'"'"' /proc/cpuinfo 2>&1'`
+		AVAILABLE_CPU=`ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "$KEY" "$USERNAME"@"$HOSTNAME" 2> /dev/null -q ' grep -c '"'"'^processor'"'"' /proc/cpuinfo 2>&1'`
 		if [ "$?" != "0" ]; then
 			Error "{\"status\":\"failed\", \"message\":\"Could not verify CPU requirement\"}"
 		fi
 
-		AVAILABLE_DISK=`ssh -oStrictHostKeyChecking=no -i "$KEY" "$USERNAME"@"$HOSTNAME" -q 'sudo df -h 2>&1| egrep '"'"'/$'"'"' | awk '"'"'{ print $2 }'"'"' | sed s/G//'`
+		AVAILABLE_DISK=`ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "$KEY" "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'sudo df -h 2>&1| egrep '"'"'/$'"'"' | awk '"'"'{ print $2 }'"'"' | sed s/G//'`
 		if [ "$?" != "0" ]; then
 			Error "{\"status\":\"failed\", \"message\":\"Could not verify DISK requirement\"}"
 		fi
 
 	else
-		AVAILABLE_RAM=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no "$USERNAME"@"$HOSTNAME" -q 'sudo dmidecode -t 17 2>&1 | awk '"'"'( /Size/ && $2 ~ /^[0-9]+$/ ) { x+=$2 } END{ print x }'"'"''`
+		AVAILABLE_RAM=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/nullo "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'sudo dmidecode -t 17 2>&1 | awk '"'"'( /Size/ && $2 ~ /^[0-9]+$/ ) { x+=$2 } END{ print x }'"'"''`
 		if [ "$?" != "0" ]; then
 			Error "{\"status\":\"failed\", \"message\":\"Could not verify RAM requirement\"}"
 		fi
-                AVAILABLE_CPU=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no "$USERNAME"@"$HOSTNAME" -q ' grep -c '"'"'^processor'"'"' /proc/cpuinfo 2>&1'`
+                AVAILABLE_CPU=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$USERNAME"@"$HOSTNAME" 2> /dev/null -q ' grep -c '"'"'^processor'"'"' /proc/cpuinfo 2>&1'`
                 if [ "$?" != "0" ]; then
                         Error "{\"status\":\"failed\", \"message\":\"Could not verify CPU requirement\"}"
                 fi
 
-                AVAILABLE_DISK=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no "$USERNAME"@"$HOSTNAME" -q 'sudo df -h 2>&1| egrep '"'"'/$'"'"' | awk '"'"'{ print $2 }'"'"' | sed s/G//'`
+                AVAILABLE_DISK=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'sudo df -h 2>&1| egrep '"'"'/$'"'"' | awk '"'"'{ print $2 }'"'"' | sed s/G//'`
                 if [ "$?" != "0" ]; then
                         Error "{\"status\":\"failed\", \"message\":\"Could not verify DISK requirement\"}"
                 fi
@@ -56,26 +56,26 @@ if [ "$OS" == "linux" ]; then
 
 	HAS_ERRORS=0
 	if [[ "$AVAILABLE_RAM" -lt "$RAM" ]]; then
-		MESSAGE="$MESSAGE,\"ram\":\"Not enough ram, requires $RAM but found $AVAILABLE_RAM\""
+		MESSAGE="$MESSAGE Not enough ram, requires $RAM but found $AVAILABLE_RAM."
 		HAS_ERRORS=1
 	fi
 	if [[ "$AVAILABLE_CPU" -lt "$CPU" ]]; then
-		MESSAGE="$MESSAGE,\"cpu\":\"Not enough cpus, requires $CPU but found $AVAILABLE_CPU\""
+		MESSAGE="$MESSAGE Not enough cpus, requires $CPU but found $AVAILABLE_CPU."
 		HAS_ERRORS=1
 	fi
 	if [[ "${AVAILABLE_DISK%.*}" -lt "$DISK" ]]; then
-		MESSAGE="$MESSAGE,\"disk\":\"Not enough disk space on /, requires $DISK gb but found $AVAILABLE_DISK gb\""
+		MESSAGE="$MESSAGE Not enough disk space on /, requires $DISK gb but found $AVAILABLE_DISK gb."
 		HAS_ERRORS=1
 	fi
 
 	if [[ "$HAS_ERRORS" -eq 1 ]]; then
-		MESSAGE="$MESSAGE }"
+		MESSAGE="$MESSAGE \"}"
 		Error "$MESSAGE"
 	fi
 
 
 elif [ "$OS" == "windows" ]; then
-	AVAILABLE=`./winrm/test_requirements.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
+	AVAILABLE=`./etc/restatemachine/statemachines/pre_flight_checks/winrm/test_requirements.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
 	if [ "$?" != "0" ]; then
 		Error "$AVAILABLE"
 	fi
@@ -85,20 +85,20 @@ elif [ "$OS" == "windows" ]; then
 
 	HAS_ERRORS=0
 	if [ "$AVAILABLE_CPU" -lt "$CPU" ]; then
-		MESSAGE="$MESSAGE,\"cpu\":\"Not enough cpus, requires $CPU but found $AVAILABLE_CPU\""
+		MESSAGE="$MESSAGE Not enough cpus, requires $CPU but found $AVAILABLE_CPU"
 		HAS_ERRORS=1
 	fi
 	if [ "$AVAILABLE_RAM" -lt "$RAM" ]; then
-		MESSAGE="$MESSAGE,\"ram\":\"Not enough ram, requires $RAM but found $AVAILABLE_RAM\""
+		MESSAGE="$MESSAGE Not enough ram, requires $RAM but found $AVAILABLE_RAM"
 		HAS_ERRORS=1
 	fi
 	if [ "${AVAILABLE_DISK%.*}" -lt "$DISK" ]; then
-		MESSAGE="$MESSAGE,\"disk\":\"Not enough disk space on /, requires $DISK gb but found $AVAILABLE_DISK gb\""
+		MESSAGE="$MESSAGE Not enough disk space on /, requires $DISK gb but found $AVAILABLE_DISK gb"
 		HAS_ERRORS=1
 	fi
 
         if [[ $HAS_ERRORS -eq 1 ]]; then
-                MESSAGE="$MESSAGE }"
+                MESSAGE="$MESSAGE \"}"
                 Error "$MESSAGE"
         fi
 else
@@ -108,4 +108,4 @@ fi
 echo -n "$INPUT"
 restatemachine_transition_to "test_dns"
 restatemachine_transition_after_seconds "0"
-restatemachine_status_message "Test: dns"
+restatemachine_status_message "{\"status\":\"pending\", \"message\":\"Testing DNS\"}"

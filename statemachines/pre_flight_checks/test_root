@@ -17,14 +17,14 @@ PASSWORD=`echo "$INPUT" | jq -r '.password'`
 KEY=`echo "$INPUT" | jq -r '.key'`
 OS=`echo "$INPUT" | jq -r '.os'`
 
-if [ "$OS" == "linux" ]; then
+if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
 	if [ -n "$KEY" ]; then
-		ROOT=`ssh -oStrictHostKeyChecking=no -i "$KEY" "$USERNAME"@"$HOSTNAME" -q 'sudo id -u 2>&1'`
+		ROOT=`ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "$KEY" "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'sudo id -u 2>&1'`
 		if [ "$?" != "0" ]; then
 			Error "{\"status\":\"failed\", \"message\":\"Could not verify root privileges for user\"}"
 		fi
 	else
-		ROOT=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no "$USERNAME"@"$HOSTNAME" -q 'sudo id -u'`
+		ROOT=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'sudo id -u'`
 		if [ "$?" != "0" ]; then
 			Error "{\"status\":\"failed\", \"message\":\"Could not verify root privileges for user\"}"
 		fi
@@ -33,7 +33,7 @@ if [ "$OS" == "linux" ]; then
 		Error "{\"status\":\"failed\", \"message\":\"$USERNAME is lacking root privileges\"}"
 	fi
 elif [ "$OS" == "windows" ]; then
-	ADMINISTRATOR=`./winrm/test_administrator.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
+	ADMINISTRATOR=`./etc/restatemachine/statemachines/pre_flight_checks/winrm/test_administrator.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
 	if [ "$?" != "0" ]; then
 		Error "$ADMINISTRATOR"
 	fi
@@ -45,4 +45,4 @@ fi
 echo -n "$INPUT"
 restatemachine_transition_to "test_repo_access"
 restatemachine_transition_after_seconds "0"
-restatemachine_status_message "Test: repository access"
+restatemachine_status_message "{\"status\":\"pending\", \"message\":\"Testing repository access\"}"

@@ -2,7 +2,13 @@
 
 $(document).ready(function () {
   var advanced_buttons = document.getElementsByClassName('advanced_button')
+  var save_puppet_config = document.getElementById('save_puppet_config')
 
+  if (save_puppet_config) {
+    save_puppet_config.addEventListener('click', function () {
+      savePuppetConfig()
+    }, false)
+  }
 
   if (advanced_buttons) {
     for (var i = 0; i < advanced_buttons.length; i++) {
@@ -27,5 +33,11 @@ $(document).ready(function () {
 
   }
 
+  // Saves the current knockout model to the database
+  function savePuppetConfig() {
+    $.post('', {configuration: ko.toJSON(environmentModel)}, function (data) {
+      console.log('saved')
+    })
+  }
 
 })

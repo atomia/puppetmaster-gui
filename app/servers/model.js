@@ -54,7 +54,7 @@ Server.scheduleEnvironmentFromJson = function (data, callback, onError) {
               // Run scheduled add a reference to the database
               dbh.connect(function (data) {
                 // TODO: we should not allow duplicate task_ids for an environment
-                dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + "', '" + runId + "', '" + JSON.stringify(jobData) + "', null, 1)",
+                dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + "', '" + runId + "', '" + JSON.stringify(jobData) + "', null, 1, 'ec2')",
                 function (result) {
                   scheduledServers++
                   if (scheduledServers == servers.length) {
@@ -64,10 +64,12 @@ Server.scheduleEnvironmentFromJson = function (data, callback, onError) {
                 }, function (err) {
                   // dbh.query failed
                   console.log(err)
+                  onError(err)
                 })
               }, function (err) {
                 // dbh.connect failed
                 console.log(err)
+                onError(err)
               })
 
               console.log(body)
@@ -91,9 +93,9 @@ Server.filterSelectedServers = function (servers) {
   }
   return serverList
 }
-Server.getAllTasks = function (callback, onError) {
+Server.getAllTasks = function (task_type, callback, onError) {
   dbh.connect(function () {
-    dbh.query('SELECT * from tasks', function (result) {
+    dbh.query('SELECT * from tasks where type = \''+task_type+'\'', function (result) {
       dbh.release()
       callback(result)
     }, function (err) {

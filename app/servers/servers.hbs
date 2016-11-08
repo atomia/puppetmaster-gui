@@ -2,9 +2,10 @@
 
 var environmentModel;
 var existingEnvironments = {{{toJSON platformData}}}
-
+var environmentName = "{{selectedEnvironment}}"
 $(document).ready(function () {
-  environmentModel = ko.mapping.fromJS(existingEnvironments.servers)
+  existingEnvironments = {{{toJSON platformData}}}
+  environmentModel = ko.mapping.fromJS(existingEnvironments)
   ko.applyBindings(environmentModel, document.getElementById('mainView'))
 })
 
@@ -16,7 +17,7 @@ $(document).ready(function () {
       <h5 class="Bar-title Bar-item">Servers</h5>
       <div class="Bar-item Bar-item--right ">
         <a href="/platform-options"><button type="submit" class="Btn Btn--neutral">Back <i class="fa-margin fa fa-angle-left"></i></button></a>
-        <button type="submit" class="Btn Btn--neutral"><i class="fa-margin fa fa-floppy-o"></i> Save</button>
+        <button type="submit" class="Btn Btn--neutral" id="save_environment_button"><i class="fa-margin fa fa-floppy-o"></i> Save</button>
         <button type="submit" class="Btn Btn--primary">Next <i class="fa-margin fa fa-angle-right"></i></button>
       </div>
     </div>
@@ -88,7 +89,7 @@ $(document).ready(function () {
               </tr>
             </thead>
             <tbody>
-              <!-- ko foreach: environmentModel -->
+              <!-- ko foreach: environmentModel.servers() -->
               <!-- ko foreach: members -->
               <!-- ko if: operating_system() !== 'openstack' -->
               <!-- ko if: selected() == true -->
@@ -106,7 +107,24 @@ $(document).ready(function () {
 
                   </td>
                   <td data-bind="text: ec2_type"></td>
-                  <td data-bind="html: provisioning_status"></td>
+                  <td>
+                    <!-- ko if: provisioning_status().status === 'failed' -->
+                    <div style="float:right;">
+                      <i class="fa fa-exclamation-circle fa-lg" aria-hidden="true" style="color:#d11717;"></i><br/>
+                      <span class="Icon Icon--loading Icon--small" style="color: #373333"><span class="Icon-label"></span></span>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if: provisioning_status().status === 'pending' -->
+                    <div style="float:right;">
+                      <span class="Icon Icon--loading Icon--small" style="color: #373333"><span class="Icon-label"></span></span>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if: provisioning_status().status === 'done' -->
+                    <div style="float:right;">
+                      <i class="fa fa-check-circle fa-lg" aria-hidden="true" style="color:#2daa29;"></i>
+                    </div>
+                    <!-- /ko -->
+                    <span data-bind="text: provisioning_status().message"></span> </td>
                 </tr>
                 <!-- /ko -->
                 <!-- /ko -->

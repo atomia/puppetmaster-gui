@@ -26,31 +26,30 @@ get-ciminstance -class "cim_physicalmemory" | % {$_.Capacity}
 		s = winrm.Session(options.host, auth=(options.username,options.password))
 		r = s.run_ps(ps_num_cores)
 		if r.status_code != 0:
-			print "{\"status\" : \"error\", \"message\" : \"Could not fetch available cpu from the server\"}"
+			print "{\"status\" : \"failed\", \"message\" : \"Could not fetch available cpu from the server\"}"
 			exit(1)
 		cpu = r.std_out.rstrip()
 		r = s.run_ps(ps_disk_size)
 		if r.status_code != 0:
-			print "{\"status\" : \"error\", \"message\" : \"Could not fetch available disk from the server\"}"
+			print "{\"status\" : \"failed\", \"message\" : \"Could not fetch available disk from the server\"}"
 			exit(1)
 		disk = int(float(r.std_out.rstrip()))
 		r = s.run_ps(ps_ram)
 		if r.status_code != 0:
-			print "{\"status\" : \"error\", \"message\" : \"Could not fetch available ram from the server\"}"
+			print "{\"status\" : \"failed\", \"message\" : \"Could not fetch available ram from the server\"}"
 			exit(1)
 		ram = int(r.std_out.rstrip()) / 1024 / 1024
 		print "{\"cpu\" : " + cpu + ", \"disk\" : " + str(disk) + ", \"ram\" : " + str(ram) + "}"
 		exit(0)
 	except requests.exceptions.ConnectionError:
-		print "{\"status\" : \"error\", \"message\" : \"Could not connect to server via winrm. Could not reach hostname or ip, make sure all pre requirements are met\"}"
+		print "{\"status\" : \"failed\", \"message\" : \"Could not connect to server via winrm. Could not reach hostname or ip, make sure all pre requirements are met\"}"
 		exit(1)
 	except requests.exceptions.ConnectTimeout:
-		print "{\"status\" : \"error\", \"message\" : \"Could not connect to server via winrm. Make sure that all pre requirements are met\"}"
+		print "{\"status\" : \"failed\", \"message\" : \"Could not connect to server via winrm. Make sure that all pre requirements are met\"}"
 		exit(1)
 	except winrm.exceptions.InvalidCredentialsError:
-		print "{\"status\" : \"error\", \"message\" : \"Could not login to server via winrm. Invalid credentials\"}"
+		print "{\"status\" : \"failed\", \"message\" : \"Could not login to server via winrm. Invalid credentials\"}"
 		exit(1)
 
 if __name__ == "__main__":
     main()
-

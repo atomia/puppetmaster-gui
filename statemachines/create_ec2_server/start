@@ -40,4 +40,4 @@ fi
 cat
 restatemachine_transition_to "create_security_groups"
 restatemachine_transition_after_seconds "0"
-restatemachine_status_message "Starting create server"
+restatemachine_status_message "{\"status\":\"pending\", \"message\":\"Creating security groups\"}"

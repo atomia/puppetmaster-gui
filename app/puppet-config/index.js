@@ -21,8 +21,15 @@ router.get('/', function (req, res, next) {
     error.message = 'Could not load environment'
     next(error)
   })
+})
 
-
+router.post('/', function (req, res, next) {
+  var configurationData = JSON.parse(req.body.configuration)
+  PuppetConfig.updateData(configurationData, function(result) {
+    console.log("updated")
+  }, function(error) {
+    console.log(error)
+  })
 })
 
 

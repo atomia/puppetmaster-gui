@@ -235,12 +235,12 @@
 }
 
 .Grid-column-2 {
-    width: 31%;
+    width: 29%;
     margin: 2% 2% 0 0;
 }
 
 .Grid-column-3 {
-    width: 48%;
+    width: 41%;
     margin: 2% 2% 0 0;
 }
 
@@ -258,4 +258,20 @@
 
 .Config--var {
   font-weight: bold;
+}
+
+.pre-flight-box {
+  margin: 0px;
+  margin-top: 2px;
+}
+
+.error-wrap {
+  overflow: hidden;
+    /* white-space: nowrap; */
+    /* text-overflow: ellipsis; */
+    max-width: 90%;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    text-align: left;
 }

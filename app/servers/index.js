@@ -29,8 +29,9 @@ router.get('/', function (req, res, next) {
     })
 })
 
-router.get('/tasks', function (req, res, next) {
-  Server.getAllTasks(function (taskData) {
+router.get('/tasks/:taskType', function (req, res, next) {
+  var task_type = req.params.taskType
+  Server.getAllTasks(task_type, function (taskData) {
     res.json(taskData)
   },
   function (error) {
@@ -39,7 +40,7 @@ router.get('/tasks', function (req, res, next) {
   })
 })
 
-router.post('/tasks/:id', function (req, res, next) {
+router.post('/tasks', function (req, res, next) {
   var taskData = JSON.parse(req.body.task)
   console.log(taskData)
   Server.updateTask(taskData, function (result) {

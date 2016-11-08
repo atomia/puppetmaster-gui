@@ -19,7 +19,7 @@ while read ALLOCATION_ID; do
         RESULT=$(aws ec2 associate-address --instance-id "$INSTANCE_ID" --allocation-id "$ALLOCATION_ID" 2>&1)
         if [ "$?" != "0" ]; then
                 RES=`echo $RESULT | tr -d '\r'`
-                Error "{\"status\":\"failed\", \"message\":\"Failed to assign floating ip error was: $RES\""
+                Error "{\"status\":\"failed\", \"message\":\"Failed to assign floating ip error was: $RES\"}"
         fi
         FREE_IP=1
         break
@@ -29,17 +29,17 @@ if [ "$FREE_IP" == "0" ]; then
         RESULT=`aws ec2 allocate-address --domain vpc | jq -r '.AllocationId'`
         if [ "$?" != "0" ]; then
                 RES=`echo $RESULT | tr -d '\r'`
-                Error "{\"status\":\"failed\", \"message\":\"Failed to allocate an additional floating ip error was: $RES\""
+                Error "{\"status\":\"failed\", \"message\":\"Failed to allocate an additional floating ip error was: $RES\"}"
         fi
         ALLOCATION_ID="$RESULT"
         RESULT=$(aws ec2 associate-address --instance-id "$INSTANCE_ID" --allocation-id $ALLOCATION_ID 2>&1)
         if [ "$?" != "0" ]; then
                 RES=`echo $RESULT | tr -d '\r'`
-                Error "{\"status\":\"failed\", \"message\":\"Failed to assign floating ip error was: $RES\""
+                Error "{\"status\":\"failed\", \"message\":\"Failed to assign floating ip error was: $RES\"}"
         fi
 fi
 
 echo -n "$INPUT"
 restatemachine_transition_to "get_server_info"
 restatemachine_transition_after_seconds "0"
-restatemachine_status_message ""
+restatemachine_status_message "{\"status\":\"pending\", \"message\":\"Getting server info\"}"

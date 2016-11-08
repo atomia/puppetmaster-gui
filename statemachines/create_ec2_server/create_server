@@ -30,7 +30,7 @@ done < <(echo "$INPUT" | jq -r '.existing_security_groups[]') # Parse the rules
 RESULT=$(aws ec2 run-instances --image-id="$AMI" --count=1 --instance-type="$TYPE" --key-name="$KEY" --security-group-ids="$SECURITY_GROUP_ID" --subnet-id="$SUBNET_ID" 2>&1)
 if [ "$?" != "0" ]; then
         RES=`echo $RESULT | tr -d '\r'`
-        Error "{\"status\":\"failed\", \"message\":\"Failed to create instance the error was: $RES\""
+        Error "{\"status\":\"failed\", \"message\":\"Failed to create instance the error was: $RES\"}"
 fi
 
 INSTANCE_ID=`echo "$RESULT" | jq -r '.Instances[0]|.InstanceId'`
@@ -40,8 +40,9 @@ INPUT=`echo -n "$INPUT" | jq '.instance_id = "'"$INSTANCE_ID"'"'`
 echo -n "$INPUT"
 if [ "$OS" == "windows" ]; then
         restatemachine_transition_to "fetch_admin_password"
+        restatemachine_status_message "{\"status\":\"pending\", \"message\":\"Waiting for admin password\"}"
 else
         restatemachine_transition_to "configure_server"
+        restatemachine_status_message "{\"status\":\"pending\", \"message\":\"Configuring the server\"}"
 fi
 restatemachine_transition_after_seconds "3"
-restatemachine_status_message "$1"

@@ -42,7 +42,7 @@ while read group_name rules; do
                                 # Failure to create rule so let's rollback the created group so we can retry
                                 DELETE=$(aws ec2 delete-security-group --group-id="$GROUP_ID" 2>&1)
                                 RES=`echo $RESULT | tr -d '\r'`
-                                Error "{\"status\":\"failed\", \"message\":\"Failed to create security group rule the error was: $RES, rolling back group $GROUP_ID, $DELETE \""
+                                Error "{\"status\":\"failed\", \"message\":\"Failed to create security group rule the error was: $RES, rolling back group $GROUP_ID, $DELETE \"}"
                         fi
                 fi
 
@@ -54,3 +54,4 @@ INPUT=`echo -n "$INPUT" | jq '.security_group_id = "'"$GROUP_ID"'"'`
 echo -n "$INPUT"
 restatemachine_transition_to "create_server"
 restatemachine_transition_after_second
+restatemachine_status_message "{\"status\":\"pending\", \"message\":\"Creating the server\"}"
