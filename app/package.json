@@ -19,7 +19,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "eslint app.js */*.js --ignore-path node_modules"
+    "test": "eslint app.js */*.js"
   },
   "repository": {
     "type": "git",
