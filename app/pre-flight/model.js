@@ -50,7 +50,7 @@ PreFlight.schedulePreFlightFromJson = function (data, callback, onError) {
         // Run scheduled add a reference to the database
         dbh.connect(function (data) {
           // TODO: we should not allow duplicate task_ids for an environment
-          dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + " pre-flight', '" + runId + "', '" + JSON.stringify(jobData) + "', null, 1)",
+          dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + " pre-flight', '" + runId + "', '" + JSON.stringify(jobData) + "', null, 1, 'pre_flight')",
           function (result) {
             scheduledServers++
             if (scheduledServers == servers.length) {

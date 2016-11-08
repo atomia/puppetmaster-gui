@@ -39,6 +39,10 @@ $(document).ready(function () {
             <i class="fa fa-linux fa-lg" aria-hidden="true"></i>
             <!-- /ko -->
             <span data-bind="text: name"></span>
+            <!-- ko if: operating_system() === 'windows' -->
+            <!-- ko if: password() != '' -->
+            <br/><br/>Password: <span data-bind="text: password"></span>
+            <!-- /ko --><!-- /ko -->
           </div>
           <div class="Grid-column-2 pre-flight-box" style="text-align:right;">
             <!-- ko if: preflight_status().status === 'failed' -->

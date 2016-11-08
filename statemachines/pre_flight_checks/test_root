@@ -19,12 +19,12 @@ OS=`echo "$INPUT" | jq -r '.os'`
 
 if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
 	if [ -n "$KEY" ]; then
-		ROOT=`ssh -oStrictHostKeyChecking=no -i "$KEY" "$USERNAME"@"$HOSTNAME" -q 'sudo id -u 2>&1'`
+		ROOT=`ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "$KEY" "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'sudo id -u 2>&1'`
 		if [ "$?" != "0" ]; then
 			Error "{\"status\":\"failed\", \"message\":\"Could not verify root privileges for user\"}"
 		fi
 	else
-		ROOT=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no "$USERNAME"@"$HOSTNAME" -q 'sudo id -u'`
+		ROOT=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'sudo id -u'`
 		if [ "$?" != "0" ]; then
 			Error "{\"status\":\"failed\", \"message\":\"Could not verify root privileges for user\"}"
 		fi

@@ -29,8 +29,9 @@ router.get('/', function (req, res, next) {
     })
 })
 
-router.get('/tasks', function (req, res, next) {
-  Server.getAllTasks(function (taskData) {
+router.get('/tasks/:taskType', function (req, res, next) {
+  var task_type = req.params.taskType
+  Server.getAllTasks(task_type, function (taskData) {
     res.json(taskData)
   },
   function (error) {

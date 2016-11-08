@@ -24,7 +24,7 @@ function startPreFlight () {
 
 function updateTaskStatus () {
   String.prototype.contains = function(it) { return this.indexOf(it) != -1; };
-  $.get('/servers/tasks', function (taskData) {
+  $.get('/servers/tasks/pre_flight', function (taskData) {
 
     for (var i = 0; i < taskData.length; i++) {
       var taskName = taskData[i].task_id
@@ -34,7 +34,7 @@ function updateTaskStatus () {
       for (var e = 0; e < environmentModel.servers().length; e++) {
         for (var m = 0; m < environmentModel.servers()[e].members().length; m++) {
           status = ''
-          if (taskName.contains('pre-flight') && taskName.contains(environmentModel.servers()[e].members()[m].name())) {
+          if (taskName.contains(environmentModel.servers()[e].members()[m].name())) {
 
             (function (taskData, e, m, i) {
               var runId = taskData[i].run_id

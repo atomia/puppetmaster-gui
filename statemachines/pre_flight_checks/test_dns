@@ -19,13 +19,12 @@ OS=`echo "$INPUT" | jq -r '.os'`
 
 if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
 	if [ -n "$KEY" ]; then
-		echo "logging in..."
-		DNS=`ssh -oStrictHostKeyChecking=no -i "$KEY" "$USERNAME"@"$HOSTNAME" -q 'dig -q atomia.com'`
+		DNS=`ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "$KEY" "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'dig -q atomia.com'`
 		if [ "$?" != "0" ]; then
 			Error "{\"status\":\"failed\", \"message\":\"DNS resolution does not work\"}"
 		fi
 	else
-		DNS=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no "$USERNAME"@"$HOSTNAME" -q 'dig -q atomia.com'`
+		DNS=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'dig -q atomia.com'`
 		if [ "$?" != "0" ]; then
 			Error "{\"status\":\"failed\", \"message\":\"Could not login to the server via SSH with the provided username and password\"}"
 		fi

@@ -52,7 +52,64 @@ function createAWSEnvironment () {
 */
 }
 
+
 function updateProvisioningStatus () {
+  String.prototype.contains = function(it) { return this.indexOf(it) != -1; };
+  var numberOfTasks = 0;
+  var completedTasks = 0;
+  $.get('/servers/tasks/ec2', function (taskData) {
+
+    for (var i = 0; i < taskData.length; i++) {
+      var taskName = taskData[i].task_id
+      var taskStatus = taskData[i].status
+      var taskId = taskData[i].id
+      // Match the task with the server in environmentModel
+      for (var e = 0; e < environmentModel.servers().length; e++) {
+        for (var m = 0; m < environmentModel.servers()[e].members().length; m++) {
+          status = ''
+          if (taskName.contains(environmentModel.servers()[e].members()[m].name())) {
+            numberOfTasks++;
+
+            (function (taskData, e, m, i) {
+              var runId = taskData[i].run_id
+              $.get('/restate-machines/' + runId, function (data) {
+                var result = JSON.parse(data)
+                var status = JSON.parse(result.StatusMessage)
+                if(status.status === 'failed') {
+                    $("#pre-flight-failed").show()
+                }
+                if(status.status === 'done') {
+                  completedTasks++;
+                  var hostname = JSON.parse(result.Input).public_dns
+                  var password = JSON.parse(result.Input).password
+                  environmentModel.servers()[e].members()[m].hostname(hostname)
+                  environmentModel.servers()[e].members()[m].password(password)
+                  if(completedTasks == numberOfTasks) {
+                    $('#environment-loading').hide()
+                    $('#provisioning-complete').show()
+                    $('#create_aws_environment_button').hide()
+                    window.clearInterval(updateTimer)
+                  }
+                }
+                environmentModel.servers()[e].members()[m].provisioning_status(status)
+              })
+            })(taskData, e, m, i)
+          }
+        }
+      }
+      for (var e = 0; e < environmentModel.servers().length; e++) {
+        for (var m = 0; m < environmentModel.servers()[e].members().length; m++) {
+          if (environmentModel.servers()[e].members()[m].preflight_status() === '') {
+            environmentModel.servers()[e].members()[m].preflight_status('pending')
+          }
+        }
+      }
+
+    }
+  })
+}
+
+function updateProvisioningStatusOld () {
   $.get('/servers/tasks', function (taskData) {
 
     for (var i = 0; i < taskData.length; i++) {

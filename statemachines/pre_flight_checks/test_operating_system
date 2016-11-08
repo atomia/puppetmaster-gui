@@ -20,12 +20,12 @@ PASSWORD=`echo "$INPUT" | jq -r '.password'`
 
 if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
 	if [ -n "$KEY" ]; then
-		OS_VERSION=`ssh -i $KEY $USERNAME@$HOSTNAME 'cat /etc/lsb-release 2>&1 | grep DISTRIB_RELEASE | sed s/DISTRIB_RELEASE=//'`
+		OS_VERSION=`ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i $KEY $USERNAME@$HOSTNAME 2> /dev/null 'cat /etc/lsb-release 2>&1 | grep DISTRIB_RELEASE | sed s/DISTRIB_RELEASE=//'`
 		if [ "$?" != "0" ]; then
 			Error "{\"status\":\"failed\", \"message\":\"Operating system is not supported, expecting Ubuntu\"}"
 		fi
   else
-    LOGIN=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no "$USERNAME"@"$HOSTNAME" -q 'cat /etc/lsb-release 2>&1 | grep DISTRIB_RELEASE | sed s/DISTRIB_RELEASE=//'`
+    LOGIN=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'cat /etc/lsb-release 2>&1 | grep DISTRIB_RELEASE | sed s/DISTRIB_RELEASE=//'`
     if [ "$?" != "0" ]; then
       Error "{\"status\":\"failed\", \"message\":\"Operating system is not supported, expecting Ubuntu\"}"
     fi

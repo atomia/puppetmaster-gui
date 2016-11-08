@@ -19,12 +19,12 @@ OS=`echo "$INPUT" | jq -r '.os'`
 
 if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
 	if [ -n "$KEY" ]; then
-		LOGIN=`ssh -oStrictHostKeyChecking=no -i "$KEY" "$USERNAME"@"$HOSTNAME" -q exit`
+		LOGIN=`ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "$KEY" "$USERNAME"@"$HOSTNAME" 2> /dev/null -q exit`
 		if [ "$?" != "0" ]; then
 			Error "{\"status\":\"failed\", \"message\":\"Could not login to the server via SSH with the provided key\"}"
 		fi
 	else
-		LOGIN=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no "$USERNAME"@"$HOSTNAME" -q exit`
+		LOGIN=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$USERNAME"@"$HOSTNAME"  2> /dev/null -q exit`
 		if [ "$?" != "0" ]; then
 			Error "{\"status\":\"failed\", \"message\":\"Could not login to the server via SSH with the provided username and password\"}"
 		fi
