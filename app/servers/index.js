@@ -1,7 +1,5 @@
 var express = require('express')
 var router = express.Router()
-var request = require('request')
-var config = require('../config/config.json')
 var PlatformOption = require('../platform-options/model')
 var Server = require('./model')
 
@@ -42,8 +40,7 @@ router.get('/tasks/:taskType', function (req, res, next) {
 
 router.post('/tasks', function (req, res, next) {
   var taskData = JSON.parse(req.body.task)
-  console.log(taskData)
-  Server.updateTask(taskData, function (result) {
+  Server.updateTask(taskData, function () {
     res.json({ status: 'ok' })
   },
   function (error) {
@@ -53,9 +50,8 @@ router.post('/tasks', function (req, res, next) {
 })
 
 router.post('/schedule', function (req, res, next) {
-  var selectedEnvironmentData = req.cookies.platformName
   PlatformOption.getEnvironmentFromDatabase(req.cookies.platformName, function (data) {
-    Server.scheduleEnvironmentFromJson(JSON.parse(data.json_data.replace(/(^")|("$)/g, "")), function(data) {
+    Server.scheduleEnvironmentFromJson(JSON.parse(data.json_data.replace(/(^")|("$)/g, "")), function() {
       if (!res.headerSent) {
         res.json({'status': 'ok'})
         return

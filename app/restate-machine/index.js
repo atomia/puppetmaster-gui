@@ -2,7 +2,6 @@ var express = require('express')
 var router = express.Router()
 var request = require('request')
 var config = require('../config/config.json')
-var util = require('util')
 
 var restate_username = config.restate_machine.user
 var restate_password = config.restate_machine.password
@@ -27,7 +26,6 @@ router.post('/', function (req, res, next) {
         error.message = 'Could not schedule run'
         next(error)
       }
-      console.log(body)
       res.json(body)
     }
     request(options, callback)
