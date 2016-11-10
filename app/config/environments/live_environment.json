@@ -23,7 +23,7 @@
           "graph_position": 0,
           "provisioning_order": 0,
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "username": "Administrator",
           "password": "",
@@ -75,7 +75,7 @@
           "graph_position": 0,
           "provisioning_order": 1,
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "username": "Administrator",
           "password": "",
@@ -122,7 +122,7 @@
           "graph_position": 0,
           "provisioning_order": 3,
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "requirements": [
             {
@@ -171,7 +171,7 @@
           "graph_position": 0,
           "provisioning_order": 2,
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "requirements": [
             {
@@ -215,7 +215,7 @@
           "graph_position": 2,
           "provisioning_order": 3,
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "requirements": [
             {
@@ -259,7 +259,7 @@
           "graph_position": 1,
           "provisioning_order": 3,
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "requirements": [
             {
@@ -301,7 +301,7 @@
           "graph_position": 1,
           "provisioning_order": 4,
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "username": "Administrator",
           "password": "",
@@ -345,7 +345,7 @@
           "graph_position": 1,
           "provisioning_order": 4,
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "username": "Administrator",
           "password": "",
@@ -398,7 +398,7 @@
           "graph_position": 0,
           "provisioning_order": 5,
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "requirements": [
             {
@@ -442,7 +442,7 @@
           "graph_position": 0,
           "provisioning_order": 6,
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "requirements": [
             {
@@ -493,7 +493,7 @@
           "graph_position": 0,
           "provisioning_order": 5,
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "requirements": [
             {
@@ -537,7 +537,7 @@
           "graph_position": 0,
           "provisioning_order": 5,
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "requirements": [
             {
@@ -581,7 +581,7 @@
           "graph_position": 0,
           "provisioning_order": 5,
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "requirements": [
             {
@@ -625,7 +625,7 @@
           "graph_position": 0,
           "provisioning_order": 5,
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "requirements": [
             {
@@ -669,7 +669,7 @@
           "graph_position": 0,
           "provisioning_order": 5,
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "requirements": [
             {
@@ -713,7 +713,7 @@
           "graph_position": 0,
           "provisioning_order": 6,
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "requirements": [
             {
@@ -757,7 +757,7 @@
           "graph_position": 0,
           "provisioning_order": 6,
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "password": "",
           "requirements": [
@@ -802,7 +802,7 @@
           "graph_position": 0,
           "provisioning_order": 6,
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "requirements": [
             {
@@ -846,7 +846,7 @@
           "graph_position": 0,
           "provisioning_order": 6,
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "requirements": [
             {
@@ -890,7 +890,7 @@
           "graph_position": 0,
           "provisioning_order": 7,
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "requirements": [
             {
@@ -934,7 +934,7 @@
           "graph_position": 0,
           "provisioning_order": 5,
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "requirements": [
             {
@@ -978,7 +978,7 @@
           "graph_position": 0,
           "provisioning_order": 5,
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "requirements": [
             {
@@ -1020,7 +1020,7 @@
           "graph_position": 0,
           "provisioning_order": 5,
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "username": "Administrator",
           "password": "",
@@ -1069,7 +1069,7 @@
           "graph_position": 0,
           "ec2_type": "t2.medium",
           "hostname": "",
-          "provisioning_status": "",
+          "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
           "requirements": [
           ],

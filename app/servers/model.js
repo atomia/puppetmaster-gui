@@ -11,6 +11,7 @@ Server.prototype.data = {}
 Server.scheduleEnvironmentFromJson = function (data, callback, onError) {
 
   var servers = this.filterSelectedServers(data.servers)
+  var environmentName = data.environmentName
   var scheduledServers = 0
 
   for (var memberId = 0; memberId < servers.length; memberId++) {
@@ -33,7 +34,7 @@ Server.scheduleEnvironmentFromJson = function (data, callback, onError) {
               machine: 'create_ec2_server',
               key_name: 'stefan-test-aws',
               vpc_id: 'vpc-ad0f6ac9',
-              instance_name: curServer.name,
+              instance_name: '(' + environmentName + ') ' + curServer.name,
               ami: curServer.ami,
               type: curServer.ec2_type,
               security_groups: security_groups,

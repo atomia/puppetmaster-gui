@@ -5,8 +5,8 @@ DIR=`dirname $0`
 INPUT=`cat`
 Error () {
         restatemachine_transition_to "stop"
+        restatemachine_status_message "$1"
         restatemachine_transition_after_seconds "3"
-        restatemachine_status_message "$1 $INPUT"
         exit 0
 }
 
@@ -38,11 +38,13 @@ aws ec2 wait instance-running --instance-ids="$INSTANCE_ID"
 
 INPUT=`echo -n "$INPUT" | jq '.instance_id = "'"$INSTANCE_ID"'"'`
 echo -n "$INPUT"
+
 if [ "$OS" == "windows" ]; then
         restatemachine_transition_to "fetch_admin_password"
+        restatemachine_transition_after_seconds "3"
         restatemachine_status_message "{\"status\":\"pending\", \"message\":\"Waiting for admin password\"}"
 else
         restatemachine_transition_to "configure_server"
+        restatemachine_transition_after_seconds "3"
         restatemachine_status_message "{\"status\":\"pending\", \"message\":\"Configuring the server\"}"
 fi
-restatemachine_transition_after_seconds "3"
