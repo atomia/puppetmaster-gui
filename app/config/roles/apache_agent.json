@@ -1,0 +1,36 @@
+{
+  "name": "Apache webserver",
+  "role_name": "apache_agent",
+  "description": "Host websites on Apache",
+  "firewall": [
+    {
+      "name": "Active_directory",
+      "rules": [
+        {
+          "port": 3389,
+          "function": "rdp",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [],
+  "pretty_variables": {
+    "username": "Username",
+    "password": "Password",
+    "cluster_ip" :  "Virtual IP",
+    "atomia_clustered" : "Is clustered",
+    "should_have_pa_apache": "Apache agent",
+    "content_share_nfs_location": "Content NFS share",
+    "config_share_nfs_location": "Configuration NFS share",
+    "apache_agent_ip": "First node",
+    "maps_path": "Maps path",
+    "should_have_php_farm": "PHP farm",
+    "php_versions": "PHP versions",
+    "php_extension_packages": "PHP extensions",
+    "apache_modules_to_enable": "Extra Apache modules",
+    "use_nfs3": "Use NFS version 3"
+
+  }
+}

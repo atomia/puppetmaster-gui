@@ -1,0 +1,34 @@
+{
+  "name": "FTP cluster",
+  "role_name": "pureftpd",
+  "description": "Upload and manage files via FTP",
+  "firewall": [
+    {
+      "name": "Active_directory",
+      "rules": [
+        {
+          "port": 3389,
+          "function": "rdp",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [],
+  "pretty_variables": {
+    "provisioning_host" :  "Provisioning IP",
+    "ftp_cluster_ip" : "Virtual IP",
+    "agent_user": "Agent user",
+    "agent_password": "Agent password",
+    "master_ip": "Master server IP",
+    "pureftpd_password": "Database password",
+    "content_share_nfs_location": "Content NFS share",
+    "pureftpd_slave_password": "Slave password",
+    "mysql_root_password": "Database root password",
+    "ssl_enabled": "Enable SSL",
+    "skip_mount": "Skip mount",
+    "content_mount_point": "Content mount point",
+    "passive_port_range": "Passive port range"
+  }
+}

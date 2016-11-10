@@ -1,0 +1,42 @@
+{
+  "name": "Mail cluster",
+  "role_name": "mailserver",
+  "description": "Handles sending and recieving of email",
+  "firewall": [
+    {
+      "name": "Active_directory",
+      "rules": [
+        {
+          "port": 3389,
+          "function": "rdp",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [],
+  "pretty_variables": {
+    "provisioning_host" :  "Provisioning host",
+    "cluster_ip" : "Virtual IP",
+    "is_master": "Is master",
+    "master_ip": "Master IP",
+    "agent_password": "Agent password",
+    "slave_password": "Slave password",
+    "install_antispam": "Install antispam",
+    "mail_share_nfs_location": "Mail NFS share",
+    "use_nfs3": "Use NFS version 3",
+    "skip_mount": "Skip mount",
+    "mailbox_base": "Mailbox base",
+    "mysql_server_id": "Server id",
+    "mysql_root_password": "MySQL root password",
+    "ssl_certificate_name_base": "Certificate name",
+    "postfix_my_networks": "Postfix my_networks",
+    "postfix_message_size_limit": "Postfix size limit",
+    "postfix_override_main_cf": "Postfix main.cf",
+    "postfix_override_master_cf": "Postfix master.cf",
+    "dovecot_override_config": "Dovecot.conf"
+
+
+  }
+}

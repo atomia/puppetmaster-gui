@@ -1,0 +1,1083 @@
+{
+  "name" : "Live Environment",
+  "priority": "0",
+  "description": "Optimized for live usage",
+  "servers": [
+    {
+      "category": "System",
+      "category_id": "system",
+      "selected": false,
+      "members": [
+        {
+          "name": "Active directory",
+          "description": "",
+          "required": true,
+          "selected": true,
+          "cluster": false,
+          "multiple": false,
+          "node_count": 1,
+          "operating_system": "windows",
+          "ami": "ami-9b81f8e8",
+          "ec2_type": "t2.small",
+          "vlan": 1,
+          "graph_position": 0,
+          "provisioning_order": 0,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "username": "Administrator",
+          "password": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "1",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "1",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "25",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "active_directory",
+              "overrides": [
+                {
+                  "variable": "$domain_name",
+                  "value": "atomia.local"
+                },
+                {
+                  "variable": "$netbios_domain_name",
+                  "value": "ATOMIA"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Active directory replica",
+          "description": "It is recommended to install an Active directory replica in live environments",
+          "required": false,
+          "selected": false,
+          "cluster": false,
+          "multiple": false,
+          "node_count": 1,
+          "operating_system": "windows",
+          "ami": "ami-9b81f8e8",
+          "ec2_type": "t2.small",
+          "vlan": 1,
+          "graph_position": 0,
+          "provisioning_order": 1,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "username": "Administrator",
+          "password": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "4",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "1",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "50",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "active_directory_replica",
+              "overrides": [
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Internal DNS",
+          "description": "Used to store DNS information local to the environment",
+          "required": true,
+          "selected": false,
+          "cluster": false,
+          "multiple": false,
+          "node_count": 1,
+          "ami": "ami-0d77397e",
+          "ec2_type": "t2.micro",
+          "category": "system",
+          "operating_system": "ubuntu",
+          "username": "ubuntu",
+          "password": "",
+          "vlan": 3,
+          "graph_position": 0,
+          "provisioning_order": 3,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "1",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "1",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "10",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "internaldns",
+              "overrides": [
+                {
+                  "variable": "$zone_name",
+                  "value": "atomia.internal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Monitoring",
+          "description": "Setup monitoring of all provisioned servers with Nagios.",
+          "required": false,
+          "selected": false,
+          "cluster": false,
+          "multiple": false,
+          "node_count": 1,
+          "ami": "ami-0d77397e",
+          "ec2_type": "t2.micro",
+          "category": "system",
+          "operating_system": "ubuntu",
+          "username": "ubuntu",
+          "password": "",
+          "vlan": 3,
+          "graph_position": 0,
+          "provisioning_order": 2,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "2",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "2",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "50",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "nagios_server",
+              "overrides": [
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Atomia database",
+          "description": "",
+          "required": true,
+          "selected": false,
+          "cluster": false,
+          "multiple": false,
+          "node_count": 1,
+          "ami": "ami-0d77397e",
+          "ec2_type": "t2.small",
+          "operating_system": "ubuntu",
+          "username": "ubuntu",
+          "password": "",
+          "vlan": 1,
+          "graph_position": 2,
+          "provisioning_order": 3,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "8",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "4",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "100",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "atomia_database",
+              "overrides": [
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Internal mail server",
+          "description": "Set up a mail server that will handle all outgoing email that Atomia sends",
+          "required": false,
+          "selected": false,
+          "cluster": false,
+          "multiple": false,
+          "node_count": 1,
+          "ami": "ami-0d77397e",
+          "ec2_type": "t2.micro",
+          "operating_system": "ubuntu",
+          "username": "ubuntu",
+          "password": "",
+          "vlan": 1,
+          "graph_position": 1,
+          "provisioning_order": 3,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "1",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "1",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "10",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "internal_mailserver",
+              "overrides": [
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Atomia internal",
+          "description": "",
+          "required": true,
+          "selected": false,
+          "cluster": false,
+          "multiple": false,
+          "node_count": 1,
+          "operating_system": "windows",
+          "ami": "ami-9b81f8e8",
+          "ec2_type": "t2.medium",
+          "vlan": 1,
+          "graph_position": 1,
+          "provisioning_order": 4,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "username": "Administrator",
+          "password": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "8",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "4",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "100",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "internal_apps",
+              "overrides": [
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Atomia Public",
+          "description": "",
+          "required": true,
+          "selected": false,
+          "cluster": false,
+          "multiple": false,
+          "node_count": 1,
+          "ami": "ami-9b81f8e8",
+          "ec2_type": "t2.medium",
+          "operating_system": "windows",
+          "vlan": 1,
+          "graph_position": 1,
+          "provisioning_order": 4,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "username": "Administrator",
+          "password": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "8",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "4",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "100",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "public_apps",
+              "overrides": [
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "category": "DNS",
+      "category_id": "dns",
+      "selected": false,
+      "members": [
+        {
+          "name": "Atomia DNS",
+          "description": "",
+          "required": true,
+          "selected": false,
+          "cluster": false,
+          "multiple": false,
+          "node_count": 1,
+          "ami": "ami-0d77397e",
+          "ec2_type": "t2.micro",
+          "operating_system": "ubuntu",
+          "username": "ubuntu",
+          "password": "",
+          "vlan": 2,
+          "graph_position": 0,
+          "provisioning_order": 5,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "1",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "1",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "10",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "atomiadns",
+              "overrides": [
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Nameservers",
+          "description": "",
+          "required": false,
+          "selected": false,
+          "cluster": false,
+          "multiple": true,
+          "node_count": 1,
+          "ami": "ami-0d77397e",
+          "ec2_type": "t2.micro",
+          "operating_system": "ubuntu",
+          "username": "ubuntu",
+          "password": "",
+          "vlan": 2,
+          "graph_position": 0,
+          "provisioning_order": 6,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "1",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "1",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "10",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "atomiadns_powerdns",
+              "overrides": [
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "category": "Shared hosting",
+      "category_id": "shared_hosting",
+      "selected": false,
+      "members": [
+        {
+          "name": "Filesystem agent",
+          "description": "",
+          "required": true,
+          "selected": false,
+          "cluster": false,
+          "multiple": false,
+          "node_count": 1,
+          "ami": "ami-0d77397e",
+          "ec2_type": "t2.micro",
+          "operating_system": "ubuntu",
+          "username": "ubuntu",
+          "password": "",
+          "vlan": 4,
+          "graph_position": 0,
+          "provisioning_order": 5,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "1",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "1",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "10",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "fsagent",
+              "overrides": [
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Installatron",
+          "description": "Used to install applications from the control panel, requires a valid Installatron Server license",
+          "required": false,
+          "selected": false,
+          "cluster": false,
+          "multiple": false,
+          "node_count": 1,
+          "ami": "ami-0d77397e",
+          "ec2_type": "t2.micro",
+          "operating_system": "ubuntu",
+          "username": "ubuntu",
+          "password": "",
+          "vlan": 4,
+          "graph_position": 0,
+          "provisioning_order": 5,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "1",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "1",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "20",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "installatron",
+              "overrides": [
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Awstats",
+          "description": "Used to display usage statistics in the control panel",
+          "required": false,
+          "selected": false,
+          "cluster": false,
+          "multiple": false,
+          "node_count": 1,
+          "ami": "ami-0d77397e",
+          "ec2_type": "t2.micro",
+          "operating_system": "ubuntu",
+          "username": "ubuntu",
+          "password": "",
+          "vlan": 4,
+          "graph_position": 0,
+          "provisioning_order": 5,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "1",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "1",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "10",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "awstats",
+              "overrides": [
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Daggre",
+          "description": "Collects usage information from different systems like storage usage",
+          "required": false,
+          "selected": false,
+          "cluster": false,
+          "multiple": false,
+          "node_count": 1,
+          "ami": "ami-0d77397e",
+          "ec2_type": "t2.micro",
+          "operating_system": "ubuntu",
+          "username": "ubuntu",
+          "password": "",
+          "vlan": 4,
+          "graph_position": 0,
+          "provisioning_order": 5,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "1",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "1",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "10",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "daggre",
+              "overrides": [
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Cronjob",
+          "description": "Allows users to add scheduled tasks from the control panel",
+          "required": false,
+          "selected": false,
+          "cluster": false,
+          "multiple": false,
+          "node_count": 1,
+          "ami": "ami-0d77397e",
+          "ec2_type": "t2.micro",
+          "operating_system": "ubuntu",
+          "username": "ubuntu",
+          "password": "",
+          "vlan": 4,
+          "graph_position": 0,
+          "provisioning_order": 5,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "1",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "1",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "20",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "cronagent",
+              "overrides": [
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Apache cluster",
+          "description": "Host websites on Apache",
+          "required": false,
+          "selected": false,
+          "cluster": true,
+          "multiple": false,
+          "node_count": 1,
+          "ami": "ami-0d77397e",
+          "ec2_type": "t2.micro",
+          "operating_system": "ubuntu",
+          "username": "ubuntu",
+          "password": "",
+          "vlan": 4,
+          "graph_position": 0,
+          "provisioning_order": 6,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "4",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "4",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "20",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "apache_agent",
+              "overrides": [
+              ]
+            }
+          ]
+        },
+        {
+          "name": "IIS cluster",
+          "description": "Host websites on IIS (Windows)",
+          "required": false,
+          "selected": false,
+          "cluster": true,
+          "multiple": false,
+          "node_count": 1,
+          "ami": "ami-9b81f8e8",
+          "ec2_type": "t2.medium",
+          "operating_system": "windows",
+          "username": "ubuntu",
+          "password": "",
+          "vlan": 4,
+          "graph_position": 0,
+          "provisioning_order": 6,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "password": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "4",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "4",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "50",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "iis",
+              "overrides": [
+              ]
+            }
+          ]
+        },
+        {
+          "name": "FTP cluster",
+          "description": "Allows users to manage the content of their home directory",
+          "required": false,
+          "selected": false,
+          "cluster": true,
+          "multiple": false,
+          "node_count": 1,
+          "ami": "ami-0d77397e",
+          "ec2_type": "t2.micro",
+          "operating_system": "ubuntu",
+          "username": "ubuntu",
+          "password": "",
+          "vlan": 4,
+          "graph_position": 0,
+          "provisioning_order": 6,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "1",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "1",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "10",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "pureftpd",
+              "overrides": [
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Mail cluster",
+          "description": "Host mail accounts",
+          "required": false,
+          "selected": false,
+          "cluster": true,
+          "multiple": false,
+          "node_count": 1,
+          "ami": "ami-0d77397e",
+          "ec2_type": "t2.micro",
+          "operating_system": "ubuntu",
+          "username": "ubuntu",
+          "password": "",
+          "vlan": 4,
+          "graph_position": 0,
+          "provisioning_order": 6,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "2",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "2",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "20",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "mailserver",
+              "overrides": [
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Load balancers",
+          "description": "Distributes traffic between your cluster nodes",
+          "required": false,
+          "selected": false,
+          "cluster": false,
+          "multiple": true,
+          "node_count": 1,
+          "ami": "ami-0d77397e",
+          "ec2_type": "t2.micro",
+          "operating_system": "ubuntu",
+          "username": "ubuntu",
+          "password": "",
+          "vlan": 4,
+          "graph_position": 0,
+          "provisioning_order": 7,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "1",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "1",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "10",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "haproxy",
+              "overrides": [
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Customer MySQL",
+          "description": "Host MySQL databases",
+          "required": false,
+          "selected": false,
+          "cluster": false,
+          "multiple": false,
+          "node_count": 1,
+          "ami": "ami-0d77397e",
+          "ec2_type": "t2.micro",
+          "operating_system": "ubuntu",
+          "username": "ubuntu",
+          "password": "",
+          "vlan": 4,
+          "graph_position": 0,
+          "provisioning_order": 5,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "4",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "4",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "100",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "mysql",
+              "overrides": [
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Customer PostgreSQL",
+          "description": "Host PostgreSQL databases",
+          "required": false,
+          "selected": false,
+          "cluster": false,
+          "multiple": false,
+          "node_count": 1,
+          "ami": "ami-0d77397e",
+          "ec2_type": "t2.micro",
+          "operating_system": "ubuntu",
+          "username": "ubuntu",
+          "password": "",
+          "vlan": 4,
+          "graph_position": 0,
+          "provisioning_order": 5,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "4",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "4",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "100",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "postgresql",
+              "overrides": [
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Customer MSSQL",
+          "description": "Host MSSQL databases",
+          "required": false,
+          "selected": false,
+          "cluster": false,
+          "multiple": false,
+          "node_count": 1,
+          "ami": "ami-9b81f8e8",
+          "ec2_type": "t2.medium",
+          "operating_system": "windows",
+          "vlan": 4,
+          "graph_position": 0,
+          "provisioning_order": 5,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "username": "Administrator",
+          "password": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "4",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "4",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "100",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "mssql",
+              "overrides": [
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "category": "VPS Hosting",
+      "category_id": "cloud",
+      "selected": false,
+      "members": [
+        {
+          "name": "OpenStack",
+          "description": "Use OpenStack to host cloud services",
+          "required": false,
+          "selected": false,
+          "cluster": false,
+          "multiple": false,
+          "node_count": 1,
+          "operating_system": "openstack",
+          "vlan": 5,
+          "graph_position": 0,
+          "ec2_type": "t2.medium",
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "requirements": [
+          ],
+          "roles": [
+            "openstack"
+          ]
+        }
+      ]
+    }
+  ]
+}

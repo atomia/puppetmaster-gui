@@ -1,0 +1,28 @@
+{
+  "name": "Active directory",
+  "role_name": "active_directory",
+  "description": "Active directory is used to store information about users in the Atomia system",
+  "firewall": [
+    {
+      "name": "Active_directory",
+      "rules": [
+        {
+          "port": 3389,
+          "function": "rdp",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [],
+  "pretty_variables": {
+    "domain_name" :  "Domain Name",
+    "netbios_domain_name" : "NetBios name",
+    "restore_password": "Restore password",
+    "app_password": "Pool user password",
+    "bind_password": "Posix user password",
+    "windows_admin_password": "Win admin password",
+    "master_ip": "Server IP"
+  }
+}

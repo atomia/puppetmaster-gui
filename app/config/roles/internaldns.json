@@ -1,0 +1,29 @@
+{
+  "name": "Internal DNS",
+  "role_name": "internaldns",
+  "description": "Used for internal DNS lookups",
+  "firewall": [
+    {
+      "name": "Internal_dns",
+      "rules": [
+        {
+          "port": 53,
+          "function": "dns",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        },
+        {
+          "port": 53,
+          "name": "dns",
+          "protocol": "udp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [],
+  "pretty_variables": {
+    "username" :  "Username",
+    "password" : "Password"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Internal mailserver",
+  "role_name": "internal_mailserver",
+  "description": "Sends email from the environment",
+  "firewall": [
+    {
+      "name": "Active_directory",
+      "rules": [
+        {
+          "port": 3389,
+          "function": "rdp",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [],
+  "pretty_variables": {
+    "allow_subnet" :  "Allow subnet"
+  }
+}

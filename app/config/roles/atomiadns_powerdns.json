@@ -1,0 +1,24 @@
+{
+  "name": "Nameserver",
+  "role_name": "atomiadns_powerdns",
+  "description": "PowerDNS nameserver",
+  "firewall": [
+    {
+      "name": "Active_directory",
+      "rules": [
+        {
+          "port": 3389,
+          "function": "rdp",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [],
+  "pretty_variables": {
+    "db_hostname" :  "Database host",
+    "db_username" : "Database username",
+    "db_password" : "Database password"
+  }
+}

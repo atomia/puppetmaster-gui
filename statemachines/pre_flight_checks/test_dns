@@ -1,0 +1,45 @@
+#!/bin/bash
+DIR=`dirname $0`
+. /etc/restatemachine/shell_helpers.inc
+
+INPUT=`cat`
+Error () {
+        echo -n "$INPUT"
+        restatemachine_transition_to "test_dns"
+        restatemachine_transition_after_seconds "60"
+        restatemachine_status_message "$1"
+        exit 0
+}
+
+HOSTNAME=`echo "$INPUT" | jq -r '.hostname'`
+USERNAME=`echo "$INPUT" | jq -r '.username'`
+PASSWORD=`echo "$INPUT" | jq -r '.password'`
+KEY=`echo "$INPUT" | jq -r '.key'`
+OS=`echo "$INPUT" | jq -r '.os'`
+
+if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
+	if [ -n "$KEY" ]; then
+		DNS=`ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "$KEY" "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'dig -q atomia.com'`
+		if [ "$?" != "0" ]; then
+			Error "{\"status\":\"failed\", \"message\":\"DNS resolution does not work\"}"
+		fi
+	else
+		DNS=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'dig -q atomia.com'`
+		if [ "$?" != "0" ]; then
+			Error "{\"status\":\"failed\", \"message\":\"Could not login to the server via SSH with the provided username and password\"}"
+		fi
+	fi
+elif [ "$OS" == "windows" ]; then
+	DNS=`./etc/restatemachine/statemachines/pre_flight_checks/winrm/test_dns.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
+	if [ "$?" != "0" ]; then
+		Error "$DNS"
+	fi
+else
+	Error "{\"status\":\"failed\", \"message\":\"Unknown operating system $OS \"}"
+fi
+
+
+echo -n "$INPUT"
+restatemachine_transition_to "test_root"
+restatemachine_transition_after_seconds "0"
+restatemachine_status_message "{\"status\":\"pending\", \"message\":\"Testing root access\"}"

@@ -1,0 +1,26 @@
+{
+  "name": "Installatron",
+  "role_name": "installatron",
+  "description": "Installatron server application installer",
+  "firewall": [
+    {
+      "name": "Active_directory",
+      "rules": [
+        {
+          "port": 3389,
+          "function": "rdp",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [],
+  "pretty_variables": {
+    "license_key" :  "Installatron license key",
+    "authentication_key" : "Authentication key",
+    "content_share_nfs_location": "Content NFS share",
+    "use_nfs3": "Use NFS version 3",
+    "installatron_hostname": "Server hostname"
+  }
+}

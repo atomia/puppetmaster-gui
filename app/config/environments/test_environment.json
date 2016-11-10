@@ -1,0 +1,37 @@
+{
+	"name" : "Test Environment",
+	"priority": "1",
+	"description": "For testing",
+	"servers": [
+		{
+			"name": "Active directory",
+			"required": true,
+			"cluster": false,
+			"category": "system",
+			"operating_system": "windows",
+			"roles": [
+				"active_directory"
+			]
+		},
+		{
+			"name": "Active directory replica",
+			"required": false,
+			"cluster": false,
+			"category": "system",
+			"operating_system": "windows",
+			"roles": [
+				"active_directory_replica"
+			]
+		},
+		{
+			"name": "Atomia internal",
+			"required": true,
+			"cluster": false,
+			"category": "system",
+			"operating_system": "windows",
+			"roles": [
+				"internal_apps"
+			]
+		}
+	]
+}

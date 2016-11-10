@@ -1,0 +1,43 @@
+#!/bin/sh
+
+. /etc/restatemachine/shell_helpers.inc
+
+if [ x"$1" = x"--help" ]; then
+        cat <<ENDOFUSAGE
+This statemachine will create a virtual machine on Amazon EC2
+
+Requirments:
+apt-get -y install python-pip
+pip install --upgrade awscli
+apt-get install jq
+~/.ec2/configure
+
+Expected input:
+{
+        "key_name": "my_key",
+        "vpc_id": "vpc-ad0f6ac9",
+        "ami": "abc-123",
+        "type": "t2.micro",
+        "security_groups": [
+                {
+                        "name": "My security group",
+                        "rules": [
+                                "name": "Allow SSH",
+                                "protocol": "tcp",
+                                "port": 22,
+                                "cidr": "0.0.0.0/0"
+                        ]
+                }
+        ],
+        "existing_security_groups: ["default"],
+        "os": "windows"
+}
+ENDOFUSAGE
+
+        exit 0
+fi
+
+cat
+restatemachine_transition_to "create_security_groups"
+restatemachine_transition_after_seconds "0"
+restatemachine_status_message "{\"status\":\"pending\", \"message\":\"Creating security groups\"}"
