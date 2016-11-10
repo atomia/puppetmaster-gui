@@ -53,5 +53,5 @@ done < <(echo "$INPUT" | jq -r '.security_groups[]|"\(.name) \(.rules)"') #Parse
 INPUT=`echo -n "$INPUT" | jq '.security_group_id = "'"$GROUP_ID"'"'`
 echo -n "$INPUT"
 restatemachine_transition_to "create_server"
-restatemachine_transition_after_second
+restatemachine_transition_after_seconds "3"
 restatemachine_status_message "{\"status\":\"pending\", \"message\":\"Creating the server\"}"

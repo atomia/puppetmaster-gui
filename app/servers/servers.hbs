@@ -1,7 +1,7 @@
 <script>
 
 var environmentModel;
-var existingEnvironments = {{{toJSON platformData}}}
+
 var environmentName = "{{selectedEnvironment}}"
 $(document).ready(function () {
   existingEnvironments = {{{toJSON platformData}}}
@@ -108,23 +108,24 @@ $(document).ready(function () {
                   </td>
                   <td data-bind="text: ec2_type"></td>
                   <td>
-                    <!-- ko if: provisioning_status().status === 'failed' -->
+                    <!-- ko if: provisioning_status.status() === 'failed' -->
                     <div style="float:right;">
                       <i class="fa fa-exclamation-circle fa-lg" aria-hidden="true" style="color:#d11717;"></i><br/>
                       <span class="Icon Icon--loading Icon--small" style="color: #373333"><span class="Icon-label"></span></span>
                     </div>
                     <!-- /ko -->
-                    <!-- ko if: provisioning_status().status === 'pending' -->
+                    <!-- ko if: provisioning_status.status() === 'pending' -->
                     <div style="float:right;">
                       <span class="Icon Icon--loading Icon--small" style="color: #373333"><span class="Icon-label"></span></span>
                     </div>
                     <!-- /ko -->
-                    <!-- ko if: provisioning_status().status === 'done' -->
+                    <!-- ko if: provisioning_status.status() === 'done' -->
                     <div style="float:right;">
                       <i class="fa fa-check-circle fa-lg" aria-hidden="true" style="color:#2daa29;"></i>
                     </div>
                     <!-- /ko -->
-                    <span data-bind="text: provisioning_status().message"></span> </td>
+                    <span data-bind="text: provisioning_status.message"></span> </td>
+
                 </tr>
                 <!-- /ko -->
                 <!-- /ko -->

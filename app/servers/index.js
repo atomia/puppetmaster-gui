@@ -51,7 +51,9 @@ router.post('/tasks', function (req, res, next) {
 
 router.post('/schedule', function (req, res, next) {
   PlatformOption.getEnvironmentFromDatabase(req.cookies.platformName, function (data) {
-    Server.scheduleEnvironmentFromJson(JSON.parse(data.json_data.replace(/(^")|("$)/g, "")), function() {
+    var environmentData = JSON.parse(data.json_data.replace(/(^")|("$)/g, ""))
+    environmentData.environmentName = req.cookies.platformName
+    Server.scheduleEnvironmentFromJson(environmentData, function() {
       if (!res.headerSent) {
         res.json({'status': 'ok'})
         return
