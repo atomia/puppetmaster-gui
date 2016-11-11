@@ -43,14 +43,9 @@ PlatformOption.getTemplateByName = function (name, callback, onError) {
 PlatformOption.newEnvironment = function (name, template, callback, onError) {
   // Get the chosen template
   this.getTemplateByName(template, function (templateData) {
-    dbh.connect(function () {
-      templateData.name = name
-      dbh.query("INSERT INTO platform_data VALUES(null,'" + template + "', '" + JSON.stringify(templateData) + "', '" + name + "')", function () {
-        dbh.release()
-        callback()
-      }, function (err) {
-        onError(err)
-      })
+    templateData.name = name
+    dbh.query("INSERT INTO platform_data VALUES(null,'" + template + "', '" + JSON.stringify(templateData) + "', '" + name + "')", function () {
+      callback()
     }, function (err) {
       onError(err)
     })
@@ -60,39 +55,24 @@ PlatformOption.newEnvironment = function (name, template, callback, onError) {
 }
 
 PlatformOption.getEnvironmentFromDatabase = function (name, callback, onError) {
-  dbh.connect(function () {
-    dbh.query('SELECT * FROM platform_data WHERE name = \'' + name + '\' ', function (result) {
-      dbh.release()
-      callback(result[0])
-    }, function (err) {
-      onError(err)
-    })
+  dbh.query('SELECT * FROM platform_data WHERE name = \'' + name + '\' ', function (result) {
+    callback(result[0])
   }, function (err) {
     onError(err)
   })
 }
 
 PlatformOption.getAllEnvironmentsFromDatabase = function (callback, onError) {
-  dbh.connect(function () {
-    dbh.query('SELECT * FROM platform_data', function (result) {
-      dbh.release()
-      callback(result)
-    }, function (err) {
-      onError(err)
-    })
+  dbh.query('SELECT * FROM platform_data', function (result) {
+    callback(result)
   }, function (err) {
     onError(err)
   })
 }
 
 PlatformOption.updateEnvironmentData = function (name, platformData, callback, onError) {
-  dbh.connect(function () {
-    dbh.query('UPDATE platform_data SET json_data = \'' + JSON.stringify(platformData).replace(/\\/g, '') + '\' WHERE name = \'' + name + '\' ', function (result) {
-      dbh.release()
-      callback(result)
-    }, function (err) {
-      onError(err)
-    })
+  dbh.query('UPDATE platform_data SET json_data = \'' + JSON.stringify(platformData).replace(/\\/g, '') + '\' WHERE name = \'' + name + '\' ', function (result) {
+    callback(result)
   }, function (err) {
     onError(err)
   })

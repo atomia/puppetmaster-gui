@@ -4,6 +4,8 @@ var path = require('path')
 var exphbs = require('express-handlebars')
 var bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser')
+var mysql = require('mysql')
+var config = require('./config/config.json')
 
 // Controllers/routes
 var startController = require('./start/index')
@@ -50,16 +52,25 @@ app.use('/restate-machines', restateController)
 app.use('/servers', serverController)
 app.use('/puppet-config', puppetController)
 app.use('/pre-flight', preFlightController)
-
+/* eslint-disable no-unused-vars, no-undef*/
+databasePool  = mysql.createPool({
+  connectionLimit : 50,
+  host: config.database.host,
+  user: config.database.user,
+  password: config.database.password,
+  database: config.database.database
+});
+/* eslint-enable no-unused-vars, no-undef */
 // Default error handler
-app.use(function (err, req, res) {
+app.use(function (err, req) {
   var errorMessage
   if (err.message) {
     errorMessage = '<h3>' + err.message + '</h3>'
   }
 
   errorMessage = errorMessage + err.stack
-  res.status(500).send(errorMessage)
+  req.body = errorMessage
+  req.sendStatus(500)
 })
 
 app.listen(3000, function () {

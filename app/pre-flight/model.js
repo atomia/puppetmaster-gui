@@ -7,7 +7,7 @@ var PreFlight = function (data) {
 
 PreFlight.prototype.data = {}
 
-PreFlight.schedulePreFlightFromJson = function (data, callback, onError) {
+PreFlight.schedulePreFlightFromJson = function (environmentId, data, callback, onError) {
 
   var servers = Servers.filterSelectedServers(data.servers)
   var scheduledServers = 0
@@ -47,21 +47,15 @@ PreFlight.schedulePreFlightFromJson = function (data, callback, onError) {
         }
         var runId = JSON.parse(body).Id
         // Run scheduled add a reference to the database
-        dbh.connect(function () {
-          // TODO: we should not allow duplicate task_ids for an environment
-          dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + " pre-flight', '" + runId + "', '" + JSON.stringify(jobData) + "', null, 1, 'pre_flight')",
-          function () {
-            scheduledServers++
-            if (scheduledServers == servers.length) {
-              dbh.release()
-              callback()
-            }
-          }, function (err) {
-            // dbh.query failed
-            onError(err)
-          })
+        // TODO: we should not allow duplicate task_ids for an environment
+        dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + " pre-flight', '" + runId + "', '" + JSON.stringify(jobData) + "', null, " + environmentId + ", 'pre_flight')",
+        function () {
+          scheduledServers++
+          if (scheduledServers == servers.length) {
+            callback()
+          }
         }, function (err) {
-          // dbh.connect failed
+          // dbh.query failed
           onError(err)
         })
       })
@@ -71,26 +65,16 @@ PreFlight.schedulePreFlightFromJson = function (data, callback, onError) {
 }
 
 PreFlight.getAllTasks = function (callback, onError) {
-  dbh.connect(function () {
-    dbh.query('SELECT * from tasks', function (result) {
-      dbh.release()
-      callback(result)
-    }, function (err) {
-      onError(err)
-    })
+  dbh.query('SELECT * from tasks', function (result) {
+    callback(result)
   }, function (err) {
     onError(err)
   })
 }
 
 PreFlight.updateTask = function (task, callback, onError) {
-  dbh.connect(function () {
-    dbh.query("UPDATE tasks SET status = '" + task.status + "' WHERE id = " + task.id, function () {
-      dbh.release()
-      callback(true)
-    }, function (err) {
-      onError(err)
-    })
+  dbh.query("UPDATE tasks SET status = '" + task.status + "' WHERE id = " + task.id, function () {
+    callback(true)
   }, function (err) {
     onError(err)
   })
