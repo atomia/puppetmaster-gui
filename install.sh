@@ -38,7 +38,7 @@ if [ "$USER_EXISTS" = "1" ]; then
         mysql --defaults-file=/etc/mysql/debian.cnf -e "DROP USER '$DB_USER'@'localhost';"
 fi
 
-mysql --defaults-file=/etc/mysql/debian.cnf -e "CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD';GRANT ALL PRIVILEGES ON hiera.* TO '$DB_USER'@'localhost';FLUSH PRIVILEGES;"
+mysql --defaults-file=/etc/mysql/debian.cnf -e "CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD';GRANT ALL PRIVILEGES ON puppet_atomia.* TO '$DB_USER'@'localhost';FLUSH PRIVILEGES;"
 
 cd /opt/puppetmaster-gui/app
 mysql --defaults-file=/etc/mysql/debian.cnf < schema.sql
