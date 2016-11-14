@@ -1,6 +1,6 @@
-DROP database IF EXISTS puppet-atomia;
-CREATE database puppet-atomia;
-USE puppet-atomia;
+DROP database IF EXISTS puppet_atomia;
+CREATE database puppet_atomia;
+USE puppet_atomia;
 
 CREATE TABLE `platform_data` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
