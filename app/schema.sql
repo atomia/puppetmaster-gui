@@ -19,7 +19,7 @@ CREATE TABLE `tasks` (
   `fk_platform_data` int(11) DEFAULT NULL,
   `type` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=87 DEFAULT CHARSET=utf8
+) ENGINE=InnoDB AUTO_INCREMENT=87 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `configuration` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

@@ -12,6 +12,9 @@ Before starting the installation make sure the following steps are completed
 
 ## Installation instructions
 
+Run install.sh (as root)
+
+The installation gui will be available at http://127.0.0.1:3000 
 
 ## Contributions
 
