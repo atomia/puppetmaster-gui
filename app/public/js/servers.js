@@ -23,11 +23,41 @@ $(document).ready(function () {
 var updateTimer
 
 function createAWSEnvironment () {
-  // Schedule the jobs in the database
-  $.post('/servers/schedule', {}, function () {
-    $('#create_aws_environment_button').hide()
-    $('#environment-loading').show()
+  // Save AWS information
+
+  var privateKey
+  if(typeof $('#privateKey').val() != 'undefined') {
+    privateKey = $('#privateKey').val().replace(/\.[^/.]+$/, "")
+  } else {
+    privateKey = $('#privateKeySaved').html()
+  }
+  var awsConfig = {
+    'aws_key': $('#aws_key').val(),
+    'aws_secret': $('#aws_secret').val(),
+    'aws_region': $('#regionSelect').val(),
+    'vpc_id': $('#vpc_id').val(),
+    'private_key' : privateKey
+  }
+
+  if(typeof $('#upload_form').val() != 'undefined') {
+    $('#upload_form').ajaxSubmit({
+      error: function(xhr) {
+        console.log('Error: ' + xhr.status);
+      },
+
+      success: function(response) {
+        console.log(response)
+      }
+    });
+  }
+
+  $.post('/servers/aws', {awsData: JSON.stringify(awsConfig)}, function () {
+    $.post('/servers/schedule', {}, function () {
+      $('#create_aws_environment_button').hide()
+      $('#environment-loading').show()
+    })
   })
+
 
 }
 
@@ -52,7 +82,7 @@ function updateProvisioningStatus () {
                 var result = JSON.parse(data)
                 var status = JSON.parse(result.StatusMessage)
                 if(status.status === 'failed') {
-                    $("#pre-flight-failed").show()
+                  $("#pre-flight-failed").show()
                 }
                 if(status.status === 'done') {
                   completedTasks++;

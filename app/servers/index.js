@@ -2,8 +2,18 @@ var express = require('express')
 var router = express.Router()
 var PlatformOption = require('../platform-options/model')
 var Server = require('./model')
+var fs = require('fs')
+var multer = require('multer')
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, '/root')
+  },
+  filename: function (req, file, cb) {
+    cb(null, 'amazon.key')
+  }
+})
 
-
+var upload = multer({ storage: storage  })
 
 router.get('/', function (req, res, next) {
   var selectedEnvironmentData = req.cookies.platformName
@@ -11,9 +21,12 @@ router.get('/', function (req, res, next) {
   PlatformOption.getEnvironmentFromDatabase(req.cookies.platformName, function (data) {
 
     PlatformOption.getAllRoles(function (roleData) {
-      if(data)
-      var platData = JSON.parse(data.json_data.replace(/(^")|("$)/g, ""));
-      res.render('servers/servers', { platformData: platData, roleData: roleData, selectedEnvironment: selectedEnvironmentData })
+      if(data) {
+        var platData = JSON.parse(data.json_data.replace(/(^")|("$)/g, ""));
+      }
+      Server.getAWSConfig(function (awsData) {
+        res.render('servers/servers', { awsData: awsData, platformData: platData, roleData: roleData, selectedEnvironment: selectedEnvironmentData })
+      })
     },
     function (error) {
       error.message = 'Could not load roles'
@@ -46,6 +59,18 @@ router.get('/tasks/:taskType', function (req, res, next) {
   })
 })
 
+router.get ('/roles/:fqdn', function (req, res, next) {
+  var fqdn = req.params.fqdn
+  PlatformOption.getRolesForHostname(req.cookies.platformName, fqdn, function (data) {
+    res.json (data)
+  },
+  function (error) {
+    error.message = 'Could not fetch roles'
+    next(error)
+  }
+)
+})
+
 router.post('/tasks', function (req, res, next) {
   var taskData = JSON.parse(req.body.task)
   Server.updateTask(taskData, function () {
@@ -57,6 +82,20 @@ router.post('/tasks', function (req, res, next) {
   })
 })
 
+router.post('/key', upload.single('privateKey'), function (req, res) {
+  fs.chmodSync('/root/amazon.key', '0400');
+  res.json({ status: 'ok' })
+})
+router.post('/aws', function (req, res, next) {
+  var awsData = JSON.parse(req.body.awsData)
+  Server.saveAWSConfig(awsData, function () {
+    res.json({ status: 'ok' })
+  },
+  function (error) {
+    error.message = 'Could not update task'
+    next(error)
+  })
+})
 router.post('/schedule', function (req, res, next) {
   PlatformOption.getEnvironmentFromDatabase(req.cookies.platformName, function (data) {
     var environmentData = JSON.parse(data.json_data.replace(/(^")|("$)/g, ""))
