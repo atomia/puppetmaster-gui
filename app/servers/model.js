@@ -1,6 +1,9 @@
 var dbh = require('../lib/database_helper')
 var request = require('request')
 var PlatformOption = require('../platform-options/model')
+var fs = require('fs')
+var config = require('../config/config.json')
+
 var Server = function (data) {
   this.data = data
 }
@@ -18,11 +21,17 @@ Server.scheduleEnvironmentFromJson = function (environmentId, data, callback, on
     (function (curServer, onError) {
       var roleCount = 0
       var security_groups = []
+      var volume_size = 10
       for (var roleId = 0; roleId < curServer.roles.length; roleId++) {
         PlatformOption.getRoleByName(curServer.roles[roleId].class, function (roleData) {
           roleCount++
           for (var securityGroupId = 0; securityGroupId < roleData.firewall.length; securityGroupId++) {
             security_groups.push(roleData.firewall[securityGroupId])
+          }
+          for (var rId = 0; rId < curServer.requirements.length; rId++) {
+            if (curServer.requirements[rId].check == 'disk') {
+              volume_size = curServer.requirements[rId].value
+            }
           }
 
           // All async operations are complete
@@ -38,7 +47,8 @@ Server.scheduleEnvironmentFromJson = function (environmentId, data, callback, on
               type: curServer.ec2_type,
               security_groups: security_groups,
               existing_security_groups: ['default'],
-              os: curServer.operating_system
+              os: curServer.operating_system,
+              volume_size: volume_size
             }
             var options = {
               url: 'http://localhost:3000/restate-machines',
@@ -96,6 +106,92 @@ Server.updateTask = function (task, callback, onError) {
     callback(true)
   }, function (err) {
     onError(err)
+  })
+}
+
+Server.saveAWSConfig = function (awsConfig, callback) {
+  if (typeof config.amazon != 'undefined') {
+    callback()
+    return
+  }
+  var configPath = '/root/.aws'
+  if (!fs.existsSync(configPath)){
+    fs.mkdirSync(configPath);
+  }
+  var awsData = '[default]\n'
+  awsData += 'aws_access_key_id=' + awsConfig.aws_key + '\n'
+  awsData += 'aws_secret_access_key=' + awsConfig.aws_secret + '\n'
+  awsData += 'region=' + awsConfig.aws_region + '\n'
+  awsData += 'private_key' + awsConfig.private_key + '\n'
+  awsData += 'output=json\n'
+
+  fs.writeFile(configPath + '/config', awsData, function(err) {
+    if(err) {
+      return callback(err);
+    }
+    callback()
+  });
+}
+
+Server.getAWSConfig = function (callback) {
+  // The aws config file is stored at /root/.aws/config
+  var configPath = '/root/.aws/config'
+  if (typeof config.amazon != 'undefined') {
+    callback(config.amazon)
+    return
+  }
+  else {
+    var awsConfig = {
+      'aws_key': '',
+      'aws_secret': '',
+      'aws_region': '',
+      'vpc_id': '',
+      'private_key': ''
+    }
+  }
+
+  fs.stat(configPath, function(err) {
+    if(err == null) {
+      var lineReader = require('readline').createInterface({
+        input: require('fs').createReadStream(configPath)
+      });
+
+      lineReader.on ('line', function (line) {
+        var awsKeyRE = /^aws_access_key_id=(.*)$/
+        var awsSecretRE = /^aws_secret_access_key=(.*)$/
+        var awsRegionRE = /^region=(.*)$/
+        var vpcIdRE = /^vpc_id=(.*)$/
+        var privateKeyRE = /^private_key=(.*)$/
+
+        var awsKey = line.match(awsKeyRE)
+        var awsSecret = line.match(awsSecretRE)
+        var awsRegion = line.match(awsRegionRE)
+        var vpcId = line.match(vpcIdRE)
+        var privateKey = line.match(privateKeyRE)
+
+        if (awsKey) {
+          awsConfig.aws_key = awsKey[1]
+        }
+        if (awsSecret) {
+          awsConfig.aws_secret = awsSecret[1]
+        }
+        if (awsRegion) {
+          awsConfig.aws_region = awsRegion[1]
+        }
+        if (vpcId) {
+          awsConfig.vpc_id = vpcId[1]
+        }
+        if (privateKey) {
+          awsConfig.private_key = privateKey[1]
+        }
+      });
+      lineReader.on ('close', function () {
+        callback(awsConfig)
+      })
+    }
+    else {
+      callback (awsConfig)
+    }
   })
 }
 

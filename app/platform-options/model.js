@@ -10,7 +10,7 @@ PlatformOption.prototype.data = {}
 
 PlatformOption.getAllEnvironmentsFromTemplate = function (callback, onError) {
   var environments = []
-  fh.readFiles('config/environments/', function (filename, content, count, total) {
+  fh.readFiles(__dirname + '/../config/environments/', function (filename, content, count, total) {
     var environment = JSON.parse(content)
     environments[environment.priority] = environment
     if (count === total) {
@@ -23,7 +23,7 @@ PlatformOption.getAllEnvironmentsFromTemplate = function (callback, onError) {
 
 PlatformOption.getTemplateByName = function (name, callback, onError) {
   var environments = []
-  fh.readFiles('config/environments/', function (filename, content, count, total) {
+  fh.readFiles(__dirname + '/../config/environments/', function (filename, content, count, total) {
     var environment = JSON.parse(content)
     environments[environment.priority] = environment
     if (count === total) {
@@ -113,7 +113,7 @@ PlatformOption.buildVlanTree = function (platform, callback) {
 
 PlatformOption.getAllRoles = function (callback, onError) {
   var roles = []
-  fh.readFiles('config/roles/', function (filename, content, count, total) {
+  fh.readFiles(__dirname + '/../config/roles/', function (filename, content, count, total) {
     var role = JSON.parse(content)
     roles[role.role_name] = role
 
@@ -126,10 +126,33 @@ PlatformOption.getAllRoles = function (callback, onError) {
 }
 
 PlatformOption.getRoleByName = function (name, callback) {
-  fs.readFile('config/roles/' + name + '.json', 'utf8', function (err, data) {
+  fs.readFile(__dirname + '/../config/roles/' + name + '.json', 'utf8', function (err, data) {
     if (err) throw err;
     callback(JSON.parse(data));
   });
+}
+
+PlatformOption.getRolesForHostname = function (platformName, fqdn, callback, onError) {
+
+  PlatformOption.getEnvironmentFromDatabase(platformName, function (environment) {
+    environment = JSON.parse(environment.json_data.replace(/(^")|("$)/g, ""))
+    for (var serverId = 0; serverId < environment.servers.length; serverId++) {
+      for (var memberId = 0; memberId < environment.servers[serverId].members.length; memberId++) {
+        if(environment.servers[serverId].members[memberId].hostname === fqdn){
+          var roles = environment.servers[serverId].members[memberId].roles
+          var roleArr = []
+          for (var roleId = 0; roleId < roles.length; roleId++) {
+            roleArr.push(roles[roleId].class)
+          }
+          callback(roleArr)
+          return;
+        }
+      }
+    }
+    callback([])
+  },
+  function (error) { onError(error)
+  })
 }
 
 module.exports = PlatformOption
