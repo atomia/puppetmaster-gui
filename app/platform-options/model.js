@@ -62,6 +62,14 @@ PlatformOption.getEnvironmentFromDatabase = function (name, callback, onError) {
   })
 }
 
+PlatformOption.getEnvironmentFromDatabaseHostname = function (hostname, callback, onError) {
+  dbh.query('SELECT * FROM platform_data WHERE json_data LIKE \'%' + hostname + '%\' ', function (result) {
+    callback(result[0])
+  }, function (err) {
+    onError(err)
+  })
+}
+
 PlatformOption.getAllEnvironmentsFromDatabase = function (callback, onError) {
   dbh.query('SELECT * FROM platform_data', function (result) {
     callback(result)
@@ -132,9 +140,9 @@ PlatformOption.getRoleByName = function (name, callback) {
   });
 }
 
-PlatformOption.getRolesForHostname = function (platformName, fqdn, callback, onError) {
+PlatformOption.getRolesForHostname = function (fqdn, callback, onError) {
 
-  PlatformOption.getEnvironmentFromDatabase(platformName, function (environment) {
+  PlatformOption.getEnvironmentFromDatabaseHostname(fqdn, function (environment) {
     environment = JSON.parse(environment.json_data.replace(/(^")|("$)/g, ""))
     for (var serverId = 0; serverId < environment.servers.length; serverId++) {
       for (var memberId = 0; memberId < environment.servers[serverId].members.length; memberId++) {
