@@ -61,7 +61,7 @@ router.get('/tasks/:taskType', function (req, res, next) {
 
 router.get ('/roles/:fqdn', function (req, res, next) {
   var fqdn = req.params.fqdn
-  PlatformOption.getRolesForHostname(req.cookies.platformName, fqdn, function (data) {
+  PlatformOption.getRolesForHostname(fqdn, function (data) {
     res.json (data)
   },
   function (error) {
