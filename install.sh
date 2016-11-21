@@ -9,7 +9,7 @@ else
 fi
 
 apt-get update
-apt-get install curl
+apt-get install -y curl
 REPO=`curl -m 5 --output /dev/null --silent --head --fail http://apt.atomia.com`
 if [ "$?" != "0" ]; then
         printf "\nERROR: This server can not access Atomias apt repository http://apt.atomia.com, please contact support@atomia.com to request access\n"
@@ -104,9 +104,9 @@ LEN2AJ49aDOpLTtEHUOw5nD7hKiT9ClsNQ==
 /usr/bin/apt-key add /etc/apt/ATOMIA-GPG-KEY.pub
 
 apt-get update
-apt-get install restatemachine
+apt-get install -y restatemachine
 
-bash -c 'echo "ListenOn = \":80\"
+bash -c 'echo "ListenOn = \":8080\"
 Username = \"restatemachine\"
 Password = \"'$RESTATE_PASSWORD'\"
 #TLSCertificateFile = \"/some/certificate.pem\"

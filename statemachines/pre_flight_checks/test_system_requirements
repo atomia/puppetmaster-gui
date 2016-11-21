@@ -19,6 +19,7 @@ OS=`echo "$INPUT" | jq -r '.os'`
 CPU=`echo "$INPUT" | jq -r '.system_requirements.cpu'`
 RAM=`echo "$INPUT" | jq -r '.system_requirements.ram'`
 DISK=`echo "$INPUT" | jq -r '.system_requirements.disk'`
+DISK=`expr $DISK - 1`
 
 MESSAGE="{\"status\":\"failed\",\"message\":\""
 if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
