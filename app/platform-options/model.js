@@ -143,19 +143,22 @@ PlatformOption.getRoleByName = function (name, callback) {
 PlatformOption.getRolesForHostname = function (fqdn, callback, onError) {
 
   PlatformOption.getEnvironmentFromDatabaseHostname(fqdn, function (environment) {
-    environment = JSON.parse(environment.json_data.replace(/(^")|("$)/g, ""))
-    for (var serverId = 0; serverId < environment.servers.length; serverId++) {
-      for (var memberId = 0; memberId < environment.servers[serverId].members.length; memberId++) {
-        if(environment.servers[serverId].members[memberId].hostname === fqdn){
-          var roles = environment.servers[serverId].members[memberId].roles
-          var roleArr = []
-          for (var roleId = 0; roleId < roles.length; roleId++) {
-            roleArr.push(roles[roleId].class)
-          }
-          callback(roleArr)
-          return;
+    if (typeof environment != 'undefined')
+    {
+        environment = JSON.parse(environment.json_data.replace(/(^")|("$)/g, ""))
+        for (var serverId = 0; serverId < environment.servers.length; serverId++) {
+            for (var memberId = 0; memberId < environment.servers[serverId].members.length; memberId++) {
+                if(environment.servers[serverId].members[memberId].hostname === fqdn){
+                    var roles = environment.servers[serverId].members[memberId].roles
+                    var roleArr = []
+                    for (var roleId = 0; roleId < roles.length; roleId++) {
+                        roleArr.push(roles[roleId].class)
+                    }
+                    callback(roleArr)
+                    return;
+                }
+            }
         }
-      }
     }
     callback([])
   },
