@@ -79,7 +79,7 @@ function updateProvisioningStatus () {
             (function (taskData, e, m, i) {
               var runId = taskData[i].run_id
               $.get('/restate-machines/' + runId, function (data) {
-                var result = JSON.parse(data)
+                var result = data
                 var status = JSON.parse(result.StatusMessage)
                 if(status.status === 'failed') {
                   $("#pre-flight-failed").show()

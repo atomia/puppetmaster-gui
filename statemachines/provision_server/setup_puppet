@@ -1,0 +1,68 @@
+#!/bin/bash
+DIR=`dirname $0`
+PWD=`pwd`
+. /etc/restatemachine/shell_helpers.inc
+
+INPUT=`cat`
+
+CURRENT_DIR="/home/ubuntu/puppetmaster-gui/statemachines/provision_server"
+HOSTNAME=`echo "$INPUT" | jq -r '.hostname'`
+USERNAME=`echo "$INPUT" | jq -r '.username'`
+PASSWORD=`echo "$INPUT" | jq -r '.password'`
+KEY=`echo "$INPUT" | jq -r '.key'`
+OS=`echo "$INPUT" | jq -r '.os'`
+ENVIRONMENT=`echo "$INPUT" | jq -r '.environment'`
+ROLES=`echo "$INPUT" | jq -r '.roles'`
+
+#HOSTNAME="ec2-52-50-198-165.eu-west-1.compute.amazonaws.com"
+PUPPETMASTER=`hostname -f`
+#USERNAME="ubuntu"
+#PASSWORD=""
+#KEY="/root/amazon.key"
+#OS="ubuntu"
+
+Error () {
+	ERROR_MESSAGE=`echo "$1" | sed ':a;N;$!ba;s/\n/ /g'` 
+        echo -n "$INPUT"
+        restatemachine_transition_to "setup_puppet"
+        restatemachine_transition_after_seconds "60"
+        restatemachine_status_message "$ERROR_MESSAGE"
+        exit 0
+}
+
+if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
+        if [ -n "$KEY" ]; then
+		SSH_COMMAND="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "$KEY" "$USERNAME"@"$HOSTNAME" "
+        else
+		SSH_COMMAND="sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$USERNAME"@"$HOSTNAME" "
+        fi
+
+        INSTALL_PUPPET=`$SSH_COMMAND 2>&1 'sudo bash -s' < "$CURRENT_DIR"/scripts/install_puppet.sh "$PUPPETMASTER" "$ENVIRONMENT"`
+        if [ "$?" != "0" ]; then
+        	Error "{\"status\":\"failed\", \"message\":\"Could not login to the server via SSH with the provided key $INSTALL_PUPPET \"}"
+        fi
+	RUN_PUPPET=`$SSH_COMMAND 2>&1 -q sudo puppet agent --test`
+	# Puppet exit codes
+	if [ "$?" != "0" ]; then
+		Error "{\"status\":\"pending\", \"message\":\"$RUN_PUPPET\"}"
+	fi
+	#0: The run succeeded with no changes or failures; the system was already in the desired state.
+	#1: The run failed, or wasn't attempted due to another run already in progress.
+	#2: The run succeeded, and some resources were changed.
+	#4: The run succeeded, and some resources failed.
+	#6: The run succeeded, and included both changes and failures.
+elif [ "$OS" == "windows" ]; then
+	INSTALL_PUPPET=`"$CURRENT_DIR"/winrm/install_puppet.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD" --environment="$ENVIRONMENT" --puppetmaster="$PUPPETMASTER" --roles="$ROLES"`
+	if [ "$?" != "0" ]; then
+		Error "{\"status\":\"pending\", \"message\":\"Failed to install puppet on host. Error: $INSTALL_PUPPET\"}"
+	fi
+	RUN_PUPPET=`"$CURRENT_DIR"/winrm/run_puppet.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
+	if [ "$?" != "0" ]; then
+		Error "{\"status\":\"pending\", \"message\":\"Puppet run not complete\"}"
+	fi
+fi
+
+echo -n "$INPUT"
+restatemachine_transition_to "stop"
+restatemachine_transition_after_seconds "0"
+restatemachine_status_message "{\"status\":\"done\", \"message\":\"Provisioning complete\"}"

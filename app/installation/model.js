@@ -1,13 +1,13 @@
 var dbh = require('../lib/database_helper')
 var request = require('request')
 var Servers = require('../servers/model')
-var PreFlight = function (data) {
+var Installation = function (data) {
   this.data = data
 }
 
-PreFlight.prototype.data = {}
+Installation.prototype.data = {}
 
-PreFlight.schedulePreFlightFromJson = function (environmentId, data, callback, onError) {
+Installation.scheduleInstallationFromJson = function (environmentId, environmentName, data, callback, onError) {
 
   var servers = Servers.filterSelectedServers(data.servers)
   var scheduledServers = 0
@@ -21,19 +21,19 @@ PreFlight.schedulePreFlightFromJson = function (environmentId, data, callback, o
       for (var rId = 0; rId < curServer.requirements.length; rId++) {
         requirementsData[curServer.requirements[rId].check] = curServer.requirements[rId].value
       }
-      var roleData = []
-      for (var roleId = 0; roleId < curServer.roles.length; roleId++) {
-        roleData.push(curServer.roles[roleId].class)
+      var roleData = {}
+      for (var roleId = 1; roleId < curServer.roles.length +1; roleId++) {
+        roleData["atomia_role_" + roleId] = curServer.roles[roleId -1].class
       }
       jobData.data = {
-        machine: 'pre_flight_checks',
-        system_requirements: requirementsData,
+        machine: 'provision_server',
         os: curServer.operating_system,
         hostname: curServer.hostname,
         username: curServer.username,
         password: curServer.password,
         key: '/root/.ssh/' + 'stefan-test-aws.pem', //TODO: This should not be hardcoded!
-        roles: roleData
+        environment: environmentName.toLowerCase().replace(/\s/g, "_"),
+        roles: JSON.stringify(roleData)
       }
       var options = {
         url: 'http://localhost:3000/restate-machines',
@@ -42,29 +42,35 @@ PreFlight.schedulePreFlightFromJson = function (environmentId, data, callback, o
         json: true
       }
       request(options, function (error, response, body) {
-        if (error) {
-          // Handle error here
-        }
-        var runId = JSON.parse(body).Id
-        // Run scheduled add a reference to the database
-        // TODO: we should not allow duplicate task_ids for an environment
-        dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + " pre-flight', '" + runId + "', '" + JSON.stringify(jobData) + "', null, " + environmentId + ", 'pre_flight')",
-        function () {
-          scheduledServers++
-          if (scheduledServers == servers.length) {
-            callback()
+        if (!error && response.statusCode == 200) {
+
+          var runId = JSON.parse(body).Id
+          // Run scheduled add a reference to the database
+          // TODO: we should not allow duplicate task_ids for an environment
+          dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + " installation', '" + runId + "', '" + JSON.stringify(jobData) + "', null, " + environmentId + ", 'installation')",
+          function () {
+            scheduledServers++
+            if (scheduledServers == servers.length) {
+              callback()
+            }
+          }, function (err) {
+            // dbh.query failed
+            onError(err)
+          })
+
+        } else {
+          if (error) {
+            onError(error)
           }
-        }, function (err) {
-          // dbh.query failed
-          onError(err)
-        })
+        }
+
       })
     })(servers[memberId])
 
   }
 }
 
-PreFlight.getAllTasks = function (callback, onError) {
+Installation.getAllTasks = function (callback, onError) {
   dbh.query('SELECT * from tasks', function (result) {
     callback(result)
   }, function (err) {
@@ -72,7 +78,7 @@ PreFlight.getAllTasks = function (callback, onError) {
   })
 }
 
-PreFlight.updateTask = function (task, callback, onError) {
+Installation.updateTask = function (task, callback, onError) {
   dbh.query("UPDATE tasks SET status = '" + task.status + "' WHERE id = " + task.id, function () {
     callback(true)
   }, function (err) {
@@ -80,4 +86,4 @@ PreFlight.updateTask = function (task, callback, onError) {
   })
 }
 
-module.exports = PreFlight
+module.exports = Installation

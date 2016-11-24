@@ -46,28 +46,25 @@ PuppetConfig.handleSpecialVariables = function (variable) {
   return variable
 }
 
-PuppetConfig.updateData = function (data, callback, onError) {
-  dbh.connect(function () {
-    var variablesDone = 0
-    var totalVariables = 0
-    for (var manifestIndex = 0; manifestIndex < data.length; manifestIndex++) {
-      for (var variableIndex = 0; variableIndex < data[manifestIndex].variables.length; variableIndex++) {
-        totalVariables++
-        var curVariable = 'atomia::' + data[manifestIndex].variables[variableIndex].namespace + '::' + data[manifestIndex].variables[variableIndex].name
-        var curValue = data[manifestIndex].variables[variableIndex].value
-        dbh.query('INSERT INTO configuration VALUES(null,\'' + curVariable + '\',\'' + curValue + '\',\'null\') ON DUPLICATE KEY UPDATE val = \'' + curValue + '\'', function () {
-          variablesDone++
-          if(totalVariables == variablesDone)
-          {
-            dbh.release()
-            callback(true)
-          }
-        }, function (err) {
-          onError(err)
-        })
-      }
+PuppetConfig.updateData = function (environmentName, data, callback, onError) {
+  environmentName = environmentName.toLowerCase().replace(/\s/g, "_")
+  var variablesDone = 0
+  var totalVariables = 0
+  for (var manifestIndex = 0; manifestIndex < data.length; manifestIndex++) {
+    for (var variableIndex = 0; variableIndex < data[manifestIndex].variables.length; variableIndex++) {
+      totalVariables++
+      var curVariable = 'atomia::' + data[manifestIndex].variables[variableIndex].namespace + '::' + data[manifestIndex].variables[variableIndex].name
+      var curValue = data[manifestIndex].variables[variableIndex].value
+      dbh.query('INSERT INTO configuration VALUES(null,\'' + curVariable + '\',\'' + curValue + '\',\'' + environmentName + '\') ON DUPLICATE KEY UPDATE val = \'' + curValue + '\'', function () {
+        variablesDone++
+        if(totalVariables == variablesDone)
+        {
+          callback(true)
+        }
+      }, function (err) {
+        onError(err)
+      })
     }
-  })
+  }
 }
-
-module.exports = PuppetConfig
+  module.exports = PuppetConfig

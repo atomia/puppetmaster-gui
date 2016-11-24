@@ -117,3 +117,7 @@ chmod -R +x /opt/puppetmaster-gui/statemachines
 service restatemachine restart
 
 service start puppetmaster-gui
+
+# Apply hiera patch, needed due to https://github.com/puppetlabs/puppet/pull/4482
+# currently no updated version is available for puppet 3.4
+ patch /usr/lib/ruby/vendor_ruby/hiera/scope.rb < /opt/puppetmaster-gui/hiera.atomia.patch
