@@ -29,6 +29,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "username": "Administrator",
           "password": "",
           "requirements": [
@@ -81,6 +82,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "username": "Administrator",
           "password": "",
           "requirements": [
@@ -128,6 +130,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -177,6 +180,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -221,6 +225,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -265,6 +270,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -307,6 +313,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "username": "Administrator",
           "password": "",
           "requirements": [
@@ -351,6 +358,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "username": "Administrator",
           "password": "",
           "requirements": [
@@ -404,6 +412,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -448,6 +457,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -499,6 +509,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -543,6 +554,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -587,6 +599,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -631,6 +644,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -675,6 +689,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -719,6 +734,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -763,6 +779,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "password": "",
           "requirements": [
             {
@@ -808,6 +825,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -852,6 +870,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -896,6 +915,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -940,6 +960,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -984,6 +1005,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "requirements": [
             {
               "check": "ram",
@@ -1026,6 +1048,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "username": "Administrator",
           "password": "",
           "requirements": [
@@ -1075,6 +1098,7 @@
           "hostname": "",
           "provisioning_status": {"status":"","message":""},
           "preflight_status": "",
+          "installation_status": "",
           "requirements": [
           ],
           "roles": [

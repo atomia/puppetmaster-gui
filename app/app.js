@@ -14,6 +14,7 @@ var restateController = require('./restate-machine/index')
 var serverController = require('./servers/index')
 var puppetController = require('./puppet-config/index')
 var preFlightController = require('./pre-flight/index')
+var installationController = require('./installation/index')
 
 app.engine('.hbs', exphbs({
   defaultLayout: 'layout',
@@ -52,6 +53,8 @@ app.use('/restate-machines', restateController)
 app.use('/servers', serverController)
 app.use('/puppet-config', puppetController)
 app.use('/pre-flight', preFlightController)
+app.use('/installation', installationController)
+
 /* eslint-disable no-unused-vars, no-undef*/
 databasePool  = mysql.createPool({
   connectionLimit : 50,

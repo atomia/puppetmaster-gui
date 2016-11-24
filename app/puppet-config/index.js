@@ -23,7 +23,7 @@ router.get('/', function (req, res, next) {
 
 router.post('/', function (req) {
   var configurationData = JSON.parse(req.body.configuration)
-  PuppetConfig.updateData(configurationData, function() {
+  PuppetConfig.updateData(req.cookies.platformName, configurationData, function() {
 
   }, function() {
     // Handle error here

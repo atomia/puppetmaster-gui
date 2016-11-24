@@ -2,6 +2,7 @@ var express = require('express')
 var router = express.Router()
 var request = require('request')
 var config = require('../config/config.json')
+var stripAnsi = require('strip-ansi')
 
 var restate_username = config.restate_machine.user
 var restate_password = config.restate_machine.password
@@ -21,14 +22,14 @@ router.post('/', function (req, res, next) {
 
   }
 
-    function callback(error, response, body) {
-      if(error) {
-        error.message = 'Could not schedule run'
-        next(error)
-      }
-      res.json(body)
+  function callback(error, response, body) {
+    if(error) {
+      error.message = 'Could not schedule run'
+      next(error)
     }
-    request(options, callback)
+    res.json(body)
+  }
+  request(options, callback)
 })
 
 router.get('/:id', function (req, res, next) {
@@ -39,15 +40,15 @@ router.get('/:id', function (req, res, next) {
     method: 'GET'
   }
 
-    function callback(error, response, body) {
-      if(error) {
-        error.message = 'Could not fetch machine'
-        next(error)
-      }
-
-      res.json(body)
+  function callback(error, response, body) {
+    if(error) {
+      error.message = 'Could not fetch machine'
+      next(error)
     }
-    request(options, callback)
+    var data = stripAnsi(body.replace(/\\u001b/g,''))
+    res.json(JSON.parse(data))
+  }
+  request(options, callback)
 })
 
 
