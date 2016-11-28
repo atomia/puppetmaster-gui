@@ -67,10 +67,10 @@ var existingEnvironments = {{{toJSON existingEnvironments}}}
 
             <div class="Box">
               <h4 class="u-no-margin-bottom" data-bind="text: category"></h4>
-              <label class="Switch Switch--right">
+            <!--  <label class="Switch Switch--right">
                 <input class="Switch-input" data-bind="checked: selected" type="checkbox">
                 <span class="Switch-click" data-on="Yes" data-off="No"></span>
-              </label>
+              </label>-->
             </div>
 
             <div data-bind="foreach: members">
@@ -83,11 +83,13 @@ var existingEnvironments = {{{toJSON existingEnvironments}}}
                     <input class="Switch-input" data-bind="checked: selected" type="checkbox">
                     <span class="Switch-click" data-on="Yes" data-off="No"></span>
                   </label>
-                  <div data-bind="if: multiple">
-                    test
-                  </div>
-                </div>
 
+                </div>
+                <div data-bind="if: multiple">
+                  <div style="background-color:#EDEDE8;padding:5px;">
+                  Machines: <input type="number" min="0" max="10" step="1" data-bind="value: node_count" style="width:80px;"> <!-- ko if: cluster --> (clustered)<!-- /ko -->
+                </div>
+                </div>
               </div>
             </div>
 

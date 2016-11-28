@@ -3,6 +3,8 @@
 $(document).ready(function () {
   var create_aws_environment_button = document.getElementById('create_aws_environment_button')
   var save_environment_button = document.getElementById('save_environment_button')
+  var export_environment_button = document.getElementById('export_environment_button')
+  var next_server_button = document.getElementById('next_server_button')
   if (create_aws_environment_button) {
     create_aws_environment_button.addEventListener('click', function () {
       createAWSEnvironment()
@@ -10,10 +12,21 @@ $(document).ready(function () {
   }
   if (save_environment_button) {
     save_environment_button.addEventListener('click', function () {
-      saveData()
+      saveData(function (){})
     }, false)
   }
 
+  if (export_environment_button) {
+    export_environment_button.addEventListener('click', function () {
+      {window.location.href = '/servers/export'}
+    }, false)
+  }
+
+  if (next_server_button) {
+    next_server_button.addEventListener('click', function () {
+      saveData(function (){window.location.href = '/puppet-config'})
+    }, false)
+  }
   if (window.location.href.includes('servers')) {
     updateProvisioningStatus()
     updateTimer = window.setInterval(updateProvisioningStatus, 2000)
@@ -70,6 +83,7 @@ function updateProvisioningStatus () {
 
     for (var i = 0; i < taskData.length; i++) {
       var taskName = taskData[i].task_id
+      var currentNode = 0;
       // Match the task with the server in environmentModel
       for (var e = 0; e < environmentModel.servers().length; e++) {
         for (var m = 0; m < environmentModel.servers()[e].members().length; m++) {
@@ -78,7 +92,19 @@ function updateProvisioningStatus () {
             numberOfTasks++;
             (function (taskData, e, m, i) {
               var runId = taskData[i].run_id
+
               $.get('/restate-machines/' + runId, function (data) {
+                // Find a slot in nodes array
+                for (var nodeId = 0; nodeId < environmentModel.servers()[e].members()[m].node_count(); nodeId++) {
+                  if(typeof environmentModel.servers()[e].members()[m].nodes()[nodeId].run_id != 'undefined') {
+                    if(environmentModel.servers()[e].members()[m].nodes()[nodeId].run_id == runId) {
+                      currentNode = nodeId;
+                    }
+                  } else {
+                    environmentModel.servers()[e].members()[m].nodes()[nodeId].run_id = runId
+                    currentNode = nodeId
+                  }
+                }
                 var result = data
                 var status = JSON.parse(result.StatusMessage)
                 if(status.status === 'failed') {
@@ -88,10 +114,10 @@ function updateProvisioningStatus () {
                   completedTasks++;
                   var hostname = JSON.parse(result.Input).public_dns
                   var password = JSON.parse(result.Input).password
-                  environmentModel.servers()[e].members()[m].hostname(hostname)
-                  if (typeof environmentModel.servers()[e].members()[m].password == 'function')
+                  environmentModel.servers()[e].members()[m].nodes()[currentNode].hostname(hostname)
+                  if (typeof environmentModel.servers()[e].members()[m].nodes()[currentNode].password == 'function')
                   {
-                    environmentModel.servers()[e].members()[m].password(password)
+                    environmentModel.servers()[e].members()[m].nodes()[currentNode].password(password)
                   }
                   if(completedTasks == numberOfTasks) {
                     $('#environment-loading').hide()
@@ -100,9 +126,8 @@ function updateProvisioningStatus () {
                     window.clearInterval(updateTimer)
                   }
                 }
-                environmentModel.servers()[e].members()[m].provisioning_status.message(status.message)
-                environmentModel.servers()[e].members()[m].provisioning_status.status(status.status)
-                console.log(result.StatusMessage)
+                environmentModel.servers()[e].members()[m].nodes()[currentNode].provisioning_status.message(status.message)
+                environmentModel.servers()[e].members()[m].nodes()[currentNode].provisioning_status.status(status.status)
               })
             })(taskData, e, m, i)
           }
@@ -113,13 +138,14 @@ function updateProvisioningStatus () {
 }
 
 
-function saveData () {
+function saveData (callback) {
   var dataToSave = JSON.parse(ko.toJSON(environmentModel))
   delete dataToSave.__ko_mapping__
   $.ajax({
     url: '/platform-options',
     type: 'PUT',
     success: function () {
+      callback()
     },
     data: { name: environmentName, platformData: JSON.stringify(dataToSave)}
   })

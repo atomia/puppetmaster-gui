@@ -10,6 +10,7 @@
     "eslint": "^3.8.1",
     "express": "^4.14.0",
     "express-handlebars": "^3.0.0",
+    "express-zip": "^2.0.1",
     "handlebars-json": "^1.0.1",
     "knockout-else": "^1.0.12",
     "mocha": "^3.1.2",

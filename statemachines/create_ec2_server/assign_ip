@@ -5,8 +5,8 @@ DIR=`dirname $0`
 INPUT=`cat`
 Error () {
         echo -n "$INPUT"
-        restatemachine_transition_to "stop"
-        restatemachine_transition_after_seconds "0"
+        restatemachine_transition_to "assign_ip"
+        restatemachine_transition_after_seconds "30"
         restatemachine_status_message "$1"
         exit 0
 }

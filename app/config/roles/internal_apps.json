@@ -1,0 +1,22 @@
+{
+  "name": "Internal applications",
+  "role_name": "internal_apps",
+  "description": "Atomia internal applications",
+  "firewall": [
+    {
+      "name": "Active_directory",
+      "rules": [
+        {
+          "port": 3389,
+          "function": "rdp",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [""],
+  "pretty_variables": {
+    "repository" :  "Repository"
+  }
+}
