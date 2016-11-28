@@ -542,12 +542,6 @@ router.get('/export', function (req, res, next) {
                 windowsCSV = windowsCSV + '"",' // Path
                 windowsCSV = windowsCSV + '"connections",\n' // Path
 
-                "windows1","description","","","","","","","","","","","","","","","","","","","","",
-                "windows.com","3389",
-                "","0","0","24","False","False","False","False",
-                "","","2","Administrator","Admin123","0","False","False","True","False","False","False","","True","False","True","True","True","True","True","False","True","True","0","0","","0","","","test/Connections"
-
-
               }
             }
           }
@@ -561,8 +555,9 @@ router.get('/export', function (req, res, next) {
         fs.writeFileSync('/tmp/atomia.rtsx', royaltTS)
         fs.writeFileSync('/tmp/runme.bat', runme)
         fs.writeFileSync('/tmp/README.txt', readme)
-        fs.createReadStream('/root/.ssh/' + aws.private_key + '.pem').pipe(fs.createWriteStream('/tmp/atomia.key'))
-
+        /* eslint-disable no-unused-vars */
+        var zip = require('express-zip');
+        /* eslint-enable no-unused-vars */
         res.zip([
           { path: '/tmp/linux_servers.csv', name: 'linux_servers.csv' },
           { path: '/tmp/windows_servers.csv', name: 'windows_servers.csv' },
