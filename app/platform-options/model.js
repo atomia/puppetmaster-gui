@@ -79,6 +79,29 @@ PlatformOption.getAllEnvironmentsFromDatabase = function (callback, onError) {
 }
 
 PlatformOption.updateEnvironmentData = function (name, platformData, callback, onError) {
+  /* Add nodes to json */
+  platformData = JSON.parse(platformData)
+  for (var i = 0; i < platformData.servers.length; i++) {
+    var p = platformData.servers[i]
+    for (var a = 0; a < p.members.length; a++) {
+      var m = p.members[a]
+      if (m.selected) {
+        platformData.servers[i].members[a].nodes = []
+        for (var nodeId = 0; nodeId < m.node_count; nodeId++) {
+          platformData.servers[i].members[a].nodes.push({
+            "hostname":"",
+            "username":"",
+            "password":"",
+            "provisioning_status": {"status":"","message":""},
+            "preflight_status": "",
+            "installation_status": "",
+            "ec2_type": platformData.servers[i].members[a].ec2_type
+          })
+        }
+        console.log(platformData.servers[i].members[a])
+      }
+    }
+  }
   dbh.query('UPDATE platform_data SET json_data = \'' + JSON.stringify(platformData).replace(/\\/g, '') + '\' WHERE name = \'' + name + '\' ', function (result) {
     callback(result)
   }, function (err) {

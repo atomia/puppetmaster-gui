@@ -43,7 +43,7 @@ PuppetHelper.parseManifest = function (manifest, callback) {
 
     }
 
-    var defaultValueRegex = /^\W+\$([a-z_0-9]*)\W+=\s+'?"?([ a-zA-Z:\/0-9.${}_,-]*)'?"?,?$/
+    var defaultValueRegex = /^\W+\$([a-z_0-9]*)\W+=\s+'?"?([ a-zA-Z:\/0-9.${}_,-]*)'?"?,?\)?\{?$/
     var defaultValueRegexResult = line.match(defaultValueRegex)
     if (defaultValueRegexResult) {
       if (typeof variables[defaultValueRegexResult[1]] != 'undefined') {
@@ -84,7 +84,7 @@ PuppetHelper.parseManifest = function (manifest, callback) {
       if(typeof variables[key].advanced != 'undefined')
       retArr.push(variables[key])
     });
-
+console.log(retArr)
     callback(retArr)
   })
 }

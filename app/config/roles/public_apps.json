@@ -1,0 +1,22 @@
+{
+  "name": "Public applications",
+  "role_name": "public_apps",
+  "description": "Atomia public applications",
+  "firewall": [
+    {
+      "name": "Active_directory",
+      "rules": [
+        {
+          "port": 3389,
+          "function": "rdp",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [""],
+  "pretty_variables": {
+    "repository" :  "Repository"
+  }
+}

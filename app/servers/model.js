@@ -15,7 +15,10 @@ Server.scheduleEnvironmentFromJson = function (environmentId, data, callback, on
   var servers = this.filterSelectedServers(data.servers)
   var environmentName = data.environmentName
   var scheduledServers = 0
-
+  var nodeCount = 0
+  for (var serverCountId = 0; serverCountId < servers.length; serverCountId++) {
+    nodeCount = nodeCount + servers[serverCountId].node_count
+  }
   for (var memberId = 0; memberId < servers.length; memberId++) {
 
     (function (curServer, onError) {
@@ -33,47 +36,48 @@ Server.scheduleEnvironmentFromJson = function (environmentId, data, callback, on
               volume_size = curServer.requirements[rId].value
             }
           }
-
-          // All async operations are complete
           if (roleCount === curServer.roles.length) {
-            // Schedule the job
-            var jobData = {}
-            jobData.data = {
-              machine: 'create_ec2_server',
-              key_name: 'stefan-test-aws',
-              vpc_id: 'vpc-ad0f6ac9',
-              instance_name: '(' + environmentName + ') ' + curServer.name,
-              ami: curServer.ami,
-              type: curServer.ec2_type,
-              security_groups: security_groups,
-              existing_security_groups: ['default'],
-              os: curServer.operating_system,
-              volume_size: volume_size
-            }
-            var options = {
-              url: 'http://localhost:3000/restate-machines',
-              method: 'POST',
-              body: jobData,
-              json: true
-            }
-            request(options, function (error, response, body) {
-              if (error) {
-                // Handle error here
+            // Schedule the jobs
+            for (var nodeCount = 0; nodeCount < curServer.node_count; nodeCount++)
+            {
+              var jobData = {}
+              jobData.data = {
+                machine: 'create_ec2_server',
+                key_name: 'stefan-test-aws',
+                vpc_id: 'vpc-ad0f6ac9',
+                instance_name: '(' + environmentName + ') ' + curServer.name + '_' + nodeCount,
+                ami: curServer.ami,
+                type: curServer.ec2_type,
+                security_groups: security_groups,
+                existing_security_groups: ['default'],
+                os: curServer.operating_system,
+                volume_size: volume_size
               }
-              var runId = JSON.parse(body).Id
-              // Run scheduled add a reference to the database
-              // TODO: we should not allow duplicate task_ids for an environment
-              dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + "', '" + runId + "', '" + JSON.stringify(jobData) + "', null, " + environmentId + ", 'ec2')",
-              function () {
-                scheduledServers++
-                if (scheduledServers == servers.length) {
-                  callback()
+              var options = {
+                url: 'http://localhost:3000/restate-machines',
+                method: 'POST',
+                body: jobData,
+                json: true
+              }
+              request(options, function (error, response, body) {
+                if (error) {
+                  // Handle error here
                 }
-              }, function (err) {
-                // dbh.query failed
-                onError(err)
+                var runId = JSON.parse(body).Id
+                // Run scheduled add a reference to the database
+                // TODO: we should not allow duplicate task_ids for an environment
+                dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + "', '" + runId + "', '" + JSON.stringify(jobData) + "', null, " + environmentId + ", 'ec2')",
+                function () {
+                  scheduledServers++
+                  if (scheduledServers == nodeCount) {
+                    callback()
+                  }
+                }, function (err) {
+                  // dbh.query failed
+                  onError(err)
+                })
               })
-            })
+            }
           }
         })
       }

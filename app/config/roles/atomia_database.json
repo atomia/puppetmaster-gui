@@ -1,0 +1,27 @@
+{
+  "name": "Atomia database",
+  "role_name": "atomia_database",
+  "description": "PostgreSQL database backend for Atomia",
+  "firewall": [
+    {
+      "name": "Active_directory",
+      "rules": [
+        {
+          "port": 3389,
+          "function": "rdp",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [""],
+  "pretty_variables": {
+    "atomia_user" :  "Username",
+    "atomia_password" :  "Password",
+    "enable_backups" :  "Enable backups",
+    "server_address" :  "Server address",
+    "backup_dir" :  "Backup directory",
+    "cron_schedule_hour" :  "Backup time"
+  }
+}

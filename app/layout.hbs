@@ -26,6 +26,7 @@
     KnockoutElse.init([spec={}])
     $('#platform-options-a').addClass((window.location.href.includes('platform-options') ? 'u-brand-color' : ''))
     $('#servers-a').addClass((window.location.href.includes('servers') ? 'u-brand-color' : ''))
+    $('#config-a').addClass((window.location.href.includes('puppet-config') ? 'u-brand-color' : ''))
   })
   </script>
   <div class="wrapper">
@@ -42,7 +43,7 @@
             <a id='servers-a' class="Set-divider" href="/servers">Servers</a>
           </li>
           <li class="Set-item">
-            <a class="Set-divider" href="/puppet-config">Configurations</a>
+            <a id='config-a' class="Set-divider" href="/puppet-config">Configurations</a>
           </li>
           <li class="Set-item">
             <a class="Set-divider" href="#">Installation</a>

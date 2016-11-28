@@ -20,7 +20,7 @@ $(document).ready(function () {
       <div class="Bar-item Bar-item--right ">
         <a href="/platform-options"><button type="submit" class="Btn Btn--neutral">Back <i class="fa-margin fa fa-angle-left"></i></button></a>
         <button type="submit" class="Btn Btn--neutral" id="save_environment_button"><i class="fa-margin fa fa-floppy-o"></i> Save</button>
-        <button type="submit" class="Btn Btn--primary">Next <i class="fa-margin fa fa-angle-right"></i></button>
+        <button type="submit" class="Btn Btn--primary" id="next_server_button">Next <i class="fa-margin fa fa-angle-right"></i></button>
       </div>
     </div>
     <div class="Paper kss-paper" style="margin:0px;">
@@ -119,11 +119,12 @@ $(document).ready(function () {
           </thead>
           <tbody>
             <!-- ko foreach: environmentModel.servers() -->
-            <!-- ko foreach: members -->
+            <!-- ko foreach: members() -->
             <!-- ko if: operating_system() !== 'openstack' -->
             <!-- ko if: selected() == true -->
+
             <tr class="Table-bodyrow">
-              <td>1</td>
+              <td data-bind="text: node_count"></td>
               <td>
                 <!-- ko if: operating_system() === 'windows' -->
                 <i class="fa fa-windows" aria-hidden="true"></i>
@@ -132,11 +133,19 @@ $(document).ready(function () {
                 <i class="fa fa-linux" aria-hidden="true"></i>
                 <!-- /ko -->
                 <span data-bind="text: name"></span></td>
-                <td data-bind="text: hostname">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
 
-                </td>
-                <td data-bind="text: ec2_type"></td>
-                <td>
+              <!-- ko foreach: nodes() -->
+              <tr style="background-color:#EDEDE8 !important;">
+                <td></td>
+                <td></td>
+                <td data-bind="text: hostname"></td>
+                  <td data-bind="text: ec2_type"></td>
+                  <td>
                   <!-- ko if: provisioning_status.status() === 'failed' -->
                   <div style="float:right;">
                     <i class="fa fa-exclamation-circle fa-lg" aria-hidden="true" style="color:#d11717;"></i><br/>
@@ -153,9 +162,15 @@ $(document).ready(function () {
                     <i class="fa fa-check-circle fa-lg" aria-hidden="true" style="color:#2daa29;"></i>
                   </div>
                   <!-- /ko -->
+                  <!-- ko if: provisioning_status.message() === '' -->
+                  <span>Waiting to start provisioning</span>
+                  <!-- /ko -->
                   <span data-bind="text: provisioning_status.message"></span> </td>
-
+                </td>
                 </tr>
+                <!-- /ko -->
+
+
                 <!-- /ko -->
                 <!-- /ko -->
                 <!-- /ko -->
