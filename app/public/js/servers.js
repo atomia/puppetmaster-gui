@@ -3,6 +3,7 @@
 $(document).ready(function () {
   var create_aws_environment_button = document.getElementById('create_aws_environment_button')
   var save_environment_button = document.getElementById('save_environment_button')
+  var export_environment_button = document.getElementById('export_environment_button')
   var next_server_button = document.getElementById('next_server_button')
   if (create_aws_environment_button) {
     create_aws_environment_button.addEventListener('click', function () {
@@ -12,6 +13,12 @@ $(document).ready(function () {
   if (save_environment_button) {
     save_environment_button.addEventListener('click', function () {
       saveData(function (){})
+    }, false)
+  }
+
+  if (export_environment_button) {
+    export_environment_button.addEventListener('click', function () {
+      {window.location.href = '/servers/export'}
     }, false)
   }
 

@@ -84,7 +84,6 @@ PuppetHelper.parseManifest = function (manifest, callback) {
       if(typeof variables[key].advanced != 'undefined')
       retArr.push(variables[key])
     });
-console.log(retArr)
     callback(retArr)
   })
 }
