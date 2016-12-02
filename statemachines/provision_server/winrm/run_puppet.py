@@ -17,7 +17,6 @@ def main():
         &"${Env:ProgramFiles}\\Puppet Labs\\Puppet\\bin\\puppet.bat" agent --test
 	exit ($lastExitCode)
 	"""
-	print ps_script
         try:
                 s = winrm.Session(options.host, auth=(options.username,options.password))
                 r = s.run_ps(ps_script)

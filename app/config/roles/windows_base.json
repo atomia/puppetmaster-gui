@@ -1,0 +1,12 @@
+{
+  "name": "Windows base",
+  "role_name": "windows_base",
+  "description": "Basic windows settings",
+  "firewall": [
+
+  ],
+  "global_firewall": [],
+  "pretty_variables": {
+
+  }
+}

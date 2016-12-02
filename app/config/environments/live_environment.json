@@ -13,10 +13,45 @@
       "selected": false,
       "members": [
         {
-          "name": "Active directory",
+          "name": "Base configuration",
           "description": "",
           "required": true,
           "selected": true,
+          "node_count": 0,
+          "roles": [
+            {
+              "class": "windows_base",
+              "overrides": [
+                {
+                  "variable": "$domain_name",
+                  "value": "atomia.local"
+                },
+                {
+                  "variable": "$netbios_domain_name",
+                  "value": "ATOMIA"
+                }
+              ]
+            },
+            {
+              "class": "config",
+              "overrides": [
+                {
+                  "variable": "$domain_name",
+                  "value": "atomia.local"
+                },
+                {
+                  "variable": "$netbios_domain_name",
+                  "value": "ATOMIA"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Active directory",
+          "description": "",
+          "required": false,
+          "selected": false,
           "cluster": false,
           "multiple": false,
           "node_count": 1,
@@ -69,7 +104,7 @@
           "name": "Active directory replica",
           "description": "It is recommended to install an Active directory replica in live environments",
           "required": false,
-          "selected": true,
+          "selected": false,
           "cluster": false,
           "multiple": false,
           "node_count": 1,
@@ -159,8 +194,8 @@
         {
           "name": "Atomia database",
           "description": "",
-          "required": true,
-          "selected": true,
+          "required": false,
+          "selected": false,
           "cluster": false,
           "multiple": false,
           "node_count": 1,
@@ -179,17 +214,17 @@
           "requirements": [
             {
               "check": "ram",
-              "value": "8",
+              "value": "1",
               "name": "%v GB RAM"
             },
             {
               "check": "cpu",
-              "value": "4",
+              "value": "1",
               "name": "%v CPUs"
             },
             {
               "check": "disk",
-              "value": "100",
+              "value": "10",
               "name": "%v GB disk space"
             }
           ],
@@ -249,8 +284,8 @@
         {
           "name": "Atomia internal",
           "description": "",
-          "required": true,
-          "selected": true,
+          "required": false,
+          "selected": false,
           "cluster": false,
           "multiple": false,
           "node_count": 1,
@@ -294,8 +329,8 @@
         {
           "name": "Atomia Public",
           "description": "",
-          "required": true,
-          "selected": true,
+          "required": false,
+          "selected": false,
           "cluster": false,
           "multiple": false,
           "node_count": 1,
@@ -347,7 +382,7 @@
           "name": "Atomia DNS",
           "description": "",
           "required": false,
-          "selected": true,
+          "selected": false,
           "cluster": false,
           "multiple": false,
           "node_count": 1,
@@ -392,7 +427,7 @@
           "name": "Nameservers",
           "description": "",
           "required": false,
-          "selected": true,
+          "selected": false,
           "cluster": false,
           "multiple": true,
           "node_count": 2,
@@ -443,8 +478,8 @@
         {
           "name": "Filesystem agent",
           "description": "",
-          "required": true,
-          "selected": true,
+          "required": false,
+          "selected": false,
           "cluster": false,
           "multiple": false,
           "node_count": 1,
@@ -489,7 +524,7 @@
           "name": "Installatron",
           "description": "Used to install applications from the control panel, requires a valid Installatron Server license",
           "required": false,
-          "selected": true,
+          "selected": false,
           "cluster": false,
           "multiple": false,
           "node_count": 1,
@@ -534,7 +569,7 @@
           "name": "Awstats",
           "description": "Used to display usage statistics in the control panel",
           "required": false,
-          "selected": true,
+          "selected": false,
           "cluster": false,
           "multiple": false,
           "node_count": 1,
@@ -579,7 +614,7 @@
           "name": "Daggre",
           "description": "Collects usage information from different systems like storage usage",
           "required": false,
-          "selected": true,
+          "selected": false,
           "cluster": false,
           "multiple": false,
           "node_count": 1,
@@ -624,7 +659,7 @@
           "name": "Cronjob",
           "description": "Allows users to add scheduled tasks from the control panel",
           "required": false,
-          "selected": true,
+          "selected": false,
           "cluster": false,
           "multiple": false,
           "node_count": 1,
@@ -669,7 +704,7 @@
           "name": "Apache cluster",
           "description": "Host websites on Apache",
           "required": false,
-          "selected": true,
+          "selected": false,
           "cluster": true,
           "multiple": true,
           "node_count": 2,
@@ -714,7 +749,7 @@
           "name": "IIS cluster",
           "description": "Host websites on IIS (Windows)",
           "required": false,
-          "selected": true,
+          "selected": false,
           "cluster": true,
           "multiple": true,
           "node_count": 2,
@@ -760,7 +795,7 @@
           "name": "FTP cluster",
           "description": "Allows users to manage the content of their home directory",
           "required": false,
-          "selected": true,
+          "selected": false,
           "cluster": true,
           "multiple": true,
           "node_count": 2,
@@ -805,7 +840,7 @@
           "name": "Mail cluster",
           "description": "Host mail accounts",
           "required": false,
-          "selected": true,
+          "selected": false,
           "cluster": true,
           "multiple": true,
           "node_count": 2,
@@ -850,7 +885,7 @@
           "name": "Load balancers",
           "description": "Distributes traffic between your cluster nodes",
           "required": false,
-          "selected": true,
+          "selected": false,
           "cluster": false,
           "multiple": true,
           "node_count": 2,
@@ -895,7 +930,7 @@
           "name": "Customer MySQL",
           "description": "Host MySQL databases",
           "required": false,
-          "selected": true,
+          "selected": false,
           "cluster": false,
           "multiple": true,
           "node_count": 1,
@@ -940,7 +975,7 @@
           "name": "Customer PostgreSQL",
           "description": "Host PostgreSQL databases",
           "required": false,
-          "selected": true,
+          "selected": false,
           "cluster": false,
           "multiple": true,
           "node_count": 1,
@@ -985,7 +1020,7 @@
           "name": "Customer MSSQL",
           "description": "Host MSSQL databases",
           "required": false,
-          "selected": true,
+          "selected": false,
           "cluster": false,
           "multiple": true,
           "node_count": 1,

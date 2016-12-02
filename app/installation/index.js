@@ -25,8 +25,9 @@ router.get('/', function (req, res, next) {
 })
 
 router.post('/schedule', function (req, res, next) {
+  var orderId = req.body.orderId
   PlatformOption.getEnvironmentFromDatabase(req.cookies.platformName, function (data) {
-    Installation.scheduleInstallationFromJson(data.id, req.cookies.platformName, JSON.parse(data.json_data.replace(/(^")|("$)/g, "")), function() {
+    Installation.scheduleInstallationFromJson(data.id, req.cookies.platformName, orderId, JSON.parse(data.json_data.replace(/(^")|("$)/g, "")), function() {
       if (!res.headerSent) {
         res.json({'status': 'ok'})
         return

@@ -25,40 +25,52 @@ PreFlight.schedulePreFlightFromJson = function (environmentId, data, callback, o
       for (var roleId = 0; roleId < curServer.roles.length; roleId++) {
         roleData.push(curServer.roles[roleId].class)
       }
-      jobData.data = {
-        machine: 'pre_flight_checks',
-        system_requirements: requirementsData,
-        os: curServer.operating_system,
-        hostname: curServer.hostname,
-        username: curServer.username,
-        password: curServer.password,
-        key: '/root/.ssh/' + 'stefan-test-aws.pem', //TODO: This should not be hardcoded!
-        roles: roleData
-      }
-      var options = {
-        url: 'http://localhost:3000/restate-machines',
-        method: 'POST',
-        body: jobData,
-        json: true
-      }
-      request(options, function (error, response, body) {
-        if (error) {
-          // Handle error here
-        }
-        var runId = JSON.parse(body).Id
-        // Run scheduled add a reference to the database
-        // TODO: we should not allow duplicate task_ids for an environment
-        dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + " pre-flight', '" + runId + "', '" + JSON.stringify(jobData) + "', null, " + environmentId + ", 'pre_flight')",
-        function () {
-          scheduledServers++
-          if (scheduledServers == servers.length) {
-            callback()
+      for (var nodeCount = 0; nodeCount < curServer.node_count; nodeCount++)
+      {
+        var username;
+        if (curServer.nodes[nodeCount].username == '') {
+          if(curServer.operating_system == 'ubuntu') {
+            username = 'ubuntu'
           }
-        }, function (err) {
-          // dbh.query failed
-          onError(err)
+          else {
+            username = 'Administrator'
+          }
+        }
+        jobData.data = {
+          machine: 'pre_flight_checks',
+          system_requirements: requirementsData,
+          os: curServer.operating_system,
+          hostname: curServer.nodes[nodeCount].hostname,
+          username: username,
+          password: curServer.nodes[nodeCount].password,
+          key: '/root/.ssh/' + 'stefan-test-aws.pem', //TODO: This should not be hardcoded!
+          roles: roleData
+        }
+        var options = {
+          url: 'http://localhost:3000/restate-machines',
+          method: 'POST',
+          body: jobData,
+          json: true
+        }
+        request(options, function (error, response, body) {
+          if (error) {
+            // Handle error here
+          }
+          var runId = JSON.parse(body).Id
+          // Run scheduled add a reference to the database
+          // TODO: we should not allow duplicate task_ids for an environment
+          dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + " pre-flight', '" + runId + "', '" + JSON.stringify(jobData) + "', null, " + environmentId + ", 'pre_flight')",
+          function () {
+            scheduledServers++
+            if (scheduledServers == servers.length) {
+              callback()
+            }
+          }, function (err) {
+            // dbh.query failed
+            onError(err)
+          })
         })
-      })
+      }
     })(servers[memberId])
 
   }

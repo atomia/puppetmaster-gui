@@ -1,5 +1,7 @@
 <script>
 var variableData = {{{toJSON varData}}}
+var envName = "{{envName}}"
+var certExists = {{certExists}}
 $(document).ready(function () {
   console.log(variableData)
   environmentModel = ko.mapping.fromJS(variableData)
@@ -16,7 +18,23 @@ $(document).ready(function () {
         <a href="/pre-flight"><button type="submit" class="Btn Btn--primary">Next <i class="fa-margin fa fa-angle-right"></i></button></a>
       </div>
     </div>
+
     <div class="Paper kss-paper" style="margin:0px;" id="mainView">
+      <div class="Message Message--info">
+        <span id="no_cert" style="display:none;">
+          You do not yet have any certificates generated for this environment. Certificates are an important part of Atomia and should be generated before proceeding.
+          <br/><br/>
+          <button type="submit" class="Btn Btn--primary" id="generate_certificates_button">Generate certificates</button>
+          <span id="loading_cert" class="Icon Icon--loading Icon--large"  style="display:none;">
+            <span class="Icon-label">Generating certificates please wait</span>
+          </span>
+        </span>
+        <span id="have_cert" style="display:none;">
+          <span class="Icon Icon--checked2 Icon--green" >
+            <span class="Icon-label">Certificates generated</span>
+          </span>
+        </span>
+      </div>
 
       <!-- ko foreach: environmentModel -->
       <div class="Grid">
@@ -39,7 +57,7 @@ $(document).ready(function () {
                 <!-- /ko -->
               </div>
               <div class="Grid-column-3">
-                <input class="Formrow-input" type="text" id="email" data-bind="value: item.value" style="display:table-cell; width:100%; height:22px;">
+                <input class="Formrow-input" type="text" data-bind="value: item.value, attr: {'id': item.name}" style="display:table-cell; width:100%; height:22px;">
               </div>
 
               <div class="Grid-column-6 u-no-margin-top">
