@@ -8,7 +8,7 @@ function computedModel () {
     for (var i = 0; i < environmentModel.servers().length; i++) {
       for (var s = 0; s < environmentModel.servers()[i].members().length; s++) {
         var curServer = environmentModel.servers()[i].members()[s]
-        if (typeof curServer !== 'undefined' && curServer.selected() === true && curServer.operating_system() === os) {
+        if (curServer.node_count() > 0 && typeof curServer !== 'undefined' && curServer.selected() === true && curServer.operating_system() === os) {
           serverCount++
         }
       }

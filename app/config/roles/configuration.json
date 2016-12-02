@@ -1,0 +1,12 @@
+{
+  "name": "Configuration",
+  "role_name": "config",
+  "description": "General configuration options",
+  "firewall": [
+
+  ],
+  "global_firewall": [],
+  "pretty_variables": {
+
+  }
+}

@@ -32,9 +32,9 @@ Error () {
 
 if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
         if [ -n "$KEY" ]; then
-		SSH_COMMAND="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "$KEY" "$USERNAME"@"$HOSTNAME" "
+		SSH_COMMAND="ssh -o ConnectTimeout=60 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "$KEY" "$USERNAME"@"$HOSTNAME" "
         else
-		SSH_COMMAND="sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$USERNAME"@"$HOSTNAME" "
+		SSH_COMMAND="sshpass -p "$PASSWORD" ssh -o ConnectTimeout=60 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$USERNAME"@"$HOSTNAME" "
         fi
 
         INSTALL_PUPPET=`$SSH_COMMAND 2>&1 'sudo bash -s' < "$CURRENT_DIR"/scripts/install_puppet.sh "$PUPPETMASTER" "$ENVIRONMENT"`
@@ -46,6 +46,13 @@ if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
 	if [ "$?" != "0" ]; then
 		Error "{\"status\":\"pending\", \"message\":\"$RUN_PUPPET\"}"
 	fi
+
+        RUN_PUPPET=`$SSH_COMMAND 2>&1 -q sudo puppet agent --test`
+        # Puppet exit codes
+        if [ "$?" != "0" ]; then
+                Error "{\"status\":\"pending\", \"message\":\"$RUN_PUPPET\"}"
+        fi
+
 	#0: The run succeeded with no changes or failures; the system was already in the desired state.
 	#1: The run failed, or wasn't attempted due to another run already in progress.
 	#2: The run succeeded, and some resources were changed.
@@ -56,10 +63,15 @@ elif [ "$OS" == "windows" ]; then
 	if [ "$?" != "0" ]; then
 		Error "{\"status\":\"pending\", \"message\":\"Failed to install puppet on host. Error: $INSTALL_PUPPET\"}"
 	fi
-	RUN_PUPPET=`"$CURRENT_DIR"/winrm/run_puppet.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
+	RUN_PUPPET=`"$CURRENT_DIR"/winrm/run_puppet.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD" --environment="$ENVIRONMENT" --puppetmaster="$PUPPETMASTER" --roles="$ROLES"`
 	if [ "$?" != "0" ]; then
 		Error "{\"status\":\"pending\", \"message\":\"Puppet run not complete\"}"
 	fi
+        RUN_PUPPET=`"$CURRENT_DIR"/winrm/run_puppet.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD" --environment="$ENVIRONMENT" --puppetmaster="$PUPPETMASTER" --roles="$ROLES"`
+        if [ "$?" != "0" ]; then
+                Error "{\"status\":\"pending\", \"message\":\"Puppet run not complete\"}"
+        fi
+
 fi
 
 echo -n "$INPUT"

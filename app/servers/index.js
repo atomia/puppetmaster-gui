@@ -131,10 +131,10 @@ router.get('/export', function (req, res, next) {
   8. Browse for the csv file "windows_servers.csv"\r\n
   9. Click next until you get to the CSV Mapping step\r\n
   10. Add 3 new mappings for the following\r\n
-    CredentialMode | $CredentialMode$
-    CredentialUsername | $CredentialUsername$
-    CredentialPassword | $CredentialPassword$
-  11. Click next
+    CredentialMode | $CredentialMode$\r\n
+    CredentialUsername | $CredentialUsername$\r\n
+    CredentialPassword | $CredentialPassword$\r\n
+  11. Click next\r\n
   12. Save the file and Close RoyalTS completely\r\n
   13. Run the fil runme.bat\r\n
   14. Open atomia.rtsx again and you are good to go!\r\n

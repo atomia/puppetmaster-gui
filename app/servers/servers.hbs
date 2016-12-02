@@ -121,7 +121,9 @@ $(document).ready(function () {
           <tbody>
             <!-- ko foreach: environmentModel.servers() -->
             <!-- ko foreach: members() -->
+            <!-- ko if: node_count() > 0 -->
             <!-- ko if: operating_system() !== 'openstack' -->
+
             <!-- ko if: selected() == true -->
 
             <tr class="Table-bodyrow">
@@ -171,7 +173,7 @@ $(document).ready(function () {
                 </tr>
                 <!-- /ko -->
 
-
+                <!-- /ko -->
                 <!-- /ko -->
                 <!-- /ko -->
                 <!-- /ko -->

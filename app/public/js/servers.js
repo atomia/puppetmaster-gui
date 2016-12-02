@@ -75,6 +75,7 @@ function createAWSEnvironment () {
 }
 
 
+
 function updateProvisioningStatus () {
   String.prototype.contains = function(it) { return this.indexOf(it) != -1; };
   var numberOfTasks = 0;
@@ -83,7 +84,8 @@ function updateProvisioningStatus () {
 
     for (var i = 0; i < taskData.length; i++) {
       var taskName = taskData[i].task_id
-      var currentNode = 0;
+
+
       // Match the task with the server in environmentModel
       for (var e = 0; e < environmentModel.servers().length; e++) {
         for (var m = 0; m < environmentModel.servers()[e].members().length; m++) {
@@ -94,26 +96,30 @@ function updateProvisioningStatus () {
               var runId = taskData[i].run_id
 
               $.get('/restate-machines/' + runId, function (data) {
-                // Find a slot in nodes array
-                for (var nodeId = 0; nodeId < environmentModel.servers()[e].members()[m].node_count(); nodeId++) {
-                  if(typeof environmentModel.servers()[e].members()[m].nodes()[nodeId].run_id != 'undefined') {
-                    if(environmentModel.servers()[e].members()[m].nodes()[nodeId].run_id == runId) {
-                      currentNode = nodeId;
-                    }
-                  } else {
-                    environmentModel.servers()[e].members()[m].nodes()[nodeId].run_id = runId
-                    currentNode = nodeId
-                  }
-                }
                 var result = data
                 var status = JSON.parse(result.StatusMessage)
+                var hostname = JSON.parse(result.Input).public_dns
+                var password = JSON.parse(result.Input).password
+                for (var nodeId = 0; nodeId < environmentModel.servers()[e].members()[m].node_count(); nodeId++) {
+                  if(environmentModel.servers()[e].members()[m].nodes()[nodeId].hostname() != '') {
+                    if(environmentModel.servers()[e].members()[m].nodes()[nodeId].hostname()  == hostname) {
+                      currentNode = nodeId
+                      break
+                    }
+
+                  } else {
+                    currentNode = nodeId
+                    break;
+                  }
+
+                }
+
                 if(status.status === 'failed') {
                   $("#pre-flight-failed").show()
                 }
                 if(status.status === 'done') {
                   completedTasks++;
-                  var hostname = JSON.parse(result.Input).public_dns
-                  var password = JSON.parse(result.Input).password
+
                   environmentModel.servers()[e].members()[m].nodes()[currentNode].hostname(hostname)
                   if (typeof environmentModel.servers()[e].members()[m].nodes()[currentNode].password == 'function')
                   {

@@ -7,12 +7,19 @@ var PlatformOption = require('../platform-options/model')
 router.get('/', function (req, res, next) {
   var selectedEnvironmentData = req.cookies.platformName
 
-  // Load variables with default form manifest
-  // Load overrides from template
-  // Load variables defined in database
   PlatformOption.getEnvironmentFromDatabase(selectedEnvironmentData, function (data) {
     PuppetConfig.getVariables(JSON.parse(data.json_data.replace(/(^")|("$)/g, "")), function (data) {
-      res.render('puppet-config/puppet-config', {'varData' : data})
+      var environmentName = req.cookies.platformName.toLowerCase().replace(/\s/g, "_")
+
+
+      const exec = require('child_process').exec;
+      exec("/bin/bash -c 'if [ ! -d \"/etc/puppet/atomiacerts/" + environmentName + "\" ]; then exit 1; fi'", (error) => {
+        var certExists = false
+        if (!error) {
+          certExists = true
+        }
+        res.render('puppet-config/puppet-config', {'varData' : data, 'envName' : selectedEnvironmentData, 'certExists' : certExists})
+      });
     })
   },
   function (error) {
@@ -29,6 +36,21 @@ router.post('/', function (req) {
     // Handle error here
   })
 })
+
+router.post('/certificate', function (req,res) {
+  var environmentName = req.cookies.platformName.toLowerCase().replace(/\s/g, "_")
+  var appDomain = req.body.appDomain
+  var loginUrl = req.body.loginUrl
+  var orderUrl = req.body.orderUrl
+  var billingUrl = req.body.billingUrl
+  var hcpUrl = req.body.hcpUrl
+  const spawn = require('child_process').spawn;
+  const generate_cert = spawn('ruby', ['/etc/puppet/modules/atomia/files/certificates/generate_certificates.rb', appDomain, loginUrl, orderUrl, billingUrl, hcpUrl, environmentName]);
+  generate_cert.on('close', (code) => {
+    res.json({'status': code})
+  });
+})
+
 
 
 module.exports = router

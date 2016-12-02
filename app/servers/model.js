@@ -90,7 +90,7 @@ Server.filterSelectedServers = function (servers) {
   var serverList = []
   for (var categoryId = 0; categoryId < servers.length; categoryId++) {
     for (var memberId = 0; memberId < servers[categoryId].members.length; memberId++) {
-      if(servers[categoryId].members[memberId].selected == true) {
+      if(servers[categoryId].members[memberId].node_count > 0 && servers[categoryId].members[memberId].selected == true) {
         serverList.push(servers[categoryId].members[memberId])
       }
     }

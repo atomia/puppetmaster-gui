@@ -9,17 +9,17 @@ PuppetConfig.prototype.data = {}
 
 PuppetConfig.getVariables = function (environmentData, callback) {
   // Get all selected roles
+  var environmentName = environmentData.name.toLowerCase().replace(/\s/g, "_")
   var roleNames = []
   var totalNumRoles = 0
   var roleId = 0
   for (var categoryId = 0; categoryId < environmentData.servers.length; categoryId++) {
     for (var serverId = 0; serverId < environmentData.servers[categoryId].members.length; serverId++) {
       if(environmentData.servers[categoryId].members[serverId].selected) {
-        for (roleId = 0; roleId < environmentData.servers[categoryId].members[serverId].roles.length; roleId++) {
-          roleNames.push(environmentData.servers[categoryId].members[serverId].roles)
-          totalNumRoles+=environmentData.servers[categoryId].members[serverId].roles.length
-        }
+        roleNames.push(environmentData.servers[categoryId].members[serverId].roles)
+        totalNumRoles+=environmentData.servers[categoryId].members[serverId].roles.length
       }
+
     }
   }
 
@@ -29,11 +29,24 @@ PuppetConfig.getVariables = function (environmentData, callback) {
     for (var subRoleId = 0; subRoleId < roleNames[roleId].length; subRoleId++) {
       (function () {
         PuppetHelper.parseManifest(roleNames[roleId][subRoleId], function (variables) {
-          roleCount++
-          manifestData.push({'name' : variables[0].rolePretty, 'variables' : variables})
-          if(roleCount == totalNumRoles) {
-            callback(manifestData)
-          }
+
+          // Check for database overrides
+          dbh.query ('SELECT * FROM configuration WHERE env = \'' + environmentName + '\'', function (data) {
+            roleCount++
+            for (var id = 0; id < variables.length; id++) {
+              var currentVariable = 'atomia::' + variables[id].namespace + '::' + variables[id].name;
+              for (var dId = 0; dId < data.length; dId++) {
+                if( data[dId].var == currentVariable) {
+                  variables[id].value = data[dId].val
+                }
+              }
+            }
+            manifestData.push({'name' : variables[0].rolePretty, 'variables' : variables})
+            if(roleCount == totalNumRoles) {
+              callback(manifestData)
+            }
+          })//, function (err) {  })
+
         })
       })(roleNames[roleId][subRoleId])
     }
@@ -67,4 +80,4 @@ PuppetConfig.updateData = function (environmentName, data, callback, onError) {
     }
   }
 }
-  module.exports = PuppetConfig
+module.exports = PuppetConfig
