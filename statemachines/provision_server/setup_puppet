@@ -39,19 +39,18 @@ if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
 
         INSTALL_PUPPET=`$SSH_COMMAND 2>&1 'sudo bash -s' < "$CURRENT_DIR"/scripts/install_puppet.sh "$PUPPETMASTER" "$ENVIRONMENT"`
         if [ "$?" != "0" ]; then
-        	Error "{\"status\":\"failed\", \"message\":\"Could not login to the server via SSH with the provided key $INSTALL_PUPPET \"}"
+		Error "failed|Could not login server might be rebooting|${INSTALL_PUPPET}"
+        	#Error "{\"status\":\"failed\", \"message\":\"Could not login to the server via SSH with the provided key $INSTALL_PUPPET \"}"
         fi
 	RUN_PUPPET=`$SSH_COMMAND 2>&1 -q sudo puppet agent --test`
 	# Puppet exit codes
-	if [ "$?" != "0" ]; then
-		Error "{\"status\":\"pending\", \"message\":\"$RUN_PUPPET\"}"
+	if [ "$?" == "0" ] || [ "$?" == "2" ]; then
+		# Provisioning is ok
+		OK=1
+	else
+		Error "pending|installation in progress|$? ${RUN_PUPPET}"
+		#Error "{\"status\":\"pending\", \"message\":\"$RUN_PUPPET\"}"
 	fi
-
-        RUN_PUPPET=`$SSH_COMMAND 2>&1 -q sudo puppet agent --test`
-        # Puppet exit codes
-        if [ "$?" != "0" ]; then
-                Error "{\"status\":\"pending\", \"message\":\"$RUN_PUPPET\"}"
-        fi
 
 	#0: The run succeeded with no changes or failures; the system was already in the desired state.
 	#1: The run failed, or wasn't attempted due to another run already in progress.
@@ -61,20 +60,18 @@ if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
 elif [ "$OS" == "windows" ]; then
 	INSTALL_PUPPET=`"$CURRENT_DIR"/winrm/install_puppet.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD" --environment="$ENVIRONMENT" --puppetmaster="$PUPPETMASTER" --roles="$ROLES"`
 	if [ "$?" != "0" ]; then
-		Error "{\"status\":\"pending\", \"message\":\"Failed to install puppet on host. Error: $INSTALL_PUPPET\"}"
+		#Error "{\"status\":\"pending\", \"message\":\"Failed to install puppet on host. Error: $INSTALL_PUPPET\"}"
+		Error "pending|installation in progress|${INSTALL_PUPPET}"
 	fi
 	RUN_PUPPET=`"$CURRENT_DIR"/winrm/run_puppet.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD" --environment="$ENVIRONMENT" --puppetmaster="$PUPPETMASTER" --roles="$ROLES"`
 	if [ "$?" != "0" ]; then
-		Error "{\"status\":\"pending\", \"message\":\"Puppet run not complete\"}"
+		#Error "{\"status\":\"pending\", \"message\":\"Provisioning in progress\"}"
+		Error "pending|installation in progress|${RUN_PUPPET}"
 	fi
-        RUN_PUPPET=`"$CURRENT_DIR"/winrm/run_puppet.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD" --environment="$ENVIRONMENT" --puppetmaster="$PUPPETMASTER" --roles="$ROLES"`
-        if [ "$?" != "0" ]; then
-                Error "{\"status\":\"pending\", \"message\":\"Puppet run not complete\"}"
-        fi
 
 fi
-
+RAND=`shuf -i 1-10 -n 1`
 echo -n "$INPUT"
 restatemachine_transition_to "stop"
-restatemachine_transition_after_seconds "0"
-restatemachine_status_message "{\"status\":\"done\", \"message\":\"Provisioning complete\"}"
+restatemachine_transition_after_seconds "$RAND"
+restatemachine_status_message "done|Provisioning complete|"

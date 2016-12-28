@@ -18,8 +18,13 @@ $(document).ready(function () {
     </div>
     <div class="Paper kss-paper" style="margin:0px;" id="mainView">
       <button type="submit" class="Btn Btn--primary" id="start_installation_button">Start Installation</button>
-
-      <table class="Table ">
+      <div class="Message Message--loading" id="environment-loading">
+        Your servers are being provisioned in the order listed on the far left of the task list below. It is not uncommon for this action to take a long time (up to an hour depending on the size of your environment). When provisioning is done you will be notified.
+      </div>
+      <div class="Message Message--success" id="provisioning-complete" style="display:none;">
+        Provisioning is complete!
+      </div>
+      <table class="Table " style="border-collapse:initial !important;">
         <thead>
           <tr class="Table-row">
             <th style="u-left-text" width="5%">#</th>
@@ -32,11 +37,11 @@ $(document).ready(function () {
         <tbody>
           <!-- ko foreach: environmentModel.servers() -->
           <!-- ko foreach: members() -->
+          <!-- ko if: node_count() > 0 -->
           <!-- ko if: operating_system() !== 'openstack' -->
           <!-- ko if: selected() == true -->
-
           <tr class="Table-bodyrow">
-            <td data-bind="text: provisioning_order"></td>
+            <td class="provisioning_order" data-bind="text: provisioning_order"></td>
             <td>
               <!-- ko if: operating_system() === 'windows' -->
               <i class="fa fa-windows" aria-hidden="true"></i>
@@ -52,12 +57,12 @@ $(document).ready(function () {
             </tr>
 
             <!-- ko foreach: nodes() -->
-            <tr style="background-color:#EDEDE8 !important;">
+            <tr style="background-color:#f7f7f7 !important;border-collapse:initial !important;">
               <td></td>
               <td></td>
               <td data-bind="text: hostname"></td>
-                <td data-bind="text: ec2_type"></td>
-                <td>
+              <td data-bind="text: ec2_type"></td>
+              <td>
                 <!-- ko if: installation_status().status === 'failed' -->
                 <div style="float:right;">
                   <i class="fa fa-exclamation-circle fa-lg" aria-hidden="true" style="color:#d11717;"></i><br/>
@@ -76,19 +81,40 @@ $(document).ready(function () {
                 <!-- /ko -->
                 <span data-bind="text:installation_status().message"></span> </td>
               </td>
-              </tr>
-              <!-- /ko -->
+            </tr>
+            <tr style="background-color:#f7f7f7 !important;border-collapse:initial !important;">
+              <td colspan="5">
+                <table>
+                  <tr>
+                    <td>
+                      <strong>Next run:</strong> <span data-bind="text:installation_status().next_run"></span>
+                    </td>
+                    <td>
+                      <strong>Running now:</strong> <span data-bind="text:installation_status().running"></span>
+                    </td>
 
+                  </tr>
+                  <tr>
+                    <td colspan="2"><strong>Log:</strong> <pre><span data-bind="text:installation_status().output"></span></pre>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr style="">
+              <td colspan="5"></td>
+            </tr>
+            <!-- /ko -->
 
-              <!-- /ko -->
-              <!-- /ko -->
-              <!-- /ko -->
-              <!-- /ko -->
-            </tbody>
+            <!-- /ko -->
+            <!-- /ko -->
+            <!-- /ko -->
+            <!-- /ko -->
+            <!-- /ko -->
           </tbody>
-          <tfoot>
-          </tfoot>
-        </table>
+        </tbody>
+        <tfoot>
+        </tfoot>
+      </table>
 
 
     </div>

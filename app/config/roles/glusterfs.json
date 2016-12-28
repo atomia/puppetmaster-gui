@@ -1,0 +1,33 @@
+{
+  "name": "Glusterfs",
+  "role_name": "glusterfs",
+  "description": "First GlusterFS server",
+  "firewall": [
+    {
+      "name": "Active_directory",
+      "rules": [
+        {
+          "port": 3389,
+          "function": "rdp",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [""],
+  "pretty_variables": {
+    "web_content_volume_size" :  "Web volume size",
+    "configuration_volume_size" :  "Configuration volume size",
+    "mail_volume_size" :  "Mail volume size",
+    "peers" :  "Peers",
+    "physical_volume" :  "Physical volume",
+    "vg_name" :  "Volume group",
+    "quota_management_ssh_key" :  "SSH key",
+    "create_storage_files" :  "Storage files",
+    "gluster_hostname" :  "Hostname",
+    "fs_add_group" :  "Add group"
+  }
+
+
+}

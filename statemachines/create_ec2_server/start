@@ -38,6 +38,7 @@ ENDOFUSAGE
 fi
 
 cat
+RAND=`shuf -i 1-10 -n 1`
 restatemachine_transition_to "create_security_groups"
-restatemachine_transition_after_seconds "0"
+restatemachine_transition_after_seconds "$RAND"
 restatemachine_status_message "{\"status\":\"pending\", \"message\":\"Creating security groups\"}"

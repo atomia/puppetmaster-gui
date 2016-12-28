@@ -11,7 +11,6 @@ var restate_url = 'http://' + restate_username + ':' + restate_password + '@' + 
 // Add a restate machine run
 router.post('/', function (req, res, next) {
   var data = req.body.data
-
   var options = {
     url: restate_url + '/runs/' + data.machine,
     method: 'POST',

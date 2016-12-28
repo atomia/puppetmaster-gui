@@ -25,6 +25,7 @@ Server.scheduleEnvironmentFromJson = function (environmentId, data, callback, on
       var roleCount = 0
       var security_groups = []
       var volume_size = 10
+      var extra_size = 0
       for (var roleId = 0; roleId < curServer.roles.length; roleId++) {
         PlatformOption.getRoleByName(curServer.roles[roleId].class, function (roleData) {
           roleCount++
@@ -35,23 +36,28 @@ Server.scheduleEnvironmentFromJson = function (environmentId, data, callback, on
             if (curServer.requirements[rId].check == 'disk') {
               volume_size = curServer.requirements[rId].value
             }
+            if (curServer.requirements[rId].check == 'extra_disk') {
+              extra_size = curServer.requirements[rId].value
+            }
           }
           if (roleCount === curServer.roles.length) {
             // Schedule the jobs
             for (var nodeCount = 0; nodeCount < curServer.node_count; nodeCount++)
             {
+              (function (nodeId) {
               var jobData = {}
               jobData.data = {
                 machine: 'create_ec2_server',
                 key_name: 'stefan-test-aws',
                 vpc_id: 'vpc-ad0f6ac9',
-                instance_name: '(' + environmentName + ') ' + curServer.name + '_' + nodeCount,
+                instance_name: '(' + environmentName + ') ' + curServer.name + '_' + nodeId,
                 ami: curServer.ami,
                 type: curServer.ec2_type,
                 security_groups: security_groups,
                 existing_security_groups: ['default'],
                 os: curServer.operating_system,
-                volume_size: volume_size
+                volume_size: volume_size,
+                extra_vol_size: extra_size
               }
               var options = {
                 url: 'http://localhost:3000/restate-machines',
@@ -66,7 +72,7 @@ Server.scheduleEnvironmentFromJson = function (environmentId, data, callback, on
                 var runId = JSON.parse(body).Id
                 // Run scheduled add a reference to the database
                 // TODO: we should not allow duplicate task_ids for an environment
-                dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + "', '" + runId + "', '" + JSON.stringify(jobData) + "', null, " + environmentId + ", 'ec2')",
+                dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + "_" + nodeId + "', '" + runId + "', '" + JSON.stringify(jobData) + "', null, " + environmentId + ", 'ec2')",
                 function () {
                   scheduledServers++
                   if (scheduledServers == nodeCount) {
@@ -77,6 +83,7 @@ Server.scheduleEnvironmentFromJson = function (environmentId, data, callback, on
                   onError(err)
                 })
               })
+              })(nodeCount)
             }
           }
         })

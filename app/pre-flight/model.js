@@ -27,6 +27,7 @@ PreFlight.schedulePreFlightFromJson = function (environmentId, data, callback, o
       }
       for (var nodeCount = 0; nodeCount < curServer.node_count; nodeCount++)
       {
+
         var username;
         if (curServer.nodes[nodeCount].username == '') {
           if(curServer.operating_system == 'ubuntu') {
@@ -46,6 +47,7 @@ PreFlight.schedulePreFlightFromJson = function (environmentId, data, callback, o
           key: '/root/.ssh/' + 'stefan-test-aws.pem', //TODO: This should not be hardcoded!
           roles: roleData
         }
+
         var options = {
           url: 'http://localhost:3000/restate-machines',
           method: 'POST',

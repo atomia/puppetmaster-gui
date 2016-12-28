@@ -1,18 +1,23 @@
 var config = require('../config/config.json')
 var fs = require('fs')
 var readline = require('readline')
-
+var PlatformOption = require('../platform-options/model')
+var waterfall = require('async-waterfall')
 var PuppetHelper = function (connection) {
   this.connection = connection
 }
 
 
-PuppetHelper.parseManifest = function (manifest, callback) {
+PuppetHelper.parseManifest = function (environmentName, manifest, callback) {
   var manifestPath = config.main.module_path
   var variables = {}
   var classPath = manifest.class
   if (classPath === 'nagios_server' || classPath === 'nagios') {
     classPath = 'nagios/server'
+  }
+  if (classPath === 'glusterfs_replica') {
+    callback(null)
+    return
   }
   var rd = readline.createInterface({
     input: fs.createReadStream(manifestPath + '/' + classPath + '.pp'),
@@ -44,52 +49,136 @@ PuppetHelper.parseManifest = function (manifest, callback) {
     }
 
     var defaultValueRegex = /^\W+\$([a-z_0-9]*)\W+=\s+'?"?([ a-zA-Z:\/0-9.${}_,-]*)'?"?,?\)?\{?$/
-    var defaultValueRegexResult = line.match(defaultValueRegex)
-    if (defaultValueRegexResult) {
-      if (typeof variables[defaultValueRegexResult[1]] != 'undefined') {
-        variables[defaultValueRegexResult[1]].value = defaultValueRegexResult[2].replace(/,\s*$/, "")
+      var defaultValueRegexResult = line.match(defaultValueRegex)
+      if (defaultValueRegexResult) {
+        if (typeof variables[defaultValueRegexResult[1]] != 'undefined') {
+          variables[defaultValueRegexResult[1]].value = defaultValueRegexResult[2].replace(/,\s*$/, "")
+        }
       }
-    }
-  })
+    })
 
-  rd.on ('close', function() {
-    var retArr = []
-    var localConfig = require('../config/roles/' + manifest.class + '.json')
-    /* eslint-disable no-unused-vars */
-    Object.keys(variables).forEach(function(key, index) {
-      /* eslint-enable no-unused-vars */
-      // Add pretty variable name from config
-      if (typeof localConfig.pretty_variables[key] != 'undefined')
-      variables[key].pretty = localConfig.pretty_variables[key]
+    rd.on ('close', function() {
+      var retArr = []
+      var localConfig = require('../config/roles/' + manifest.class + '.json')
+      var objectCount = 0
+      var objectTotal = 0
+      /* eslint-disable no-unused-vars */
+
+      objectTotal = Object.keys(variables).length
+      Object.keys(variables).forEach(function(key, index) {
+        waterfall([
+          function (callback) {
+            var curKey = key
+
+            /* eslint-enable no-unused-vars */
+            // Add pretty variable name from config
+            if (typeof localConfig.pretty_variables[curKey] != 'undefined')
+            variables[curKey].pretty = localConfig.pretty_variables[curKey]
+            else {
+              variables[curKey].pretty = false
+            }
+            variables[curKey].rolePretty = localConfig.name
+            variables[curKey].name = key
+            variables[curKey].namespace = manifest.class
+
+            if (typeof variables[curKey].value == 'undefined') {
+              variables[curKey].value = ''
+            }
+
+
+            if (variables[curKey].validation === '%int_boolean') {
+
+              // Rewrite int_boolean strings to true/false
+              if (variables[curKey].value === '0'){
+                variables[curKey].value = false;
+              }
+              if (variables[curKey].value === '1') {
+                variables[curKey].value = true;
+              }
+            }
+            // Generate passwords for password fields
+            if (variables[curKey].validation === '%password' && variables[curKey].value === '') {
+              variables[curKey].value = PuppetHelper.generatePassword()
+            }
+
+            callback(null,curKey)
+          },
+          function (curKey, callback) {
+            if (variables[curKey].validation === '%ipaddress' && variables[curKey].value === '') {
+              PlatformOption.getHostnameForRole(environmentName, manifest.class, function (hostname) {
+                if (hostname != null) {
+                  PlatformOption.getIpFromHostname(hostname, function (ip) {
+                    variables[curKey].value = ip
+                    callback(null, curKey)
+                  })
+                }
+              },
+              function (error) {
+                error.message = 'Could not fetch roles'
+                //  next(error)
+              }
+            )
+          }
+          else {
+            callback(null, curKey)
+          }
+        },
+        function (curKey, callback) {
+          if (variables[curKey].validation === '%hostname' && variables[curKey].value === '') {
+            PlatformOption.getHostnameForRole(environmentName, manifest.class, function (hostname) {
+              if (hostname != null) {
+                variables[curKey].value = hostname
+              }
+              callback(null,curKey)
+            },
+            function (error) {
+              error.message = 'Could not fetch roles'
+              callback(null,curKey)
+            }
+          )
+        }
+        else {
+          callback(null,curKey)
+        }
+      },
+      function (curKey, callback) {
+        if (typeof variables[curKey].value == 'string' && variables[curKey].value.includes('${::fqdn}')) {
+          PlatformOption.getHostnameForRole(environmentName, manifest.class, function (hostname) {
+            if (hostname != null) {
+
+              variables[curKey].value = variables[curKey].value.replace('${::fqdn}',hostname)
+            }
+            callback(variables[curKey])
+          },
+          function (error) {
+            error.message = 'Could not fetch roles'
+            callback(variables[curKey])
+          }
+        )
+      }
       else {
-        variables[key].pretty = false
+        callback(variables[curKey])
       }
-      variables[key].rolePretty = localConfig.name
-      variables[key].name = key
-      variables[key].namespace = manifest.class
-
-      // Rewrite int_boolean strings to true/false
-      if (variables[key].value === '0'){
-        variables[key].value = false;
+    },
+    ],
+    function (variable) {
+      if(typeof variable.advanced != 'undefined') {
+        if (variables[key].validation != '%hide') {
+          retArr.push(variable)
+        }
+        objectCount++
+        //  console.log(variable)
+        if(objectCount == objectTotal ) {
+          callback(retArr)
+        }
       }
-      if (variables[key].value === '1') {
-        variables[key].value = true;
-      }
-
-      // Generate passwords for password fields
-      if (variables[key].validation === '%password' && variables[key].value === '') {
-        variables[key].value = PuppetHelper.generatePassword()
-      }
-
-      if(typeof variables[key].advanced != 'undefined')
-      retArr.push(variables[key])
-    });
-    callback(retArr)
-  })
+    } )
+  });
+})
 }
 
 String.prototype.replaceAt = function(index, character) {
-    return this.substr(0, index) + character + this.substr(index+character.length);
+  return this.substr(0, index) + character + this.substr(index+character.length);
 }
 
 PuppetHelper.generatePassword = function () {

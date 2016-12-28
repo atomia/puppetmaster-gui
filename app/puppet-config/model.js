@@ -28,24 +28,27 @@ PuppetConfig.getVariables = function (environmentData, callback) {
   for (roleId = 0; roleId < roleNames.length; roleId++) {
     for (var subRoleId = 0; subRoleId < roleNames[roleId].length; subRoleId++) {
       (function () {
-        PuppetHelper.parseManifest(roleNames[roleId][subRoleId], function (variables) {
-
+        PuppetHelper.parseManifest(environmentData.name, roleNames[roleId][subRoleId], function (variables) {
           // Check for database overrides
           dbh.query ('SELECT * FROM configuration WHERE env = \'' + environmentName + '\'', function (data) {
             roleCount++
-            for (var id = 0; id < variables.length; id++) {
-              var currentVariable = 'atomia::' + variables[id].namespace + '::' + variables[id].name;
-              for (var dId = 0; dId < data.length; dId++) {
-                if( data[dId].var == currentVariable) {
-                  variables[id].value = data[dId].val
+            if (variables != null) {
+              for (var id = 0; id < variables.length; id++) {
+                var currentVariable = 'atomia::' + variables[id].namespace + '::' + variables[id].name;
+                for (var dId = 0; dId < data.length; dId++) {
+                  if( data[dId].var == currentVariable) {
+                    variables[id].value = data[dId].val
+                  }
                 }
               }
+              manifestData.push({'name' : variables[0].rolePretty, 'variables' : variables})
             }
-            manifestData.push({'name' : variables[0].rolePretty, 'variables' : variables})
+            
             if(roleCount == totalNumRoles) {
               callback(manifestData)
             }
           })//, function (err) {  })
+
 
         })
       })(roleNames[roleId][subRoleId])
