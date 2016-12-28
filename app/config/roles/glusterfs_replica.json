@@ -1,0 +1,33 @@
+{
+  "name": "Gluster replica",
+  "role_name": "glusterfs_replica",
+  "description": "GlusterFS replicas",
+  "firewall": [
+    {
+      "name": "Active_directory",
+      "rules": [
+        {
+          "port": 3389,
+          "function": "rdp",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [""],
+  "pretty_variables": {
+    "username" :  "Username",
+    "password" :  "Password",
+    "fsagent_ip" :  "Server IP",
+    "content_share_nfs_location" :  "Content NFS share",
+    "config_share_nfs_location" :  "Configuration NFS share",
+    "skip_mount" :  "Skip mount",
+    "enable_config_agent" :  "Config agent",
+    "create_storage_files" :  "Storage files",
+    "allow_ssh_key" :  "SSH key to allow",
+    "fs_add_group" :  "Add group"
+  }
+
+
+}

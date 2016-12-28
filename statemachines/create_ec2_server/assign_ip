@@ -40,6 +40,7 @@ if [ "$FREE_IP" == "0" ]; then
 fi
 
 echo -n "$INPUT"
+RAND=`shuf -i 1-30 -n 1`
 restatemachine_transition_to "get_server_info"
-restatemachine_transition_after_seconds "0"
+restatemachine_transition_after_seconds "$RAND"
 restatemachine_status_message "{\"status\":\"pending\", \"message\":\"Getting server info\"}"

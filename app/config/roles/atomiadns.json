@@ -1,0 +1,36 @@
+{
+  "name": "AtomiaDNS",
+  "role_name": "atomiadns",
+  "description": "Atomia DNS server",
+  "firewall": [
+    {
+      "name": "Active_directory",
+      "rules": [
+        {
+          "port": 3389,
+          "function": "rdp",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [],
+  "pretty_variables": {
+    "nameserver1" :  "Primary nameserver",
+    "registry" : "Registry address",
+    "nameservers" : "Nameservers",
+    "agent_user" : "Agent user",
+    "agent_password" : "Agent password",
+    "db_hostname" : "Database host",
+    "db_username" : "Database user",
+    "db_password" : "Database password",
+    "ns_group" : "Nameserver group",
+    "zones_to_add" : "DNS Zones",
+    "atomia_dns_extra_config" : "AtomiaDNS extra config",
+    "enable_backups" : "Enable backups",
+    "backup_dir" : "Backup directory",
+    "cron_schedule_hour" : "Backup time",
+    "atomia_dns_url" : "AtomiaDNS url"
+  }
+}

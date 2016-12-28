@@ -19,6 +19,16 @@ $(document).ready(function () {
     <div class="Paper kss-paper" style="margin:0px;" id="mainView">
       <button type="submit" class="Btn Btn--primary" id="start_pre_flight_button">Start pre flight checks</button>
       <button type="submit" class="Btn Btn--primary" id="start_pre_flight_button">Retry pre flight checks</button>
+      <div class="Message Message--info">
+        Before proceeding with the pre flight checks make sure that the following requirements are fulfilled: <br/><br/>
+
+        Enable WINRM on ALL Windows servers with the command: <br/>
+        <pre>start cmd /k "winrm quickconfig & winrm set winrm/config/client/auth @{Basic="true"} & winrm set winrm/config/service/auth @{Basic="true"} & winrm set winrm/config/service @{AllowUnencrypted="true"}"</pre>
+        <br/></br>
+        Make sure WINRM (port 5985) is open for the local subnet (or the ip address of the puppet master server)
+        <br/><br/>
+      </div>
+
       <div class="Message Message--error" id="pre-flight-failed" style="display:none;">
         One or more of the pre flight checks failed, the failed checks will automatically retry once every 60 seconds so once you have fixed the errors reported check back for an update
       </div>
@@ -35,6 +45,7 @@ $(document).ready(function () {
         <tbody>
           <!-- ko foreach: environmentModel.servers() -->
           <!-- ko foreach: members() -->
+          <!-- ko if: node_count() > 0 -->
           <!-- ko if: operating_system() !== 'openstack' -->
           <!-- ko if: selected() == true -->
 
@@ -59,8 +70,8 @@ $(document).ready(function () {
               <td></td>
               <td></td>
               <td data-bind="text: hostname"></td>
-                <td data-bind="text: ec2_type"></td>
-                <td>
+              <td data-bind="text: ec2_type"></td>
+              <td>
                 <!-- ko if: preflight_status().status === 'failed' -->
                 <div style="float:right;">
                   <i class="fa fa-exclamation-circle fa-lg" aria-hidden="true" style="color:#d11717;"></i><br/>
@@ -79,19 +90,19 @@ $(document).ready(function () {
                 <!-- /ko -->
                 <span data-bind="text:preflight_status().message"></span> </td>
               </td>
-              </tr>
-              <!-- /ko -->
+            </tr>
+            <!-- /ko -->
 
-
-              <!-- /ko -->
-              <!-- /ko -->
-              <!-- /ko -->
-              <!-- /ko -->
-            </tbody>
+            <!-- /ko -->
+            <!-- /ko -->
+            <!-- /ko -->
+            <!-- /ko -->
+            <!-- /ko -->
           </tbody>
-          <tfoot>
-          </tfoot>
-        </table>
+        </tbody>
+        <tfoot>
+        </tfoot>
+      </table>
 
     </div>
 

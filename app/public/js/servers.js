@@ -5,6 +5,7 @@ $(document).ready(function () {
   var save_environment_button = document.getElementById('save_environment_button')
   var export_environment_button = document.getElementById('export_environment_button')
   var next_server_button = document.getElementById('next_server_button')
+
   if (create_aws_environment_button) {
     create_aws_environment_button.addEventListener('click', function () {
       createAWSEnvironment()

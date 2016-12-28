@@ -11,12 +11,13 @@ Installation.scheduleInstallationFromJson = function (environmentId, environment
 
   var servers = Servers.filterSelectedServers(data.servers)
   var scheduledServers = 0
-
+  var serverCount = 0
   for (var memberId = 0; memberId < servers.length; memberId++) {
 
     (function (curServer) {
       // Schedule the job
       if (curServer.provisioning_order == orderId) {
+        serverCount++
         var jobData = {}
         var requirementsData = {}
         for (var rId = 0; rId < curServer.requirements.length; rId++) {
@@ -62,7 +63,7 @@ Installation.scheduleInstallationFromJson = function (environmentId, environment
               dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + " installation', '" + runId + "', '" + JSON.stringify(jobData) + "', null, " + environmentId + ", 'installation')",
               function () {
                 scheduledServers++
-                if (scheduledServers == servers.length) {
+                if (scheduledServers == serverCount) {
                   callback()
                 }
               }, function (err) {
@@ -92,8 +93,16 @@ Installation.getAllTasks = function (callback, onError) {
   })
 }
 
-Installation.updateTask = function (task, callback, onError) {
-  dbh.query("UPDATE tasks SET status = '" + task.status + "' WHERE id = " + task.id, function () {
+Installation.getTaskByRunId = function (runId, callback, onError) {
+  dbh.query("SELECT * from tasks WHERE run_id ='" + runId + "'", function (result) {
+    callback(result[0])
+  }, function (err) {
+    onError(err)
+  })
+}
+
+Installation.updateTask = function (taskId, taskStatus, callback, onError) {
+  dbh.query("UPDATE tasks SET status = '" + taskStatus + "' WHERE id = " + taskId, function () {
     callback(true)
   }, function (err) {
     onError(err)

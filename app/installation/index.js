@@ -47,5 +47,21 @@ router.post('/schedule', function (req, res, next) {
 
 })
 
+router.put('/task/:taskId', function (req, res) {
+  var taskId = req.params.taskId
+  var status = req.body.status
+
+  Installation.updateTask (taskId, status, function () {
+    res.json({'status':'ok'})
+  }, function (error) { res.json({'status':error})})
+})
+
+router.get('/task/:taskId', function (req, res) {
+  var taskId = req.params.taskId
+
+  Installation.getTaskByRunId (taskId, function (result) {
+    res.json({'task':result})
+  }, function (error) { res.json({'status':error})})
+})
 
 module.exports = router

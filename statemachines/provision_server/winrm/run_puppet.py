@@ -19,10 +19,12 @@ def main():
 	"""
         try:
                 s = winrm.Session(options.host, auth=(options.username,options.password))
-                r = s.run_ps(ps_script)
+                #r = s.run_ps(ps_script)
+		r = s.run_cmd('puppet', ['agent', '--test'])
+		print r.std_out
+		print r.std_err
                 if r.status_code == 0 or r.status_code == 2:
 			exit(0)
-		print "{\"status\" : \"failed\", \"message\" : \"" + r.std_out + "\"}"
                 exit(1)
         except requests.exceptions.ConnectionError:
                 print "{\"status\" : \"failed\", \"message\" : \"Could not connect to server via winrm. Could not reach hostname or ip, make sure all pre requirements are met\"}"

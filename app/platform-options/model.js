@@ -1,6 +1,7 @@
 var fh = require('../lib/file_helper')
 var dbh = require('../lib/database_helper')
 var fs = require('fs')
+var dns = require('dns')
 
 var PlatformOption = function (data) {
   this.data = data
@@ -192,6 +193,46 @@ PlatformOption.getRolesForHostname = function (fqdn, callback, onError) {
   },
   function (error) { onError(error)
   })
+}
+
+PlatformOption.getHostnameForRole = function (platformName, role, callback, onError) {
+
+
+  PlatformOption.getEnvironmentFromDatabase(platformName, function (environment) {
+
+    if (typeof environment != 'undefined')
+    {
+      environment = JSON.parse(environment.json_data.replace(/(^")|("$)/g, ""))
+      for (var serverId = 0; serverId < environment.servers.length; serverId++) {
+        for (var memberId = 0; memberId < environment.servers[serverId].members.length; memberId++) {
+          if (typeof environment.servers[serverId].members[memberId].nodes != 'undefined') {
+            for (var roleId = 0; roleId < environment.servers[serverId].members[memberId].roles.length; roleId++){
+              if (environment.servers[serverId].members[memberId].roles[roleId].class == role) {
+                callback(environment.servers[serverId].members[memberId].nodes[0].hostname)
+                return
+              }
+            }
+
+          }
+        }
+      }
+    }
+    callback(null)
+  },
+  function (error) {
+    onError (error)
+  })
+}
+
+PlatformOption.getIpFromHostname = function (hostname, callback) {
+  if(hostname != '') {
+    dns.resolve4(hostname, function (err, ip) {
+      callback(ip[0]);
+    })
+  }
+  else {
+    callback(null)
+  }
 }
 
 module.exports = PlatformOption

@@ -24,8 +24,7 @@ $(document).ready(function () {
       generateCertificates()
     }, false)
   }
-console.log(certExists)
-  if(certExists == true) {
+  if(typeof certExists != 'undefined' && certExists == true) {
     $("#have_cert").show()
   } else {
     $("#no_cert").show()
@@ -64,16 +63,34 @@ console.log(certExists)
       $("#appdomain").css('border-color','red')
       return
     }
+
     $("#generate_certificates_button").hide()
     $("#loading_cert").show()
     $("#appdomain").css('border-color','#d3d1ce')
+
+
     $.post('/puppet-config/certificate', {appDomain:appDomain,loginUrl:loginUrl,orderUrl:orderUrl,billingUrl:billingUrl,hcpUrl:hcpUrl}, function (data) {
       if(data.status == 0) {
+        $.get('/puppet-config/certificate', function (data) {
+          for (var key in data) {
+            if (data.hasOwnProperty(key)) {
+              for (var m = 0; m < environmentModel().length; m++) {
+                if (environmentModel()[m].name() == 'Windows base') {
+                  for (var v = 0; v < environmentModel()[m].variables().length; v++) {
+                    if(environmentModel()[m].variables()[v].name() == key){
+                      console.log(environmentModel()[m].variables()[v])
+                      environmentModel()[m].variables()[v].value(data[key])
+                    }
+                  }
+                }
+              }
+            }
+          }
+          savePuppetConfig()
+        })
         $("#have_cert").show()
         $("#no_cert").hide()
       }
-
-      console.log(data)
     })
   }
 

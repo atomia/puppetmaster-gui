@@ -71,6 +71,19 @@ router.get ('/roles/:fqdn', function (req, res, next) {
 )
 })
 
+router.get ('/hostname/:role', function (req, res, next) {
+  var role = req.params.role
+  var selectedEnvironmentData = req.cookies.platformName
+  PlatformOption.getHostnameForRole(selectedEnvironmentData, role, function (data) {
+    res.json (data)
+  },
+  function (error) {
+    error.message = 'Could not fetch roles'
+    next(error)
+  }
+)
+})
+
 router.post('/tasks', function (req, res, next) {
   var taskData = JSON.parse(req.body.task)
   Server.updateTask(taskData, function () {

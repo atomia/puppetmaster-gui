@@ -51,6 +51,34 @@ router.post('/certificate', function (req,res) {
   });
 })
 
+router.get('/certificate', function (req, res) {
+  var environmentName = req.cookies.platformName.toLowerCase().replace(/\s/g, "_")
+
+  var certificates = {}
+  const exec = require('child_process').exec;
+  exec("/bin/bash -c 'openssl x509 -in /etc/puppet/atomiacerts/" + environmentName + "/certificates/automationencrypt.crt -fingerprint -noout | sed \"s/SHA1 Fingerprint=//\" | sed s/\://g'", (error, stdout) => {
+    if (!error) {
+      certificates.automationserver_encryption_cert_thumb = stdout.replace(/\n$/, '')
+    }
+    exec("/bin/bash -c 'openssl x509 -in /etc/puppet/atomiacerts/" + environmentName + "/certificates/billingencrypt.crt -fingerprint -noout | sed \"s/SHA1 Fingerprint=//\" | sed s/\://g'", (error, stdout) => {
+      if (!error) {
+        certificates.billing_encryption_cert_thumb = stdout.replace(/\n$/, '')
+      }
+      exec("/bin/bash -c 'openssl x509 -in /etc/puppet/atomiacerts/" + environmentName + "/ca.crt -fingerprint -noout | sed \"s/SHA1 Fingerprint=//\" | sed s/\://g'", (error, stdout) => {
+        if (!error) {
+          certificates.root_cert_thumb = stdout.replace(/\n$/, '')
+        }
+        exec("/bin/bash -c 'openssl x509 -in /etc/puppet/atomiacerts/" + environmentName + "/certificates/stssigning.crt -fingerprint -noout | sed \"s/SHA1 Fingerprint=//\" | sed s/\://g'", (error, stdout) => {
+          if (!error) {
+            certificates.signing_cert_thumb = stdout.replace(/\n$/, '')
+          }
+          res.json(certificates)
+        })
+      })
+    })
+  })
+})
 
 
-module.exports = router
+
+  module.exports = router
