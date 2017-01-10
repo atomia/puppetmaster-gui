@@ -81,7 +81,15 @@ $(document).ready(function () {
                 <!-- /ko -->
                 <span data-bind="text:installation_status().message"></span> </td>
               </td>
+              <tr style="background-color:#f7f7f7 !important;border-collapse:initial !important;">
+                <td colspan="5" style="text-align:right;">
+                  <!-- ko ifnot: installation_status().status === 'done' -->
+                      <button data-bind="attr: {id: hostname }"  class="Btn Btn--neutral Btn--small retry_provisioning">Retry provisioning <i class="fa-margin fa fa-refresh"></i></button>
+                  <!-- /ko -->
+                </td>
+              </tr>
             </tr>
+
             <tr style="background-color:#f7f7f7 !important;border-collapse:initial !important;">
               <td colspan="5">
                 <table>
@@ -95,13 +103,19 @@ $(document).ready(function () {
 
                   </tr>
                   <tr>
-                    <td colspan="2"><strong>Log:</strong> <pre><span data-bind="text:installation_status().output"></span></pre>
+                    <td colspan="2">
+
+
+                        <div class="show_log_div" data-bind="visible: installation_status().output"><strong>Show logs</strong>
+                          <div class="log_div" style="display:none;">
+                            <pre data-bind="attr: {id: 'log_' +  hostname }"><span data-bind="text:installation_status().output"></span></pre>
+                          </div>
+                        </div>
+
+                    </td>
                   </tr>
                 </table>
               </td>
-            </tr>
-            <tr style="">
-              <td colspan="5"></td>
             </tr>
             <!-- /ko -->
 

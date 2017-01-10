@@ -1,10 +1,10 @@
 {
-  "name": "Active directory replica",
+  "name": "Active-directory-replica",
   "role_name": "active_directory_replica",
   "description": "Active directory is used to store information about users in the Atomia system",
   "firewall": [
     {
-      "name": "Active_directory_replica",
+      "name": "Active_directory",
       "rules": [
         {
           "port": 3389,

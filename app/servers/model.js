@@ -45,44 +45,44 @@ Server.scheduleEnvironmentFromJson = function (environmentId, data, callback, on
             for (var nodeCount = 0; nodeCount < curServer.node_count; nodeCount++)
             {
               (function (nodeId) {
-              var jobData = {}
-              jobData.data = {
-                machine: 'create_ec2_server',
-                key_name: 'stefan-test-aws',
-                vpc_id: 'vpc-ad0f6ac9',
-                instance_name: '(' + environmentName + ') ' + curServer.name + '_' + nodeId,
-                ami: curServer.ami,
-                type: curServer.ec2_type,
-                security_groups: security_groups,
-                existing_security_groups: ['default'],
-                os: curServer.operating_system,
-                volume_size: volume_size,
-                extra_vol_size: extra_size
-              }
-              var options = {
-                url: 'http://localhost:3000/restate-machines',
-                method: 'POST',
-                body: jobData,
-                json: true
-              }
-              request(options, function (error, response, body) {
-                if (error) {
-                  // Handle error here
+                var jobData = {}
+                jobData.data = {
+                  machine: 'create_ec2_server',
+                  key_name: 'stefan-test-aws',
+                  vpc_id: 'vpc-ad0f6ac9',
+                  instance_name: '(' + environmentName + ') ' + curServer.name + '_' + nodeId,
+                  ami: curServer.ami,
+                  type: curServer.ec2_type,
+                  security_groups: security_groups,
+                  existing_security_groups: ['default'],
+                  os: curServer.operating_system,
+                  volume_size: volume_size,
+                  extra_vol_size: extra_size
                 }
-                var runId = JSON.parse(body).Id
-                // Run scheduled add a reference to the database
-                // TODO: we should not allow duplicate task_ids for an environment
-                dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + "_" + nodeId + "', '" + runId + "', '" + JSON.stringify(jobData) + "', null, " + environmentId + ", 'ec2')",
-                function () {
-                  scheduledServers++
-                  if (scheduledServers == nodeCount) {
-                    callback()
+                var options = {
+                  url: 'http://localhost:3000/restate-machines',
+                  method: 'POST',
+                  body: jobData,
+                  json: true
+                }
+                request(options, function (error, response, body) {
+                  if (error) {
+                    // Handle error here
                   }
-                }, function (err) {
-                  // dbh.query failed
-                  onError(err)
+                  var runId = JSON.parse(body).Id
+                  // Run scheduled add a reference to the database
+                  // TODO: we should not allow duplicate task_ids for an environment
+                  dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + "_" + nodeId + "', '" + runId + "', '" + JSON.stringify(jobData) + "', null, " + environmentId + ", 'ec2')",
+                  function () {
+                    scheduledServers++
+                    if (scheduledServers == nodeCount) {
+                      callback()
+                    }
+                  }, function (err) {
+                    // dbh.query failed
+                    onError(err)
+                  })
                 })
-              })
               })(nodeCount)
             }
           }
@@ -104,6 +104,20 @@ Server.filterSelectedServers = function (servers) {
   }
   return serverList
 }
+
+Server.getServerWithRole = function (servers, role) {
+  for (var memberId = 0; memberId < servers.length; memberId++) {
+
+    if(servers[memberId].node_count > 0 && servers[memberId].selected == true) {
+      for (var roleId = 0; roleId < servers[memberId].roles.length; roleId++) {
+        if(role == servers[memberId].roles[roleId].class) {
+          return (servers[memberId].nodes[0])
+        }
+      }
+    }
+  }
+  return null
+}
 Server.getAllTasks = function (platformId, task_type, callback, onError) {
   dbh.query('SELECT * from tasks where type = \''+task_type+'\' AND fk_platform_data = ' + platformId +'', function (result) {
     callback(result)
@@ -114,6 +128,14 @@ Server.getAllTasks = function (platformId, task_type, callback, onError) {
 
 Server.updateTask = function (task, callback, onError) {
   dbh.query("UPDATE tasks SET status = '" + task.status + "' WHERE id = " + task.id, function () {
+    callback(true)
+  }, function (err) {
+    onError(err)
+  })
+}
+
+Server.deleteTask = function (taskId, platformId, callback, onError) {
+  dbh.query("DELETE from tasks WHERE id = " + taskId + " AND fk_platform_data = " + platformId, function () {
     callback(true)
   }, function (err) {
     onError(err)

@@ -9,6 +9,7 @@ CURRENT_DIR="/home/ubuntu/puppetmaster-gui/statemachines/provision_server"
 HOSTNAME=`echo "$INPUT" | jq -r '.hostname'`
 USERNAME=`echo "$INPUT" | jq -r '.username'`
 PASSWORD=`echo "$INPUT" | jq -r '.password'`
+NEW_PASSWORD=`echo "$INPUT" | jq -r '.new_password'`
 KEY=`echo "$INPUT" | jq -r '.key'`
 OS=`echo "$INPUT" | jq -r '.os'`
 ENVIRONMENT=`echo "$INPUT" | jq -r '.environment'`
@@ -61,12 +62,18 @@ elif [ "$OS" == "windows" ]; then
 	INSTALL_PUPPET=`"$CURRENT_DIR"/winrm/install_puppet.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD" --environment="$ENVIRONMENT" --puppetmaster="$PUPPETMASTER" --roles="$ROLES"`
 	if [ "$?" != "0" ]; then
 		#Error "{\"status\":\"pending\", \"message\":\"Failed to install puppet on host. Error: $INSTALL_PUPPET\"}"
-		Error "pending|installation in progress|${INSTALL_PUPPET}"
+		# Try again with alternative credentials
+		INSTALL_PUPPET_2=`"$CURRENT_DIR"/winrm/install_puppet.py --host="$HOSTNAME" --username="$USERNAME" --password="$NEW_PASSWORD" --environment="$ENVIRONMENT" --puppetmaster="$PUPPETMASTER" --roles="$ROLES"`
+		if [ "$?" != "0" ]; then
+			Error "pending|installation in progress|Password ${INSTALL_PUPPET} ------- ${INSTALL_PUPPET_2}"
+		fi
 	fi
 	RUN_PUPPET=`"$CURRENT_DIR"/winrm/run_puppet.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD" --environment="$ENVIRONMENT" --puppetmaster="$PUPPETMASTER" --roles="$ROLES"`
 	if [ "$?" != "0" ]; then
-		#Error "{\"status\":\"pending\", \"message\":\"Provisioning in progress\"}"
-		Error "pending|installation in progress|${RUN_PUPPET}"
+		RUN_PUPPET_2=`"$CURRENT_DIR"/winrm/run_puppet.py --host="$HOSTNAME" --username="$USERNAME" --password="$NEW_PASSWORD" --environment="$ENVIRONMENT" --puppetmaster="$PUPPETMASTER" --roles="$ROLES"`
+		if [ "$?" != "0" ]; then
+			Error "pending|installation in progress| ${RUN_PUPPET} ------- ${RUN_PUPPET_2}"
+		fi
 	fi
 
 fi

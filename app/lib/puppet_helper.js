@@ -167,11 +167,10 @@ PuppetHelper.parseManifest = function (environmentName, manifest, callback) {
           retArr.push(variable)
         }
         objectCount++
-        //  console.log(variable)
         if(objectCount == objectTotal ) {
           callback(retArr)
         }
-      }
+      } else { objectCount++ }
     } )
   });
 })

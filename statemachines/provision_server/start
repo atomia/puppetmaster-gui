@@ -28,6 +28,7 @@ ENDOFUSAGE
 fi
 
 cat
+RAND=`shuf -i 1-20 -n 1`
 restatemachine_transition_to "setup_puppet"
-restatemachine_transition_after_seconds "0"
+restatemachine_transition_after_seconds "$RAND" 
 restatemachine_status_message "pending|Installing puppet|"

@@ -34,16 +34,22 @@ PuppetConfig.getVariables = function (environmentData, callback) {
             roleCount++
             if (variables != null) {
               for (var id = 0; id < variables.length; id++) {
+                if(variables[id].name == 'skip_mount')
                 var currentVariable = 'atomia::' + variables[id].namespace + '::' + variables[id].name;
                 for (var dId = 0; dId < data.length; dId++) {
                   if( data[dId].var == currentVariable) {
+                    if (data[dId].val == '0')
+                    data[dId].val = 0;
+                    if (data[dId].val == '1')
+                    data[dId].val = 1;
+
                     variables[id].value = data[dId].val
                   }
                 }
               }
               manifestData.push({'name' : variables[0].rolePretty, 'variables' : variables})
             }
-            
+
             if(roleCount == totalNumRoles) {
               callback(manifestData)
             }
@@ -71,6 +77,17 @@ PuppetConfig.updateData = function (environmentName, data, callback, onError) {
       totalVariables++
       var curVariable = 'atomia::' + data[manifestIndex].variables[variableIndex].namespace + '::' + data[manifestIndex].variables[variableIndex].name
       var curValue = data[manifestIndex].variables[variableIndex].value
+
+      if(curValue !== '') {
+        if (data[manifestIndex].variables[variableIndex].validation === '%int_boolean') {
+          if (data[manifestIndex].variables[variableIndex].value == true || data[manifestIndex].variables[variableIndex].value === 'true') {
+            curValue = '1'
+          }
+          else if ((data[manifestIndex].variables[variableIndex].value == false )) {
+            curValue = '0'
+          }
+        }
+      }
       dbh.query('INSERT INTO configuration VALUES(null,\'' + curVariable + '\',\'' + curValue + '\',\'' + environmentName + '\') ON DUPLICATE KEY UPDATE val = \'' + curValue + '\'', function () {
         variablesDone++
         if(totalVariables == variablesDone)
