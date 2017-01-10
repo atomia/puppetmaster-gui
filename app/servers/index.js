@@ -59,6 +59,24 @@ router.get('/tasks/:taskType', function (req, res, next) {
   })
 })
 
+router.delete('/tasks/:taskId', function (req, res, next) {
+  var taskId = req.params.taskId
+  PlatformOption.getEnvironmentFromDatabase(req.cookies.platformName, function (data) {
+    var environmentId = data.id
+    Server.deleteTask(taskId, environmentId, function (taskData) {
+      res.json(taskData)
+    },
+    function (error) {
+      error.message = 'Could not load tasks'
+      next(error)
+    })
+  },
+  function (error) {
+    error.message = 'Could not load environment'
+    next(error)
+  })
+})
+
 router.get ('/roles/:fqdn', function (req, res, next) {
   var fqdn = req.params.fqdn
   PlatformOption.getRolesForHostname(fqdn, function (data) {
@@ -144,9 +162,9 @@ router.get('/export', function (req, res, next) {
   8. Browse for the csv file "windows_servers.csv"\r\n
   9. Click next until you get to the CSV Mapping step\r\n
   10. Add 3 new mappings for the following\r\n
-    CredentialMode | $CredentialMode$\r\n
-    CredentialUsername | $CredentialUsername$\r\n
-    CredentialPassword | $CredentialPassword$\r\n
+  CredentialMode | $CredentialMode$\r\n
+  CredentialUsername | $CredentialUsername$\r\n
+  CredentialPassword | $CredentialPassword$\r\n
   11. Click next\r\n
   12. Save the file and Close RoyalTS completely\r\n
   13. Run the fil runme.bat\r\n

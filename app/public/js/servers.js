@@ -91,7 +91,8 @@ function updateProvisioningStatus () {
       for (var e = 0; e < environmentModel.servers().length; e++) {
         for (var m = 0; m < environmentModel.servers()[e].members().length; m++) {
           status = ''
-          if (taskName.contains(environmentModel.servers()[e].members()[m].name())) {
+          var nameRE = new RegExp("^(" + environmentModel.servers()[e].members()[m].name() + ")_[0-9]$");
+          if (nameRE.test(taskName)) {
             numberOfTasks++;
             (function (taskData, e, m, i) {
               var runId = taskData[i].run_id

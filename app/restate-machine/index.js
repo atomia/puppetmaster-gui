@@ -50,5 +50,25 @@ router.get('/:id', function (req, res, next) {
   request(options, callback)
 })
 
+router.delete('/:id', function (req, res, next) {
+  var machine_id = req.params.id
+  var options = {
+    url: restate_url + '/runs/' + machine_id,
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/octet-stream'
+    }
+
+  }
+
+  function callback(error, response, body) {
+    if(error) {
+      error.message = 'Could not schedule run'
+      next(error)
+    }
+    res.json(body)
+  }
+  request(options, callback)
+})
 
 module.exports = router

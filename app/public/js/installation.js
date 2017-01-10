@@ -7,12 +7,31 @@ var minOrder=null
 
 $(document).ready(function () {
   var start_installation_button = document.getElementById('start_installation_button')
+  var retry_provisioning_buttons = document.getElementsByClassName('retry_provisioning')
+  var show_log_divs = document.getElementsByClassName('show_log_div')
 
   if (start_installation_button) {
     start_installation_button.addEventListener('click', function () {
       startInstallation()
     }, false)
   }
+
+  if (retry_provisioning_buttons) {
+    for (var a = 0; a < retry_provisioning_buttons.length; a++) {
+      retry_provisioning_buttons[a].addEventListener('click', function () {
+        retryProvisioning($(this).attr('id'))
+      }, false)
+    }
+  }
+
+  if (show_log_divs) {
+    for (var a = 0; a < show_log_divs.length; a++) {
+      show_log_divs[a].addEventListener('click', function () {
+        $('.log_div', this).toggle();
+      }, false)
+    }
+  }
+
 
   if (window.location.href.includes('installation')) {
     updateInstallationTaskStatus()
@@ -42,38 +61,45 @@ function startInstallation () {
 
 function updateInstallationTaskStatus () {
   String.prototype.contains = function(it) { return this.indexOf(it) != -1; };
-  $.get('/servers/tasks/installation', function (taskData) {
-    console.log(taskData)
-    for (var i = 0; i < taskData.length; i++) {
 
+  // Get all the current installation tasks
+  $.get('/servers/tasks/installation', function (taskData) {
+    // Loop through all current tasks
+    for (var i = 0; i < taskData.length; i++) {
       var taskName = taskData[i].task_id
       var taskStatus = taskData[i].status
       var taskId = taskData[i].id
       var currentNode = 0
       status = ''
-
+      // Fetch the restate machine information based on task run id
       $.get('/restate-machines/' + taskData[i].run_id, function (data) {
         var input = JSON.parse(data.Input)
         var result = data
+        // Find the server in the local json configuration based on the hostname from the restate machine information
         for (var e = 0; e < environmentModel.servers().length; e++) {
           for (var m = 0; m < environmentModel.servers()[e].members().length; m++) {
             for (var nodeId = 0; nodeId < environmentModel.servers()[e].members()[m].node_count(); nodeId++) {
               if (typeof environmentModel.servers()[e].members()[m].nodes != 'undefined' && environmentModel.servers()[e].members()[m].nodes()[nodeId].hostname() == input.hostname) {
+                // We found the matching server update it's status
                 console.log(input.hostname)
-                //  console.log(result.StatusMessage.replace(/'/g,'"'))
                 try {
-                  var tmpStatus = result.StatusMessage.split("|")//JSON.parse(result.StatusMessage)
+                  var tmpStatus = result.StatusMessage.split("|")
                   var status = {
                     status : tmpStatus[0],
                     message : tmpStatus[1],
                     output : tmpStatus[2],
                     running : data.RunningStateCode,
-                    next_run: data.NextStateRun
+                    next_run: data.NextStateRun,
+                    hostname: input.hostname
                   }
-
                   if(status.status === 'failed') {
-                    // Do something if task failed?
-                    $.put('/installation/task/' + taskData[i].run_id, {status:'failed'})
+                    $.ajax({
+                      url: '/installation/task/' + result.id,
+                      type: "PUT",
+                      data:  {status:'failed'},
+                      success: function(result){
+                      }
+                    })
                   }
                   if(typeof environmentModel.servers()[e].members()[m].nodes()[nodeId] != 'undefined') {
                     environmentModel.servers()[e].members()[m].nodes()[nodeId].installation_status(status)
@@ -85,16 +111,13 @@ function updateInstallationTaskStatus () {
                   environmentModel.servers()[e].members()[m].nodes()[nodeId].installation_status({'status': {'status':'pending', 'message': result.StatusMessage}})
                   break;
                 }
-
-
-
               }
             }
           }
         }
       })
 
-      // Update done status
+      // Count how many servers are provisioned (done status), store the result in the numDone variable
       for (var order = 0; order < 10; order++) {
         var numDone = 0
         var totalOrder = 0
@@ -112,9 +135,9 @@ function updateInstallationTaskStatus () {
             }
           }
         }
-
-        //  console.log(environmentModel.servers()[e].members()[m].name() + ' ' + numDone + ' ' + environmentModel.servers()[e].members()[m].node_count())
-        //  console.log('done ' + numDone + ' ' + totalOrder + 'next ' + nextId + ' order '+order + ' next ' + nextId)
+      //  console.log('Done: ' + numDone + ' Order: ' + order + ' NextId: ' + nextId + ' Total: ' + totalOrder)
+        // If we have finished all provisioning tasks in the current order we should initate provisioning of the next order
+        // Done: 1 Order: 0 NextId: 0
         if (numDone != 0 && numDone == totalOrder && order == nextId) {
           console.log("want to proceed")
           console.log('done ' + numDone + ' ' + totalOrder + 'next ' + nextId + ' order '+order + ' next ' + nextId)
@@ -131,10 +154,8 @@ function updateInstallationTaskStatus () {
                     break
                   }
                 }
-
               }
             }
-
           }
 
           // Found the next order, check if there are tasks created
@@ -167,20 +188,54 @@ function updateInstallationTaskStatus () {
               })
               break;
             }
-
           }
-
         }
-
-
       }
-
-
-
-
-
     }
+  })
+}
 
-
+function retryProvisioning(currentHostname) {
+  console.log(currentHostname)
+  var currentOrder = 0
+  for (var e = 0; e < environmentModel.servers().length; e++) {
+    for (var m = 0; m < environmentModel.servers()[e].members().length; m++) {
+      for (var nodeId = 0; nodeId < environmentModel.servers()[e].members()[m].node_count(); nodeId++) {
+        if (typeof environmentModel.servers()[e].members()[m].nodes != 'undefined' && environmentModel.servers()[e].members()[m].nodes()[nodeId].hostname() == currentHostname) {
+          currentOrder = environmentModel.servers()[e].members()[m].provisioning_order()
+        }
+      }
+    }
+  }
+  console.log(currentOrder)
+  var foundTask = false
+  $.get('/servers/tasks/installation', function (taskData) {
+    for (var i = 0; i < taskData.length; i++) {
+      if (taskData[i].input.indexOf(currentHostname) !== -1) {
+        foundTask = true;
+        (function (currentTask) {
+          $.ajax({
+            url: '/restate-machines/' + currentTask.run_id,
+            type: "DELETE",
+            success: function(result){
+            }
+          })
+          $.ajax({
+            url: '/servers/tasks/' + currentTask.id,
+            type: "DELETE",
+            success: function(result){
+              $.post('/installation/schedule', {orderId: currentOrder}, function (data) {
+                console.log('secheduled' + currentOrder)
+              })
+            }
+          })
+        })(taskData[i])
+      }
+    }
+    if (!foundTask) {
+      $.post('/installation/schedule', {orderId: currentOrder}, function (data) {
+        console.log('secheduled' + currentOrder)
+      })
+    }
   })
 }

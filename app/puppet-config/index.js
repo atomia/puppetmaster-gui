@@ -28,10 +28,10 @@ router.get('/', function (req, res, next) {
   })
 })
 
-router.post('/', function (req) {
+router.post('/', function (req, res) {
   var configurationData = JSON.parse(req.body.configuration)
   PuppetConfig.updateData(req.cookies.platformName, configurationData, function() {
-
+    res.json({'status': 'ok'})
   }, function() {
     // Handle error here
   })

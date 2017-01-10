@@ -74,6 +74,10 @@ if (!($PuppetInstalled)) {
         except winrm.exceptions.InvalidCredentialsError:
                 print "{\"status\" : \"failed\", \"message\" : \"Could not login to server via winrm. Invalid credentials\"}"
                 exit(1)
+        except:
+                print "Unknown WinRM error"
+                exit (0)
+
 
 
 if __name__ == "__main__":
