@@ -76,7 +76,7 @@ if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
 
 
 elif [ "$OS" == "windows" ]; then
-	AVAILABLE=`./etc/restatemachine/statemachines/pre_flight_checks/winrm/test_requirements.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
+	AVAILABLE=`./opt/puppetmaster-gui/statemachines/pre_flight_checks/winrm/test_requirements.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
 	if [ "$?" != "0" ]; then
 		Error "$AVAILABLE"
 	fi

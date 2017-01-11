@@ -5,7 +5,7 @@ PWD=`pwd`
 
 INPUT=`cat`
 
-CURRENT_DIR="/home/ubuntu/puppetmaster-gui/statemachines/provision_server"
+CURRENT_DIR="/opt/puppetmaster-gui/statemachines/provision_server"
 HOSTNAME=`echo "$INPUT" | jq -r '.hostname'`
 USERNAME=`echo "$INPUT" | jq -r '.username'`
 PASSWORD=`echo "$INPUT" | jq -r '.password'`
@@ -23,7 +23,7 @@ PUPPETMASTER=`hostname -f`
 #OS="ubuntu"
 
 Error () {
-	ERROR_MESSAGE=`echo "$1" | sed ':a;N;$!ba;s/\n/ /g'` 
+	ERROR_MESSAGE=`echo "$1" | sed ':a;N;$!ba;s/\n/ /g'`
         echo -n "$INPUT"
         restatemachine_transition_to "setup_puppet"
         restatemachine_transition_after_seconds "60"

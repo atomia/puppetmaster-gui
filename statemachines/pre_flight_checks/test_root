@@ -33,7 +33,7 @@ if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
 		Error "{\"status\":\"failed\", \"message\":\"$USERNAME is lacking root privileges\"}"
 	fi
 elif [ "$OS" == "windows" ]; then
-	ADMINISTRATOR=`./etc/restatemachine/statemachines/pre_flight_checks/winrm/test_administrator.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
+	ADMINISTRATOR=`./opt/puppetmaster-gui/statemachines/pre_flight_checks/winrm/test_administrator.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
 	if [ "$?" != "0" ]; then
 		Error "$ADMINISTRATOR"
 	fi
