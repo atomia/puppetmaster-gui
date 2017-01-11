@@ -8,8 +8,20 @@ var Installation = function (data) {
 Installation.prototype.data = {}
 
 Installation.scheduleInstallationFromJson = function (environmentId, environmentName, orderId, data, callback, onError) {
-
   var servers = Servers.filterSelectedServers(data.servers)
+  var serverKey = ''
+  if(data.amazon) {
+    Servers.getAWSConfig(function (aws){
+      serverKey = aws.private_key
+      this.doSchedule(environmentId, environmentName, orderId, servers, serverKey, callback, onError)
+    })
+  } else {
+    serverKey = data.server_key
+    this.doSchedule(environmentId, environmentName, orderId, servers, serverKey, callback, onError)
+  }
+}
+
+Installation.doSchedule = function (environmentId, environmentName, orderId, servers, serverKey, callback, onError) {
   var scheduledServers = 0
   var serverCount = 0
   for (var memberId = 0; memberId < servers.length; memberId++) {
@@ -74,28 +86,28 @@ Installation.scheduleInstallationFromJson = function (environmentId, environment
                 serverName: curServer.name
               }
 
-                request(options, function (error, response, body) {
-                  if (!error && response.statusCode == 200) {
-                    var runId = JSON.parse(body).Id
-                    // Run scheduled add a reference to the database
-                    // TODO: we should not allow duplicate task_ids for an environment
-                    dbh.query("INSERT INTO tasks VALUES(null,'" + options.serverName + " installation', '" + runId + "', '" + JSON.stringify(options.body) + "', null, " + environmentId + ", 'installation')",
-                    function () {
-                      scheduledServers++
-                      if (scheduledServers == serverCount) {
-                        callback()
-                      }
-                    }, function (err) {
-                      // dbh.query failed
-                      onError(err)
-                    })
-
-                  } else {
-                    if (error) {
-                      onError(error)
+              request(options, function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                  var runId = JSON.parse(body).Id
+                  // Run scheduled add a reference to the database
+                  // TODO: we should not allow duplicate task_ids for an environment
+                  dbh.query("INSERT INTO tasks VALUES(null,'" + options.serverName + " installation', '" + runId + "', '" + JSON.stringify(options.body) + "', null, " + environmentId + ", 'installation')",
+                  function () {
+                    scheduledServers++
+                    if (scheduledServers == serverCount) {
+                      callback()
                     }
+                  }, function (err) {
+                    // dbh.query failed
+                    onError(err)
+                  })
+
+                } else {
+                  if (error) {
+                    onError(error)
                   }
-                })
+                }
+              })
             }
           }
         })

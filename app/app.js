@@ -61,7 +61,8 @@ databasePool  = mysql.createPool({
   host: config.database.host,
   user: config.database.user,
   password: config.database.password,
-  database: config.database.database
+  database: config.database.database,
+  socketPath: '/var/run/mysqld/mysqld.sock'
 });
 /* eslint-enable no-unused-vars, no-undef */
 // Default error handler

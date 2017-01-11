@@ -27,19 +27,92 @@ $(document).ready(function () {
     <div class="Paper kss-paper" style="margin:0px;">
       <div class="Grid">
         <div class="Grid-column-3">
-          <div class="Box Box--select new_environment_select" id=""style="margin:0px;">
+          <div class="Box Box--select server_type_select" id="local" style="margin:0px;">
             <h2>Local(Custom)</h2>
             Provide hostnames where to install
           </div>
         </div>
         <div class="Grid-column-3">
-          <div class="Box Box--select new_environment_select" id=""style="margin:0px;">
+          <div class="Box Box--select server_type_select" id="amazon" style="margin:0px;">
             <h2>Amazon Web Services</h2>
             Provide AWS credentials and we will set up everything
           </div>
         </div>
       </div>
 
+      <div id="local_wrapper" style="display:none;">
+        <div class="Grid">
+          <div class="Grid-column-6">
+            <h3 class="u-brand-color">Install on your own servers</h3>
+
+            <div class="Grid">
+              <div class="Grid-column-6">
+                <table class="Table ">
+                  <thead>
+                    <tr class="Table-row">
+                      <th style="u-left-text" width="5%">#</th>
+                      <th class="u-left-text" width="25%">Service</th>
+                      <th class="u-left-text" width="40%">Hostname</th>
+                      <th class="u-left-text" width="10%">SSH Key</th>
+                      <th class="u-left-text" width="20%">Credentials</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- ko foreach: environmentModel.servers() -->
+                    <!-- ko foreach: members() -->
+                    <!-- ko if: node_count() > 0 -->
+                    <!-- ko if: operating_system() !== 'openstack' -->
+
+                    <!-- ko if: selected() == true -->
+
+                    <tr class="Table-bodyrow">
+                      <td data-bind="text: node_count"></td>
+                      <td>
+                        <!-- ko if: operating_system() === 'windows' -->
+                        <i class="fa fa-windows" aria-hidden="true"></i>
+                        <!-- /ko -->
+                        <!-- ko if: operating_system() === 'ubuntu' -->
+                        <i class="fa fa-linux" aria-hidden="true"></i>
+                        <!-- /ko -->
+                        <span data-bind="text: name"></span></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                      </tr>
+                      <!-- ko foreach: nodes() -->
+                      <tr style="background-color:#EDEDE8 !important;">
+                        <td></td>
+                        <td></td>
+                        <td>
+                          <input type="text" data-bind="value: hostname" class="hostname"></input>
+                          <span style="color:red;display:none;">Warning: Hostname does not resolve</span>
+                        </td>
+                        <td></td>
+                        <td>
+                          User: <input type="text" data-bind="value: username"></input>
+                          Password: <input type="text" data-bind="value: password"></input>
+                        </td>
+                      </td>
+                    </tr>
+                    <!-- /ko -->
+                    <!-- /ko -->
+                    <!-- /ko -->
+                    <!-- /ko -->
+                    <!-- /ko -->
+                    <!-- /ko -->
+                  </tbody>
+                </tbody>
+                <tfoot>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div id="amazon_wrapper" style="display:none;">
       <div class="Grid">
         <div class="Grid-column-6">
           <h3 class="u-brand-color">Amazon Web Services</h3>
@@ -147,8 +220,8 @@ $(document).ready(function () {
                 <td></td>
                 <td></td>
                 <td data-bind="text: hostname"></td>
-                  <td data-bind="text: ec2_type"></td>
-                  <td>
+                <td data-bind="text: ec2_type"></td>
+                <td>
                   <!-- ko if: provisioning_status.status() === 'failed' -->
                   <div style="float:right;">
                     <i class="fa fa-exclamation-circle fa-lg" aria-hidden="true" style="color:#d11717;"></i><br/>
@@ -170,21 +243,22 @@ $(document).ready(function () {
                   <!-- /ko -->
                   <span data-bind="text: provisioning_status.message"></span> </td>
                 </td>
-                </tr>
-                <!-- /ko -->
+              </tr>
+              <!-- /ko -->
 
-                <!-- /ko -->
-                <!-- /ko -->
-                <!-- /ko -->
-                <!-- /ko -->
-                <!-- /ko -->
-              </tbody>
+              <!-- /ko -->
+              <!-- /ko -->
+              <!-- /ko -->
+              <!-- /ko -->
+              <!-- /ko -->
             </tbody>
-            <tfoot>
-            </tfoot>
-          </table>
-        </div>
+          </tbody>
+          <tfoot>
+          </tfoot>
+        </table>
       </div>
     </div>
   </div>
+</div> <!-- Amazon end -->
+</div>
 </section>

@@ -10,8 +10,20 @@ PreFlight.prototype.data = {}
 PreFlight.schedulePreFlightFromJson = function (environmentId, data, callback, onError) {
 
   var servers = Servers.filterSelectedServers(data.servers)
-  var scheduledServers = 0
+  var serverKey = ''
+  if(data.amazon) {
+    Servers.getAWSConfig(function (aws){
+      serverKey = aws.private_key
+      this.doSchedule(environmentId, servers, serverKey, callback, onError)
+    })
+  } else {
+    serverKey = data.server_key
+    this.doSchedule(environmentId, servers, serverKey, callback, onError)
+  }
+}
 
+PreFlight.doSchedule = function (environmentId, servers, serverKey, callback, onError) {
+  var scheduledServers = 0
   for (var memberId = 0; memberId < servers.length; memberId++) {
 
     (function (curServer) {
@@ -29,6 +41,7 @@ PreFlight.schedulePreFlightFromJson = function (environmentId, data, callback, o
       {
 
         var username;
+
         if (curServer.nodes[nodeCount].username == '') {
           if(curServer.operating_system == 'ubuntu') {
             username = 'ubuntu'
@@ -44,7 +57,7 @@ PreFlight.schedulePreFlightFromJson = function (environmentId, data, callback, o
           hostname: curServer.nodes[nodeCount].hostname,
           username: username,
           password: curServer.nodes[nodeCount].password,
-          key: '/root/.ssh/' + 'stefan-test-aws.pem', //TODO: This should not be hardcoded!
+          key: serverKey,
           roles: roleData
         }
 

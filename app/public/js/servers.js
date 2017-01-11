@@ -5,6 +5,8 @@ $(document).ready(function () {
   var save_environment_button = document.getElementById('save_environment_button')
   var export_environment_button = document.getElementById('export_environment_button')
   var next_server_button = document.getElementById('next_server_button')
+  var server_type_selectors = document.getElementsByClassName('server_type_select')
+  var hostname_input = document.getElementsByClassName('hostname')
 
   if (create_aws_environment_button) {
     create_aws_environment_button.addEventListener('click', function () {
@@ -28,9 +30,33 @@ $(document).ready(function () {
       saveData(function (){window.location.href = '/puppet-config'})
     }, false)
   }
+
+  if (server_type_selectors) {
+    for (var i = 0; i < server_type_selectors.length; i++) {
+      server_type_selectors[i].addEventListener('click', function () {
+        selectEnvironmentType(this)
+      }, false)
+    }
+  }
+
+  if (hostname_input) {
+    for (var i = 0; i < hostname_input.length; i++) {
+      hostname_input[i].addEventListener('change', function () {
+        tryResolve(this)
+      }, false)
+    }
+  }
+
   if (window.location.href.includes('servers')) {
     updateProvisioningStatus()
     updateTimer = window.setInterval(updateProvisioningStatus, 2000)
+    if(environmentModel.amazon() == true) {
+      $('#amazon_wrapper').show()
+      $('#amazon').addClass('Box--selected')
+    } else {
+      $('#local_wrapper').show()
+      $('#local').addClass('Box--selected')
+    }
   }
 })
 
@@ -157,4 +183,36 @@ function saveData (callback) {
     },
     data: { name: environmentName, platformData: JSON.stringify(dataToSave)}
   })
+}
+
+function selectEnvironmentType (selectedType) {
+  $('.Box--selected').removeClass('Box--selected')
+  $(selectedType).addClass('Box--selected')
+  var environmentType = $(selectedType).attr('id')
+
+  if (environmentType == 'local') {
+    $('#local_wrapper').show()
+    $('#amazon_wrapper').hide()
+    environmentModel.amazon(false)
+  } else {
+    // Amazon
+    $('#local_wrapper').hide()
+    $('#amazon_wrapper').show()
+    environmentModel.amazon(true)
+
+  }
+}
+
+function tryResolve (currentInput) {
+  var hostname = $(currentInput).val()
+  $(currentInput).css('border-color', '')
+  $(currentInput).parent().children('span').hide()
+  $('#' + hostname).hide()
+  $.get('/platform-options/resolves/' + hostname, function (data) {
+    if(data.status == 'error') {
+      $(currentInput).css('border-color', 'red')
+      $(currentInput).parent().children('span').show()
+    }
+  })
+
 }

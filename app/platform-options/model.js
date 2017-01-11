@@ -227,7 +227,11 @@ PlatformOption.getHostnameForRole = function (platformName, role, callback, onEr
 PlatformOption.getIpFromHostname = function (hostname, callback) {
   if(hostname != '') {
     dns.resolve4(hostname, function (err, ip) {
-      callback(ip[0]);
+      if(err) {
+        callback(null)
+      } else {
+        callback(ip[0])
+      }
     })
   }
   else {
