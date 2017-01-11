@@ -30,7 +30,7 @@ if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
 		fi
 	fi
 elif [ "$OS" == "windows" ]; then
-	DNS=`./etc/restatemachine/statemachines/pre_flight_checks/winrm/test_dns.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
+	DNS=`./opt/puppetmaster-gui/statemachines/pre_flight_checks/winrm/test_dns.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
 	if [ "$?" != "0" ]; then
 		Error "$DNS"
 	fi

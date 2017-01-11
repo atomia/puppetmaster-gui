@@ -35,7 +35,7 @@ if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
 		Error "{\"status\":\"failed\", \"message\":\"Operating system version is not supported, expecting Ubuntu 16.04 but found $OS_VERSION \"}"
 	fi
 elif [ "$OS" == "windows" ]; then
-        OS_VERSION=`./etc/restatemachine/statemachines/pre_flight_checks/winrm/test_os.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
+        OS_VERSION=`./opt/puppetmaster-gui/statemachines/pre_flight_checks/winrm/test_os.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
         if [ "$?" != "0" ]; then
                 Error "$OS_VERSION"
         fi

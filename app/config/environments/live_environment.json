@@ -3,7 +3,7 @@
   "priority": "0",
   "description": "Optimized for live usage",
   "amazon": false,
-  "server_key": ""
+  "server_key": "",
   "servers": [
     {
       "category": "System",
