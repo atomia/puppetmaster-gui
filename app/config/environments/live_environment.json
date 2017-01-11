@@ -2,10 +2,8 @@
   "name" : "Live Environment",
   "priority": "0",
   "description": "Optimized for live usage",
-  "aws_key" : "",
-  "aws_scret" : "",
-  "aws_vpc" : "",
-  "aws_region" : "",
+  "amazon": false,
+  "server_key": ""
   "servers": [
     {
       "category": "System",

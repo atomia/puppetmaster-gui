@@ -80,6 +80,17 @@ router.get('/requirements', function (req, res, next) {
 
 })
 
+router.get('/resolves/:hostname', function (req, res) {
+  var hostname = req.params.hostname
+  PlatformOption.getIpFromHostname (hostname, function (result) {
+    if(result) {
+      res.json({'status': 'ok'})
+    } else {
+      res.json({'status': 'error'})
+    }
+  })
+})
+
 router.delete('/cookies', function (req, res) {
   res.clearCookie('platformName')
   res.clearCookie('currentPlatform')
