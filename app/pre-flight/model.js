@@ -39,52 +39,52 @@ PreFlight.doSchedule = function (environmentId, servers, serverKey, callback, on
       }
       for (var nodeCount = 0; nodeCount < curServer.node_count; nodeCount++)
       {
-
-        var username;
-
-        if (curServer.nodes[nodeCount].username == '') {
-          if(curServer.operating_system == 'ubuntu') {
-            username = 'ubuntu'
-          }
-          else {
-            username = 'Administrator'
-          }
-        }
-        jobData.data = {
-          machine: 'pre_flight_checks',
-          system_requirements: requirementsData,
-          os: curServer.operating_system,
-          hostname: curServer.nodes[nodeCount].hostname,
-          username: username,
-          password: curServer.nodes[nodeCount].password,
-          key: serverKey,
-          roles: roleData
-        }
-
-        var options = {
-          url: 'http://localhost:3000/restate-machines',
-          method: 'POST',
-          body: jobData,
-          json: true
-        }
-        request(options, function (error, response, body) {
-          if (error) {
-            // Handle error here
-          }
-          var runId = JSON.parse(body).Id
-          // Run scheduled add a reference to the database
-          // TODO: we should not allow duplicate task_ids for an environment
-          dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + " pre-flight', '" + runId + "', '" + JSON.stringify(jobData) + "', null, " + environmentId + ", 'pre_flight')",
-          function () {
-            scheduledServers++
-            if (scheduledServers == servers.length) {
-              callback()
+        (function (nodeId) {
+          var username = curServer.nodes[nodeId].username
+          if (curServer.nodes[nodeId].username == '') {
+            if(curServer.operating_system == 'ubuntu') {
+              username = 'ubuntu'
             }
-          }, function (err) {
-            // dbh.query failed
-            onError(err)
+            else {
+              username = 'Administrator'
+            }
+          }
+          jobData.data = {
+            machine: 'pre_flight_checks',
+            system_requirements: requirementsData,
+            os: curServer.operating_system,
+            hostname: curServer.nodes[nodeId].hostname,
+            username: username,
+            password: curServer.nodes[nodeId].password,
+            key: serverKey,
+            roles: roleData
+          }
+
+          var options = {
+            url: 'http://localhost:3000/restate-machines',
+            method: 'POST',
+            body: jobData,
+            json: true
+          }
+          request(options, function (error, response, body) {
+            if (error) {
+              // Handle error here
+            }
+            var runId = JSON.parse(body).Id
+            // Run scheduled add a reference to the database
+            // TODO: we should not allow duplicate task_ids for an environment
+            dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + " pre-flight', '" + runId + "', '" + JSON.stringify(jobData) + "', null, " + environmentId + ", 'pre_flight')",
+            function () {
+              scheduledServers++
+              if (scheduledServers == servers.length) {
+                callback()
+              }
+            }, function (err) {
+              // dbh.query failed
+              onError(err)
+            })
           })
-        })
+        })(nodeCount)
       }
     })(servers[memberId])
 

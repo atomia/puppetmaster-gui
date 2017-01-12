@@ -11,7 +11,7 @@ def main():
 	(options, args) = parser.parse_args()
 
 	ps_num_cores = """
-(Get-CimInstance win32_processor).NumberOfCores
+((Get-CimInstance win32_processor).NumberOfCores | Measure-Object -Sum).sum
 """
 	ps_disk_size = """
 $disk = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'" |
@@ -33,13 +33,13 @@ get-ciminstance -class "cim_physicalmemory" | % {$_.Capacity}
 		if r.status_code != 0:
 			print "{\"status\" : \"failed\", \"message\" : \"Could not fetch available disk from the server\"}"
 			exit(1)
-		disk = int(float(r.std_out.rstrip()))
+		disk = int(float(r.std_out.replace(',','.').rstrip()))
 		r = s.run_ps(ps_ram)
 		if r.status_code != 0:
 			print "{\"status\" : \"failed\", \"message\" : \"Could not fetch available ram from the server\"}"
 			exit(1)
 		ram = int(r.std_out.rstrip()) / 1024 / 1024
-		print "{\"cpu\" : " + cpu + ", \"disk\" : " + str(disk) + ", \"ram\" : " + str(ram) + "}"
+		print "{\"cpu\" : " + str(cpu) + ", \"disk\" : " + str(disk) + ", \"ram\" : " + str(ram) + "}"
 		exit(0)
 	except requests.exceptions.ConnectionError:
 		print "{\"status\" : \"failed\", \"message\" : \"Could not connect to server via winrm. Could not reach hostname or ip, make sure all pre requirements are met\"}"

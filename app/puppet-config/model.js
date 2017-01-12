@@ -34,7 +34,7 @@ PuppetConfig.getVariables = function (environmentData, callback) {
             roleCount++
             if (variables != null) {
               for (var id = 0; id < variables.length; id++) {
-                if(variables[id].name == 'skip_mount')
+
                 var currentVariable = 'atomia::' + variables[id].namespace + '::' + variables[id].name;
                 for (var dId = 0; dId < data.length; dId++) {
                   if( data[dId].var == currentVariable) {

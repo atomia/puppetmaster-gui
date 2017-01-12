@@ -24,7 +24,7 @@ DISK=`expr $DISK - 1`
 MESSAGE="{\"status\":\"failed\",\"message\":\""
 if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
 	if [ -n "$KEY" ]; then
-		AVAILABLE_RAM=`ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "$KEY" "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'sudo dmidecode -t 17 2>&1 | awk '"'"'( /Size/ && $2 ~ /^[0-9]+$/ ) { x+=$2 } END{ print x }'"'"''`
+		AVAILABLE_RAM=`ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "$KEY" "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'dmidecode -t 17 2>&1 | awk '"'"'( /Size/ && $2 ~ /^[0-9]+$/ ) { x+=$2 } END{ print x }'"'"''`
 		if [ "$?" != "0" ]; then
 			Error "{\"status\":\"failed\", \"message\":\"Could not verify RAM requirement\"}"
 		fi
@@ -34,22 +34,22 @@ if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
 			Error "{\"status\":\"failed\", \"message\":\"Could not verify CPU requirement\"}"
 		fi
 
-		AVAILABLE_DISK=`ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "$KEY" "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'sudo df -h 2>&1| egrep '"'"'/$'"'"' | awk '"'"'{ print $2 }'"'"' | sed s/G//'`
+		AVAILABLE_DISK=`ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "$KEY" "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'df -h 2>&1| egrep '"'"'/$'"'"' | awk '"'"'{ print $2 }'"'"' | sed s/G//'`
 		if [ "$?" != "0" ]; then
 			Error "{\"status\":\"failed\", \"message\":\"Could not verify DISK requirement\"}"
 		fi
 
 	else
-		AVAILABLE_RAM=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/nullo "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'sudo dmidecode -t 17 2>&1 | awk '"'"'( /Size/ && $2 ~ /^[0-9]+$/ ) { x+=$2 } END{ print x }'"'"''`
+		AVAILABLE_RAM=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/nullo "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'echo "scale=2; $(grep MemTotal /proc/meminfo | awk '"'"'{print $2}'"'"') /1024^2" | bc | awk '"'"'{print int($1+0.5)}'"'"''`
 		if [ "$?" != "0" ]; then
 			Error "{\"status\":\"failed\", \"message\":\"Could not verify RAM requirement\"}"
 		fi
-                AVAILABLE_CPU=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$USERNAME"@"$HOSTNAME" 2> /dev/null -q ' grep -c '"'"'^processor'"'"' /proc/cpuinfo 2>&1'`
+                AVAILABLE_CPU=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'grep -c '"'"'^processor'"'"' /proc/cpuinfo 2>&1'`
                 if [ "$?" != "0" ]; then
                         Error "{\"status\":\"failed\", \"message\":\"Could not verify CPU requirement\"}"
                 fi
 
-                AVAILABLE_DISK=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'sudo df -h 2>&1| egrep '"'"'/$'"'"' | awk '"'"'{ print $2 }'"'"' | sed s/G//'`
+                AVAILABLE_DISK=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'df -h 2>&1| egrep '"'"'/$'"'"' | awk '"'"'{ print $2 }'"'"' | sed s/G//'`
                 if [ "$?" != "0" ]; then
                         Error "{\"status\":\"failed\", \"message\":\"Could not verify DISK requirement\"}"
                 fi
