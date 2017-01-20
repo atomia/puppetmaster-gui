@@ -23,7 +23,7 @@ def main():
 		r = s.run_cmd('puppet', ['agent', '--test'])
 		print r.std_out
 		print r.std_err
-                if r.status_code == 0 or r.status_code == 2:
+                if r.status_code == 0:
 			exit(0)
                 exit(1)
         except requests.exceptions.ConnectionError:
@@ -35,9 +35,9 @@ def main():
         except winrm.exceptions.InvalidCredentialsError:
                 print "{\"status\" : \"failed\", \"message\" : \"Could not login to server via winrm. Invalid credentials\"}"
                 exit(1)
-	except:
-		print "Unknown WinRM error"
-		exit (0)
+	except Exception as e:
+		print e
+		exit (1)
 
 
 if __name__ == "__main__":

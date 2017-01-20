@@ -42,18 +42,19 @@ function updateTaskStatus () {
               if (typeof environmentModel.servers()[e].members()[m].nodes != 'undefined' && environmentModel.servers()[e].members()[m].nodes()[nodeId].hostname() == input.hostname) {
                 console.log(input.hostname)
 
-
-                var status = JSON.parse(result.StatusMessage)
-                if(status.status === 'failed') {
-                $("#pre-flight-failed").show()
-                }
-                environmentModel.servers()[e].members()[m].nodes()[currentNode].preflight_status(status)
+                try {
+                  var status = JSON.parse(result.StatusMessage)
+                  if(status.status === 'failed') {
+                    $("#pre-flight-failed").show()
+                  }
+                  environmentModel.servers()[e].members()[m].nodes()[nodeId].preflight_status(status)
+                } catch(e) { console.log('Could not parse: (' + input.hostname + ') '  + result.StatusMessage)}
 
               }
             }
           }
         }
       })
-}
-})
+    }
+  })
 }

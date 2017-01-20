@@ -15,7 +15,7 @@ HOSTNAME=`echo "$INPUT" | jq -r '.hostname'`
 
 RESOLVES=`if ! dig "$HOSTNAME" @8.8.8.8 | tr "\n" " " | grep -q '"'"'status:[[:space:]]*NOERROR.*[[:space:]]ANSWER:[[:space:]]*[1-9]'"'"';  then exit 1; fi`
 if [ "$?" != "1" ]; then
-	Error "{\"status\":\"failed\", \"message\":\"The hostname of the server does not resolve in public dns\"}"
+	Error "{\"status\":\"failed\", \"message\":\"The hostname of the server does not resolve in public dns. Test done: dig $HOSTNAME @8.8.8.8\"}"
 fi
 
 echo -n "$INPUT"

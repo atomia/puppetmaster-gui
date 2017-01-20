@@ -21,7 +21,7 @@ exit 1
 		s = winrm.Session(options.host, auth=(options.username,options.password))
 		r = s.run_ps(ps_script)
 		if r.status_code != 0:
-			print "{\"status\" : \"failed\", \"message\" : \"DNS resolution does not seem to work on the server\"}"
+			print "{\"status\" : \"failed\", \"message\" : \"DNS resolution does not work. Test done: Resolve-DnsName atomia.com\"}"
 			exit(1)
 		exit(0)
 	except requests.exceptions.ConnectionError:

@@ -21,12 +21,12 @@ if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
 	if [ -n "$KEY" ]; then
 		ROOT=`ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "$KEY" "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'sudo id -u 2>&1'`
 		if [ "$?" != "0" ]; then
-			Error "{\"status\":\"failed\", \"message\":\"Could not verify root privileges for user\"}"
+			Error "{\"status\":\"failed\", \"message\":\"Could not verify root privileges for user. Test done: sudo id -u (expecting 0)\"}"
 		fi
 	else
 		ROOT=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'sudo id -u'`
 		if [ "$?" != "0" ]; then
-			Error "{\"status\":\"failed\", \"message\":\"Could not verify root privileges for user\"}"
+			Error "{\"status\":\"failed\", \"message\":\"Could not verify root privileges for user. Test done: sudo id -u (expecting 0)\"}"
 		fi
 	fi
 	if [ "$ROOT" != "0" ]; then

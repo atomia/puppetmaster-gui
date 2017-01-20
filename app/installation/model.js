@@ -57,7 +57,7 @@ Installation.doSchedule = function (environmentId, environmentName, orderId, ser
             }
             for (var nodeCount = 0; nodeCount < curServer.node_count; nodeCount++)
             {
-              var username;
+              var username = curServer.nodes[nodeCount].username;
               if (curServer.nodes[nodeCount].username == '') {
                 if(curServer.operating_system == 'ubuntu') {
                   username = 'ubuntu'
@@ -73,7 +73,7 @@ Installation.doSchedule = function (environmentId, environmentName, orderId, ser
                 username: username,
                 password: curServer.nodes[nodeCount].password,
                 new_password: new_password,
-                key: '/root/.ssh/' + 'stefan-test-aws.pem', //TODO: This should not be hardcoded!
+                key: serverKey,
                 environment: environmentName.toLowerCase().replace(/\s/g, "_"),
                 roles: JSON.stringify(roleData)
               }

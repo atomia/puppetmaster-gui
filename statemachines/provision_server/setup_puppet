@@ -35,7 +35,7 @@ if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
         if [ -n "$KEY" ]; then
 		SSH_COMMAND="ssh -o ConnectTimeout=60 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "$KEY" "$USERNAME"@"$HOSTNAME" "
         else
-		SSH_COMMAND="sshpass -p "$PASSWORD" ssh -o ConnectTimeout=60 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$USERNAME"@"$HOSTNAME" "
+		SSH_COMMAND="sudo sshpass -p "$PASSWORD" ssh -o ConnectTimeout=60 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$USERNAME"@"$HOSTNAME" "
         fi
 
         INSTALL_PUPPET=`$SSH_COMMAND 2>&1 'sudo bash -s' < "$CURRENT_DIR"/scripts/install_puppet.sh "$PUPPETMASTER" "$ENVIRONMENT"`
@@ -70,9 +70,10 @@ elif [ "$OS" == "windows" ]; then
 	fi
 	RUN_PUPPET=`"$CURRENT_DIR"/winrm/run_puppet.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD" --environment="$ENVIRONMENT" --puppetmaster="$PUPPETMASTER" --roles="$ROLES"`
 	if [ "$?" != "0" ]; then
+		FOO=$?
 		RUN_PUPPET_2=`"$CURRENT_DIR"/winrm/run_puppet.py --host="$HOSTNAME" --username="$USERNAME" --password="$NEW_PASSWORD" --environment="$ENVIRONMENT" --puppetmaster="$PUPPETMASTER" --roles="$ROLES"`
 		if [ "$?" != "0" ]; then
-			Error "pending|installation in progress| ${RUN_PUPPET} ------- ${RUN_PUPPET_2}"
+			Error "pending|installation in progress| ${FOO} $? ${RUN_PUPPET} ------- ${RUN_PUPPET_2}"
 		fi
 	fi
 

@@ -21,12 +21,12 @@ if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
 	if [ -n "$KEY" ]; then
 		DNS=`ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "$KEY" "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'dig -q atomia.com'`
 		if [ "$?" != "0" ]; then
-			Error "{\"status\":\"failed\", \"message\":\"DNS resolution does not work\"}"
+			Error "{\"status\":\"failed\", \"message\":\"DNS resolution does not work. Test done: dig -q atomia.com'\"}"
 		fi
 	else
 		DNS=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'dig -q atomia.com'`
 		if [ "$?" != "0" ]; then
-			Error "{\"status\":\"failed\", \"message\":\"Could not login to the server via SSH with the provided username and password\"}"
+			Error "{\"status\":\"failed\", \"message\":\"DNS resolution does not work. Test done: dig -q atomia.com\"}"
 		fi
 	fi
 elif [ "$OS" == "windows" ]; then

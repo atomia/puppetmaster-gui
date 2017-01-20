@@ -18,76 +18,75 @@ PreFlight.schedulePreFlightFromJson = function (environmentId, data, callback, o
     })
   } else {
     serverKey = data.server_key
-    this.doSchedule(environmentId, servers, serverKey, callback, onError)
+    this.doSchedule(environmentId, servers, serverKey, 0, 0, callback, onError)
   }
 }
 
-PreFlight.doSchedule = function (environmentId, servers, serverKey, callback, onError) {
-  var scheduledServers = 0
-  for (var memberId = 0; memberId < servers.length; memberId++) {
+PreFlight.doSchedule = function (environmentId, servers, serverKey, currentId, nodeId, callback, onError) {
 
-    (function (curServer) {
-      // Schedule the job
-      var jobData = {}
-      var requirementsData = {}
-      for (var rId = 0; rId < curServer.requirements.length; rId++) {
-        requirementsData[curServer.requirements[rId].check] = curServer.requirements[rId].value
+  var curServer = servers[currentId]
+  // Schedule the job
+  if (typeof curServer != 'undefined') {
+    var jobData = {}
+    var requirementsData = {}
+    for (var rId = 0; rId < curServer.requirements.length; rId++) {
+      requirementsData[curServer.requirements[rId].check] = curServer.requirements[rId].value
+    }
+    var roleData = []
+    for (var roleId = 0; roleId < curServer.roles.length; roleId++) {
+      roleData.push(curServer.roles[roleId].class)
+    }
+      var username = curServer.nodes[nodeId].username
+      if (curServer.nodes[nodeId].username == '') {
+        if(curServer.operating_system == 'ubuntu') {
+          username = 'ubuntu'
+        }
+        else {
+          username = 'Administrator'
+        }
       }
-      var roleData = []
-      for (var roleId = 0; roleId < curServer.roles.length; roleId++) {
-        roleData.push(curServer.roles[roleId].class)
+      jobData.data = {
+        machine: 'pre_flight_checks',
+        system_requirements: requirementsData,
+        os: curServer.operating_system,
+        hostname: curServer.nodes[nodeId].hostname,
+        username: username,
+        password: curServer.nodes[nodeId].password,
+        key: serverKey,
+        roles: roleData
       }
-      for (var nodeCount = 0; nodeCount < curServer.node_count; nodeCount++)
-      {
-        (function (nodeId) {
-          var username = curServer.nodes[nodeId].username
-          if (curServer.nodes[nodeId].username == '') {
-            if(curServer.operating_system == 'ubuntu') {
-              username = 'ubuntu'
-            }
-            else {
-              username = 'Administrator'
+      var options = {
+        url: 'http://localhost:3000/restate-machines',
+        method: 'POST',
+        body: jobData,
+        json: true
+      }
+      request(options, function (error, response, body) {
+        if (error) {
+          // Handle error here
+        }
+        var runId = JSON.parse(body).Id
+        // Run scheduled add a reference to the database
+        // TODO: we should not allow duplicate task_ids for an environment
+        dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + " pre-flight', '" + runId + "', '" + JSON.stringify(jobData) + "', null, " + environmentId + ", 'pre_flight')",
+        function () {
+          if(nodeId < curServer.node_count -1) {
+            nodeId++
+          } else {
+            currentId++
+            nodeId = 0
+            if (currentId >= servers.length) {
+              callback()
+              return
             }
           }
-          jobData.data = {
-            machine: 'pre_flight_checks',
-            system_requirements: requirementsData,
-            os: curServer.operating_system,
-            hostname: curServer.nodes[nodeId].hostname,
-            username: username,
-            password: curServer.nodes[nodeId].password,
-            key: serverKey,
-            roles: roleData
-          }
-
-          var options = {
-            url: 'http://localhost:3000/restate-machines',
-            method: 'POST',
-            body: jobData,
-            json: true
-          }
-          request(options, function (error, response, body) {
-            if (error) {
-              // Handle error here
-            }
-            var runId = JSON.parse(body).Id
-            // Run scheduled add a reference to the database
-            // TODO: we should not allow duplicate task_ids for an environment
-            dbh.query("INSERT INTO tasks VALUES(null,'" + curServer.name + " pre-flight', '" + runId + "', '" + JSON.stringify(jobData) + "', null, " + environmentId + ", 'pre_flight')",
-            function () {
-              scheduledServers++
-              if (scheduledServers == servers.length) {
-                callback()
-              }
-            }, function (err) {
-              // dbh.query failed
-              onError(err)
-            })
-          })
-        })(nodeCount)
-      }
-    })(servers[memberId])
-
+          // Recursive call
+          PreFlight.doSchedule(environmentId, servers, serverKey, currentId, nodeId, callback, onError)
+          return
+        }, function (err) {
+          onError(err)
+        })
+      })
   }
 }
 
