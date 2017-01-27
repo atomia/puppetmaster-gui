@@ -275,3 +275,25 @@
     -webkit-box-orient: vertical;
     text-align: left;
 }
+
+.Body--start {
+    background: url(/img/a-background.svg) 50% 25% no-repeat #f7f7f5;
+    background-size: 25em;
+}
+.Main--start {
+    text-align: center;
+    position: absolute;
+    top: 40%;
+    width: 100%;
+    max-width: 100%;
+    transform: translateY(-50%);
+}
+.Footer--start {
+    background: none;
+    padding: 2em;
+}
+.Footer-link {
+    float: right;
+    color: #abaaab;
+    padding: 2.5em 3em 0 0;
+}
