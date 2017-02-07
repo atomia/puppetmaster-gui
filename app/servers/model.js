@@ -151,11 +151,13 @@ Server.saveAWSConfig = function (awsConfig, callback) {
   if (!fs.existsSync(configPath)){
     fs.mkdirSync(configPath);
   }
+  awsConfig.private_key = awsConfig.private_key.replace("C:\\fakepath\\","")
   var awsData = '[default]\n'
   awsData += 'aws_access_key_id=' + awsConfig.aws_key + '\n'
   awsData += 'aws_secret_access_key=' + awsConfig.aws_secret + '\n'
   awsData += 'region=' + awsConfig.aws_region + '\n'
-  awsData += 'private_key' + awsConfig.private_key + '\n'
+  awsData += 'private_key=' + awsConfig.private_key + '\n'
+  awsData += 'vpc_id=' + awsConfig.vpc_id + '\n'
   awsData += 'output=json\n'
 
   fs.writeFile(configPath + '/config', awsData, function(err) {

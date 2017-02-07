@@ -14,7 +14,7 @@ def main():
 $major = [System.Environment]::OSVersion.Version.Major
 $minor = [System.Environment]::OSVersion.Version.Minor
 
-if (!($major -eq 6 -AND ($minor -eq 2 -OR $minor -eq 3))) {
+if (!($major -eq 6 -AND ($minor -eq 2 -OR $minor -eq 3)) -AND !($major -eq 10)) {
     exit 1
 }
 """
@@ -22,7 +22,7 @@ if (!($major -eq 6 -AND ($minor -eq 2 -OR $minor -eq 3))) {
 		s = winrm.Session(options.host, auth=(options.username,options.password))
 		r = s.run_ps(ps_script)
 		if r.status_code != 0:
-			print "{\"status\" : \"failed\", \"message\" : \"Not supported Windows server version, expected Windows Server 2012 R2\"}"
+			print "{\"status\" : \"failed\", \"message\" : \"Not supported Windows server version, expected Windows Server 2012 R2 or Windows Server 2016\"}"
 			exit(1)
 		exit(0)
 	except requests.exceptions.ConnectionError:

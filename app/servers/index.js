@@ -579,7 +579,7 @@ router.get('/export', function (req, res, next) {
         }
       }
 
-      Server.getAWSConfig(function(aws) {
+      Server.getAWSConfig(function() {
         var fs = require('fs');
         fs.writeFileSync('/tmp/linux_servers.csv', linuxCSV)
         fs.writeFileSync('/tmp/windows_servers.csv', windowsCSV)
@@ -589,10 +589,11 @@ router.get('/export', function (req, res, next) {
         /* eslint-disable no-unused-vars */
         var zip = require('express-zip');
         /* eslint-enable no-unused-vars */
+        res.setHeader('content-type', 'text/html')
         res.zip([
           { path: '/tmp/linux_servers.csv', name: 'linux_servers.csv' },
           { path: '/tmp/windows_servers.csv', name: 'windows_servers.csv' },
-          { path: '/root/.ssh/' + aws.private_key + '.pem', name: 'atomia.key'},
+          { path: '/root/amazon.key', name: 'atomia.key'},
           { path: '/tmp/runme.bat', name: 'runme.bat'},
           { path: '/tmp/README.txt', name: 'README.txt'},
           { path: '/tmp/atomia.rtsx', name: 'atomia.rtsx'},

@@ -15,7 +15,7 @@ PuppetHelper.parseManifest = function (environmentName, manifest, callback) {
   if (classPath === 'nagios_server' || classPath === 'nagios') {
     classPath = 'nagios/server'
   }
-  if (classPath === 'glusterfs_replica') {
+  if (classPath === 'glusterfs_replica' || classPath === 'test_environment') {
     callback(null)
     return
   }
@@ -111,6 +111,9 @@ PuppetHelper.parseManifest = function (environmentName, manifest, callback) {
                     variables[curKey].value = ip
                     callback(null, curKey)
                   })
+                } else {
+                  variables[curKey].value = '127.0.0.1'
+                  callback(null, curKey)
                 }
               },
               function (error) {

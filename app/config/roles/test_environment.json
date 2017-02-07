@@ -1,0 +1,28 @@
+{
+  "name": "Test Environment",
+  "role_name": "test_environment",
+  "description": "Installs an Atomia test environment on a single server",
+  "firewall": [
+    {
+      "name": "Active_directory",
+      "rules": [
+        {
+          "port": 3389,
+          "function": "rdp",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [],
+  "pretty_variables": {
+    "global_auth_token" :  "Authentication token",
+    "content_share_nfs_location": "Content NFS share",
+    "config_share_nfs_location": "Configuration NFS share",
+    "ip_addr": "Server IP",
+    "cloudlinux_database": "Using CloudLinux",
+    "cloudlinux_database_password": "CloudLinux db password",
+    "local_address": "Local agent address"
+  }
+}

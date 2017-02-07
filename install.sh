@@ -30,7 +30,7 @@ cd app
 npm install
 
 MYSQL_PASSWORD=`openssl rand -base64 16`
-RESTATE_PASSWORD=`openssl rand -base64 16`
+RESTATE_PASSWORD=`openssl rand -base64 16 | sed 's/\///'`
 DB_USER="puppetgui"
 USER_EXISTS="$(mysql --defaults-file=/etc/mysql/debian.cnf -sse "SELECT EXISTS(SELECT 1 FROM mysql.user WHERE user = '$DB_USER')")"
 
@@ -54,7 +54,7 @@ bash -c 'echo "{
     \"user\": \"restatemachine\",
     \"password\": \"'$RESTATE_PASSWORD'\",
     \"host\": \"localhost\",
-    \"port\": \"80\"
+    \"port\": \"8080\"
   },
   \"main\" : {
     \"module_path\" : \"/etc/puppet/modules/atomia/manifests\"

@@ -131,52 +131,6 @@
           ]
         },
         {
-          "name": "Monitoring",
-          "description": "Setup monitoring of all provisioned servers with Nagios.",
-          "required": false,
-          "selected": false,
-          "cluster": false,
-          "multiple": false,
-          "node_count": 1,
-          "ami": "ami-0d77397e",
-          "ec2_type": "t2.micro",
-          "category": "system",
-          "operating_system": "ubuntu",
-          "username": "ubuntu",
-          "password": "",
-          "vlan": 3,
-          "graph_position": 0,
-          "provisioning_order": 2,
-          "hostname": "",
-          "provisioning_status": {"status":"","message":""},
-          "preflight_status": "",
-          "installation_status": "",
-          "requirements": [
-            {
-              "check": "ram",
-              "value": "2",
-              "name": "%v GB RAM"
-            },
-            {
-              "check": "cpu",
-              "value": "2",
-              "name": "%v CPUs"
-            },
-            {
-              "check": "disk",
-              "value": "50",
-              "name": "%v GB disk space"
-            }
-          ],
-          "roles": [
-            {
-              "class": "nagios_server",
-              "overrides": [
-              ]
-            }
-          ]
-        },
-        {
           "name": "Atomia database",
           "description": "",
           "required": false,
@@ -359,7 +313,7 @@
       ]
     },
     {
-      "category": "DNS",
+      "category": "Domain & DNS",
       "category_id": "dns",
       "selected": false,
       "members": [
@@ -448,6 +402,52 @@
           "roles": [
             {
               "class": "atomiadns_powerdns",
+              "overrides": [
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Domainreg",
+          "description": "Register and manage domain names",
+          "required": false,
+          "selected": false,
+          "cluster": false,
+          "multiple": false,
+          "node_count": 1,
+          "ami": "ami-0d77397e",
+          "ec2_type": "t2.micro",
+          "category": "system",
+          "operating_system": "ubuntu",
+          "username": "ubuntu",
+          "password": "",
+          "vlan": 3,
+          "graph_position": 0,
+          "provisioning_order": 2,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "installation_status": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "2",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "2",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "50",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "domainreg",
               "overrides": [
               ]
             }

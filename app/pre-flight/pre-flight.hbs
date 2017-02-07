@@ -22,11 +22,13 @@ $(document).ready(function () {
       <div class="Message Message--info">
         Before proceeding with the pre flight checks make sure that the following requirements are fulfilled: <br/><br/>
 
-        Enable WINRM on ALL Windows servers with the command: <br/>
+        Enable WINRM on ALL Windows servers with the command (Not needed if servers are created by the installer on Amazon): <br/>
         <pre>start cmd /k "winrm quickconfig & winrm set winrm/config/client/auth @{Basic="true"} & winrm set winrm/config/service/auth @{Basic="true"} & winrm set winrm/config/service @{AllowUnencrypted="true"}"</pre>
-        <br/></br>
+        </br></br>
         Make sure WINRM (port 5985) is open for the local subnet (or the ip address of the puppet master server)
-        <br/><br/>
+        <br><br>
+        Make sure that all available Windows updates have been applied
+        <br><br>
       </div>
 
       <div class="Message Message--error" id="pre-flight-failed" style="display:none;">

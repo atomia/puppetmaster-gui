@@ -14,11 +14,11 @@ PreFlight.schedulePreFlightFromJson = function (environmentId, data, callback, o
   if(data.amazon) {
     Servers.getAWSConfig(function (aws){
       serverKey = aws.private_key
-      this.doSchedule(environmentId, servers, serverKey, callback, onError)
+      PreFlight.doSchedule(environmentId, servers, serverKey, 0, 0, callback, onError)
     })
   } else {
     serverKey = data.server_key
-    this.doSchedule(environmentId, servers, serverKey, 0, 0, callback, onError)
+    PreFlight.doSchedule(environmentId, servers, serverKey, 0, 0, callback, onError)
   }
 }
 

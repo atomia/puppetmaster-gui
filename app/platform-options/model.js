@@ -208,7 +208,11 @@ PlatformOption.getHostnameForRole = function (platformName, role, callback, onEr
           if (typeof environment.servers[serverId].members[memberId].nodes != 'undefined') {
             for (var roleId = 0; roleId < environment.servers[serverId].members[memberId].roles.length; roleId++){
               if (environment.servers[serverId].members[memberId].roles[roleId].class == role) {
-                callback(environment.servers[serverId].members[memberId].nodes[0].hostname)
+                if(environment.servers[serverId].members[memberId].nodes.length > 0) {
+                  callback(environment.servers[serverId].members[memberId].nodes[0].hostname)
+                } else {
+                  callback(null)
+                }
                 return
               }
             }

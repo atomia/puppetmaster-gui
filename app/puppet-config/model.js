@@ -19,7 +19,6 @@ PuppetConfig.getVariables = function (environmentData, callback) {
         roleNames.push(environmentData.servers[categoryId].members[serverId].roles)
         totalNumRoles+=environmentData.servers[categoryId].members[serverId].roles.length
       }
-
     }
   }
 
@@ -27,14 +26,21 @@ PuppetConfig.getVariables = function (environmentData, callback) {
   var manifestData = []
   for (roleId = 0; roleId < roleNames.length; roleId++) {
     for (var subRoleId = 0; subRoleId < roleNames[roleId].length; subRoleId++) {
-      (function () {
+      (function (curRole) {
         PuppetHelper.parseManifest(environmentData.name, roleNames[roleId][subRoleId], function (variables) {
           // Check for database overrides
           dbh.query ('SELECT * FROM configuration WHERE env = \'' + environmentName + '\'', function (data) {
             roleCount++
             if (variables != null) {
               for (var id = 0; id < variables.length; id++) {
-
+                // Check for environment overrides
+                if (curRole.overrides.length > 0) {
+                  for (var oId = 0; oId < curRole.overrides.length; oId ++) {
+                    if (variables[id].name == curRole.overrides[oId].variable) {
+                      variables[id].value = curRole.overrides[oId].value
+                    }
+                  }
+                }
                 var currentVariable = 'atomia::' + variables[id].namespace + '::' + variables[id].name;
                 for (var dId = 0; dId < data.length; dId++) {
                   if( data[dId].var == currentVariable) {
@@ -42,20 +48,18 @@ PuppetConfig.getVariables = function (environmentData, callback) {
                     data[dId].val = 0;
                     if (data[dId].val == '1')
                     data[dId].val = 1;
-
-                    variables[id].value = data[dId].val
+                    if (data[dId].val != '') {
+                      variables[id].value = data[dId].val
+                    }
                   }
                 }
               }
               manifestData.push({'name' : variables[0].rolePretty, 'variables' : variables})
             }
-
             if(roleCount == totalNumRoles) {
               callback(manifestData)
             }
           })//, function (err) {  })
-
-
         })
       })(roleNames[roleId][subRoleId])
     }

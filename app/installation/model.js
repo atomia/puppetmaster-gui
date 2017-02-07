@@ -13,11 +13,11 @@ Installation.scheduleInstallationFromJson = function (environmentId, environment
   if(data.amazon) {
     Servers.getAWSConfig(function (aws){
       serverKey = aws.private_key
-      this.doSchedule(environmentId, environmentName, orderId, servers, serverKey, callback, onError)
+      Installation.doSchedule(environmentId, environmentName, orderId, servers, serverKey, callback, onError)
     })
   } else {
     serverKey = data.server_key
-    this.doSchedule(environmentId, environmentName, orderId, servers, serverKey, callback, onError)
+    Installation.doSchedule(environmentId, environmentName, orderId, servers, serverKey, callback, onError)
   }
 }
 
