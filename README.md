@@ -4,9 +4,17 @@
 
 Handles the complete setup of an Atomia environment by utilizing Puppet.
 
+## Pre requirements
+
+Before starting the installation make sure the following steps are completed
+
+* Request access to the Atomia apt repository for the ip subnet you are going to use for your environment(s). You can do so by sending an email to support@atomia.com with the range of ip addresses.
+
 ## Installation instructions
 
-Detailed instructions can be found on [our wiki](https://github.com/atomia/puppetmaster-gui/wiki/Installing-a-production-environment).
+Run install.sh (as root)
+
+The installation gui will be available at http://127.0.0.1:3000 
 
 ## Contributions
 

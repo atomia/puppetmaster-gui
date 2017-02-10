@@ -1,0 +1,40 @@
+#!/bin/bash
+DIR=`dirname $0`
+. /etc/restatemachine/shell_helpers.inc
+
+INPUT=`cat`
+Error () {
+        echo -n "$INPUT"
+        restatemachine_transition_to "test_repo_access"
+        restatemachine_transition_after_seconds "60"
+        restatemachine_status_message "$1"
+        exit 0
+}
+
+HOSTNAME=`echo "$INPUT" | jq -r '.hostname'`
+USERNAME=`echo "$INPUT" | jq -r '.username'`
+PASSWORD=`echo "$INPUT" | jq -r '.password'`
+KEY=`echo "$INPUT" | jq -r '.key'`
+OS=`echo "$INPUT" | jq -r '.os'`
+
+if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
+	if [ -n "$KEY" ]; then
+		REPO=`ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "$KEY" "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'curl -m 5 --output /dev/null --silent --head --fail http://apt.atomia.com'`
+		if [ "$?" != "0" ]; then
+			Error "{\"status\":\"failed\", \"message\":\"Can not access apt.atomia.com, request access at support@atomia.com. Test done: curl http://apt.atomia.com \"}"
+		fi
+	else
+		REPO=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'curl -m 5 --output /dev/null --silent --head --fail http://apt.atomia.com'`
+		if [ "$?" != "0" ]; then
+			Error "{\"status\":\"failed\", \"message\":\"Can not access apt.atomia.com, request access at support@atomia.com. Test done: curl http://apt.atomia.com \"}"
+		fi
+	fi
+elif [ "$OS" != "windows" ]; then
+	Error "{\"status\":\"failed\", \"message\":\"Unknown operating system $OS \"}"
+fi
+
+
+echo -n "$INPUT"
+restatemachine_transition_to "stop"
+restatemachine_transition_after_seconds "0"
+restatemachine_status_message "{\"status\":\"done\", \"message\":\"Passed all tests\"}"

@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+  <title>Atomia Installer</title>
+  <link rel="stylesheet" href="http://patternlibrary.atomia.com/css/pattern-library.css">
+  <link rel="stylesheet" href="http://patternlibrary.atomia.com/css/main.css">
+  <link rel="stylesheet" href="/css/installer.css">
+  <script type="text/javascript" src="/js/knockout.js"></script>
+  <script type="text/javascript" src="/js/knockout.mapping.js"></script>
+  <script type="text/javascript" src="/js/knockout-else.js"></script>
+  <script type="text/javascript" src="/js/jquery.js"></script>
+  <script src="http://malsup.github.com/jquery.form.js"></script>
+  <script type="text/javascript" src="/js/view_models.js" defer="defer"></script>
+  <script type="text/javascript" src="/js/platform-options.js" defer="defer"></script>
+  <script type="text/javascript" src="/js/servers.js" defer="defer"></script>
+  <script type="text/javascript" src="/js/puppet-config.js" defer="defer"></script>
+  <script type="text/javascript" src="/js/pre-flight.js" defer="defer"></script>
+  <script type="text/javascript" src="/js/installation.js" defer="defer"></script>
+  <script src="https://use.fontawesome.com/6a22df98aa.js"></script>
+</head>
+<body>
+  <script>
+
+  var selectedEnvironmentData = '{{selectedEnvironment}}'
+  $(document).ready(function () {
+    KnockoutElse.init([spec={}])
+    $('#platform-options-a').addClass((window.location.href.includes('platform-options') ? 'u-brand-color' : ''))
+    $('#servers-a').addClass((window.location.href.includes('servers') ? 'u-brand-color' : ''))
+    $('#config-a').addClass((window.location.href.includes('puppet-config') ? 'u-brand-color' : ''))
+    $('#installation-a').addClass((window.location.href.includes('installation') ? 'u-brand-color' : ''))
+  })
+  </script>
+  <div class="wrapper">
+    <header>
+      <div class="NavBar NavBar--apps">
+        <a class="Logo Logo--nav" href="#"></a>
+      </div>
+      <div class="NavBar NavBar--sections">
+        <ul class="Set Set--sections u-left ">
+          <li class="Set-item">
+            <a id='platform-options-a' class="Set-divider" href="/platform-options">Platform options</a>
+          </li>
+          <li class="Set-item">
+            <a id='servers-a' class="Set-divider" href="/servers">Servers</a>
+          </li>
+          <li class="Set-item">
+            <a id='config-a' class="Set-divider" href="/puppet-config">Configurations</a>
+          </li>
+          <li class="Set-item">
+            <a id='installation-a' class="Set-divider" href="/installation">Installation</a>
+          </li>
+          <li class="Set-item">
+            <a class="Set-divider" href="#">Finished</a>
+          </li>
+        </ul>
+      </div>
+      <div class="Bar Bar--light" id="currentEnvironmentBar" style="display:none;">
+        <p class="Bar-title Bar-item" id="currentEnvironmentTitle"></p>
+        <div class="Bar-item Bar-item--right">
+          <button class="Btn Btn--seethrough" id="changeEnvironmentButton">Change</button>
+        </div>
+      </div>
+    </header>
+    {{{body}}}
+  </div>
+</body>
+</html>

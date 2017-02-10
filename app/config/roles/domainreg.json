@@ -1,0 +1,32 @@
+{
+  "name": "Domainreg",
+  "role_name": "domainreg",
+  "description": "Register and manage domain names",
+  "firewall": [
+    {
+      "name": "Active_directory",
+      "rules": [
+        {
+          "port": 3389,
+          "function": "rdp",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [],
+  "pretty_variables": {
+    "service_username" :  "Domainreg URL",
+    "service_username": "Username",
+    "service_password": "Password",
+    "db_hostname": "Database host",
+    "db_username": "Database user",
+    "db_password": "Database password",
+    "domainreg_global_config": "Domainreg config",
+    "domainreg_tld_config_hash": "TLD configuration",
+    "enable_backups" : "Database backup",
+    "backup_dir" : "Backup directory",
+    "cron_schedule_hour": "Backup time"
+  }
+}

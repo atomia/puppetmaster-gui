@@ -1,0 +1,9 @@
+[Unit]
+Description=Puppetmaster-gui a gui client for deploying Atomia
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/node /opt/puppetmaster-gui/app/app.js
+
+[Install]
+WantedBy=multi-user.target

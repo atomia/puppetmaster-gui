@@ -3,4 +3,5 @@
 node_modules
 npm-debug.log
 app/config.json
+app/config/config.json
 puppetlabs-release-trusty.deb*

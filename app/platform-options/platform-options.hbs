@@ -1,0 +1,125 @@
+<script>
+var environmentModel;
+var existingEnvironments = {{{toJSON existingEnvironments}}}
+</script>
+<section class="Main"  >
+  <div class="Margins" style="min-height: 300px;">
+    <div class="Bar Bar--light Bar--header">
+      <h5 class="Bar-title Bar-item">Select what options to install</h5>
+      <div class="Bar-item Bar-item--right ">
+        <a href="/servers"><button type="submit" class="Btn Btn--primary">Next <i class="fa-margin fa fa-angle-right"></i></button></a>
+      </div>
+    </div>
+    <div class="Paper kss-paper" style="margin:0px;">
+      <div class="Grid">
+        <div class="Grid-column-5 u-no-margin-top" id="mainView">
+          <div id="live_or_existing_div">
+            <h3 class="u-brand-color">New or existing installation?</h3>
+            <a href="#" id="new_environment_button" class="Btn Btn--neutral">New environment</a>
+            <a href="#" id="existing_environment_button" class="Btn Btn--neutral">Existing environment</a>
+          </div>
+
+          <div id="new_environment_div" style="display:none;">
+            <h3 class="u-brand-color">New environment</h3>
+            Select one of the templates below to proceed
+            <div class="Grid">
+              {{#each environments}}
+              <div class="Grid-column-3">
+                <div class="Box Box--select new_environment_select" id="{{name}}"style="margin:0px;">
+                  <h2>{{name}}</h2>
+                  {{description}}
+                </div>
+              </div>
+              {{/each}}
+            </div>
+          </div>
+
+          <div id="existing_environment_div" style="display:none;">
+            <h3 class="u-brand-color">Existing environment</h3>
+            <div class="Grid">
+              {{#each existingEnvironments}}
+              <div class="Grid-column-3">
+                <div class="Box Box--select existing_environment_select" id="{{name}}" style="margin:0px;">
+                  <h2>{{name}}</h2>
+                </div>
+              </div>
+              {{/each}}
+            </div>
+          </div>
+
+          <div id="environment_name" style="display:none;">
+            <div class="Formrow Formrow--noLabel">
+              <label class="Formrow-label" for="name">Name</label>
+              <div class="Formrow-offset">
+                <input id="environment_name_input" type="text" placeholder="Name" value="My Atomia"/>
+                <span class="Message Message--info Message--small">The name of your new environment</span>
+              </div>
+            </div>
+            <button type="submit" class="Btn Btn--primary" id="create_environment_button">Create environment</button>
+          </div>
+
+          <div id="customization" style="display:none;" class="u-margin-top">
+            <h3 class="u-brand-color">Customization options</h3>
+
+            <div data-bind="template: {name: 'environment-template', foreach: environmentModel.servers}"></div>
+          </div>
+          <script id="environment-template" type="text/html">
+
+            <div class="Box">
+              <h4 class="u-no-margin-bottom" data-bind="text: category"></h4>
+            <!--  <label class="Switch Switch--right">
+                <input class="Switch-input" data-bind="checked: selected" type="checkbox">
+                <span class="Switch-click" data-on="Yes" data-off="No"></span>
+              </label>-->
+            </div>
+
+            <div data-bind="foreach: members">
+              <div data-bind="ifnot: required">
+
+                <div class="Box Box--child">
+                  <h4 data-bind="text: name"></h4>
+                  <p data-bind="text: description"></p>
+                  <label class="Switch Switch--right">
+                    <input class="Switch-input" data-bind="checked: selected" type="checkbox">
+                    <span class="Switch-click" data-on="Yes" data-off="No"></span>
+                  </label>
+
+                </div>
+                <div data-bind="if: multiple">
+                  <div style="background-color:#EDEDE8;padding:5px;">
+                  Machines: <input type="number" min="0" max="10" step="1" data-bind="value: node_count" style="width:80px;"> <!-- ko if: cluster --> (clustered)<!-- /ko -->
+                </div>
+                </div>
+              </div>
+            </div>
+
+          </script>
+
+        </div>
+        <div class="Grid-column-1 u-no-margin-top" id="requirements" style="display:none;">
+          <h5 class="u-brand-color u-no-margin-top">Requirements</h5>
+          <p><strong>For this installation you will need:</strong></p>
+          <div id="counterView">
+            <p data-bind="if: countServers('windows')">
+              <span data-bind="text: countServers('windows')" ></span> Machines<br/>
+              Windows Server 2012
+            </p>
+            <p data-bind="if: countServers('ubuntu')">
+              <span data-bind="text: countServers('ubuntu')" ></span> Machines<br/>
+              Ubuntu 16.04
+            </p>
+            <p data-bind="if: countServers('openstack')">
+              Existing OpenStack installation
+            </p>
+            <p>
+              <button class="Btn Btn--seethrough Req" id="viewRequirementsButton">
+              <i class="Req-icon fa fa-file-text-o"></i>
+                <span class="Req-label">View requirements list</span>
+              </button>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

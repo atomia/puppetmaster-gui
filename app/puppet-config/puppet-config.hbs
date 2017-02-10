@@ -1,0 +1,115 @@
+<script>
+var variableData = {{{toJSON varData}}}
+var envName = "{{envName}}"
+var certExists = {{certExists}}
+$(document).ready(function () {
+  console.log(variableData)
+  environmentModel = ko.mapping.fromJS(variableData)
+  ko.applyBindings(environmentModel, document.getElementById('mainView'))
+})
+</script>
+<section class="Main"  >
+  <div class="Margins" style="min-height: 300px;">
+    <div class="Bar Bar--light Bar--header">
+      <h5 class="Bar-title Bar-item">Configuration</h5>
+      <div class="Bar-item Bar-item--right ">
+        <a href="/servers"><button type="submit" class="Btn Btn--neutral">Back <i class="fa-margin fa fa-angle-left"></i></button></a>
+        <button type="submit" class="Btn Btn--neutral" id="save_puppet_config"><i class="fa-margin fa fa-floppy-o"></i> Save</button>
+        <a href="/pre-flight"><button type="submit" class="Btn Btn--primary">Next <i class="fa-margin fa fa-angle-right"></i></button></a>
+      </div>
+    </div>
+
+    <div class="Paper kss-paper" style="margin:0px;" id="mainView">
+      <div class="Message Message--info">
+        <span id="no_cert" style="display:none;">
+          You do not yet have any certificates generated for this environment. Certificates are an important part of Atomia and should be generated before proceeding.
+          <br/><br/>
+          <button type="submit" class="Btn Btn--primary" id="generate_certificates_button">Generate certificates</button>
+          <span id="loading_cert" class="Icon Icon--loading Icon--large"  style="display:none;">
+            <span class="Icon-label">Generating certificates please wait</span>
+          </span>
+        </span>
+        <span id="have_cert" style="display:none;">
+          <span class="Icon Icon--checked2 Icon--green" >
+            <span class="Icon-label">Certificates generated</span>
+          </span>
+        </span>
+      </div>
+
+      <!-- ko foreach: environmentModel -->
+      <div class="Grid">
+        <div class="Grid-column-6 u-no-margin-top">
+          <div class="Box Box--config--header">
+            <h4 class="u-no-margin-bottom Bar--item" data-bind="text: name"></h4>
+            <button  class="Bar-icon Btn Btn--neutral Btn--small Icon Icon--plus advanced_button" >Advanced</button>
+          </div>
+          <div class="Grid Box Box--child Box--config" >
+
+            <!-- ko foreach: {data: variables, as: 'item'} -->
+            <!-- ko if: item.advanced() === false -->
+            <div class="Grid-column-2">
+              <div class="Grid-column-3 ">
+                <!-- ko ifnot: item.pretty() === false -->
+                <span class="Config--var" style="font-size:0.9em;" data-bind="text: item.pretty"></span><span class="Config--var">:</span>
+                <!-- /ko -->
+                <!-- ko if: item.pretty() === false -->
+                <span class="Config--var" data-bind="text: item.name"></span><span class="Config--var">:</span>
+                <!-- /ko -->
+              </div>
+              <div class="Grid-column-3">
+                <input class="Formrow-input" type="text" data-bind="value: item.value, attr: {'id': item.name}" style="display:table-cell; width:100%; height:22px;">
+              </div>
+
+              <div class="Grid-column-6 u-no-margin-top">
+                <span style="font-size:0.8em;" data-bind="text: item.documentation"></span>
+              </div>
+            </div>
+
+            <!-- /ko -->
+            <!-- /ko -->
+            <div class="Grid-column-5 u-no-margin-top">
+
+            </div>
+
+          </div>
+
+          <div class="Grid Box Box--child Box--config advanced" data-bind="id: name" style="display:none;">
+            <!-- ko foreach: {data: variables, as: 'item'} -->
+            <!-- ko if: item.advanced() === true -->
+            <div class="Grid-column-2">
+              <div class="Grid-column-3 ">
+                <!-- ko ifnot: item.pretty() === false -->
+                <span class="Config--var" style="font-size:0.9em;" data-bind="text: item.pretty"></span><span class="Config--var">:</span>
+                <!-- /ko -->
+                <!-- ko if: item.pretty() === false -->
+                <span class="Config--var" data-bind="text: item.name"></span><span class="Config--var">:</span>
+                <!-- /ko -->
+              </div>
+              <div class="Grid-column-3">
+                <!-- ko if: item.validation() === '%int_boolean' -->
+                <label class="Switch">
+                  <input class="Switch-input" data-bind="checked: item.value" type="checkbox">
+                  <span class="Switch-click" data-on="On" data-off="Off"></span>
+                </label>
+                <!-- /ko -->
+                <!-- ko else -->
+                <input class="Formrow-input" type="text" id="email" data-bind="value: item.value, attr: {'id': item.name}" style="display:table-cell; width:100%; height:22px;">
+                <!-- /ko -->
+              </div>
+
+              <div class="Grid-column-6 u-no-margin-top">
+                <span style="font-size:0.8em;" data-bind="text: item.documentation"></span>
+              </div>
+            </div>
+            <!-- /ko -->
+            <!-- /ko -->
+          </div>
+        </div>
+      </div>
+      <!-- /ko -->
+
+
+    </div>
+
+  </div>
+</section>

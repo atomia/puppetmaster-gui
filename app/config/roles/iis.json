@@ -1,0 +1,24 @@
+{
+  "name": "IIS webserver",
+  "role_name": "iis",
+  "description": "Host Windows websites with IIS",
+  "firewall": [
+    {
+      "name": "Active_directory",
+      "rules": [
+        {
+          "port": 3389,
+          "function": "rdp",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [],
+  "pretty_variables": {
+    "cluster_ip" :  "Virtual IP",
+    "first_node" : "First node",
+    "sharepath": "Share path"
+  }
+}

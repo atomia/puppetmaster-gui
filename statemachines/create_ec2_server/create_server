@@ -1,0 +1,61 @@
+#!/bin/bash
+DIR=`dirname $0`
+. /etc/restatemachine/shell_helpers.inc
+
+INPUT=`cat`
+Error () {
+        restatemachine_transition_to "stop"
+        restatemachine_transition_after_seconds "3"
+        restatemachine_status_message "$1"
+        exit 0
+}
+
+VPC_ID=`echo "$INPUT" | jq -r '.vpc_id'`
+AMI=`echo "$INPUT" | jq -r '.ami'`
+TYPE=`echo "$INPUT" | jq -r '.type'`
+KEY=`echo "$INPUT" | jq -r '.key_name'`
+OS=`echo "$INPUT" | jq -r '.os'`
+EXTRA_VOL_SIZE=`echo "$INPUT" | jq -r '.extra_vol_size'`
+VOLUME_SIZE=`echo "$INPUT" | jq -r '.volume_size'`
+EC2_GROUPS=`aws ec2 describe-security-groups --filter="Name=vpc-id,Values=$VPC_ID" 2>&1`
+SECURITY_GROUP_ID=`echo "$INPUT" | jq -r '.security_group_id'`
+SUBNET=`aws ec2 describe-subnets --filters=Name=vpc-id,Values=vpc-ad0f6ac9 2>&1`
+SUBNET_ID=`echo "$SUBNET" | jq -r '.Subnets[0]|.SubnetId'`
+GROUP_IDS="$SECURITY_GROUP_ID "
+
+# Find all existing security group ids
+while read group_name; do
+        GROUP_ID=`echo "$EC2_GROUPS" | jq -r ".SecurityGroups[]|select(.GroupName==\"${group_name}\").GroupId" 2>&1`
+        GROUP_IDS="$GROUP_IDS$GROUP_ID"
+done < <(echo "$INPUT" | jq -r '.existing_security_groups[]') # Parse the rules
+
+if [ "$OS" == "windows" ]; then
+	RESULT=$(aws ec2 run-instances --user-data="file://opt/puppetmaster-gui/statemachines/create_ec2_server/userdata" --image-id="$AMI" --count=1 --instance-type="$TYPE" --key-name="$KEY" --security-group-ids="$SECURITY_GROUP_ID" --subnet-id="$SUBNET_ID" --block-device-mappings "[{\"DeviceName\": \"/dev/sda1\",\"Ebs\": {\"DeleteOnTermination\": true,\"VolumeSize\": $VOLUME_SIZE,\"VolumeType\": \"gp2\"}}]" 2>&1)
+else
+	if [ "$EXTRA_VOL_SIZE" == "0" ]; then
+		RESULT=$(aws ec2 run-instances --image-id="$AMI" --count=1 --instance-type="$TYPE" --key-name="$KEY" --security-group-ids="$SECURITY_GROUP_ID" --subnet-id="$SUBNET_ID" --block-device-mappings "[{\"DeviceName\": \"/dev/sda1\",\"Ebs\": {\"DeleteOnTermination\": true,\"VolumeSize\": $VOLUME_SIZE,\"VolumeType\": \"gp2\"}}]" 2>&1)
+	else
+		RESULT=$(aws ec2 run-instances --image-id="$AMI" --count=1 --instance-type="$TYPE" --key-name="$KEY" --security-group-ids="$SECURITY_GROUP_ID" --subnet-id="$SUBNET_ID" --block-device-mappings "[{\"DeviceName\": \"/dev/sda1\",\"Ebs\": {\"DeleteOnTermination\": true,\"VolumeSize\": $VOLUME_SIZE,\"VolumeType\": \"gp2\"}}, {\"DeviceName\": \"/dev/sdb\",\"Ebs\": {\"DeleteOnTermination\": true,\"VolumeSize\": $EXTRA_VOL_SIZE,\"VolumeType\": \"gp2\"}}]" 2>&1)
+	fi
+fi
+
+if [ "$?" != "0" ]; then
+        RES=`echo $RESULT | tr -d '\r'`
+        Error "{\"status\":\"failed\", \"message\":\"Failed to create instance the error was: $RES\"}"
+fi
+
+INSTANCE_ID=`echo "$RESULT" | jq -r '.Instances[0]|.InstanceId'`
+#aws ec2 wait instance-running --instance-ids="$INSTANCE_ID"
+
+INPUT=`echo -n "$INPUT" | jq '.instance_id = "'"$INSTANCE_ID"'"'`
+echo -n "$INPUT"
+
+if [ "$OS" == "windows" ]; then
+        restatemachine_transition_to "fetch_admin_password"
+        restatemachine_transition_after_seconds "15"
+        restatemachine_status_message "{\"status\":\"pending\", \"message\":\"Waiting for admin password\"}"
+else
+        restatemachine_transition_to "configure_server"
+        restatemachine_transition_after_seconds "15"
+        restatemachine_status_message "{\"status\":\"pending\", \"message\":\"Configuring the server\"}"
+fi

@@ -1,0 +1,46 @@
+#!/bin/bash
+DIR=`dirname $0`
+. /etc/restatemachine/shell_helpers.inc
+
+INPUT=`cat`
+Error () {
+        echo -n "$INPUT"
+        restatemachine_transition_to "assign_ip"
+        restatemachine_transition_after_seconds "30"
+        restatemachine_status_message "$1"
+        exit 0
+}
+
+FREE_IP=0
+INSTANCE_ID=`echo "$INPUT" | jq -r '.instance_id'`
+
+# Check if there are any free elastic ips
+while read ALLOCATION_ID; do
+        RESULT=$(aws ec2 associate-address --instance-id "$INSTANCE_ID" --allocation-id "$ALLOCATION_ID" 2>&1)
+        if [ "$?" != "0" ]; then
+                RES=`echo $RESULT | tr -d '\r'`
+                Error "{\"status\":\"failed\", \"message\":\"Failed to assign floating ip error was: $RES\"}"
+        fi
+        FREE_IP=1
+        break
+done < <(aws ec2 describe-addresses --filters="Name=domain,Values=vpc" | jq -r '.Addresses[] | select(.AssociationId==null) | .AllocationId ') # Parse the rules
+
+if [ "$FREE_IP" == "0" ]; then
+        RESULT=`aws ec2 allocate-address --domain vpc | jq -r '.AllocationId'`
+        if [ "$?" != "0" ]; then
+                RES=`echo $RESULT | tr -d '\r'`
+                Error "{\"status\":\"failed\", \"message\":\"Failed to allocate an additional floating ip error was: $RES\"}"
+        fi
+        ALLOCATION_ID="$RESULT"
+        RESULT=$(aws ec2 associate-address --instance-id "$INSTANCE_ID" --allocation-id $ALLOCATION_ID 2>&1)
+        if [ "$?" != "0" ]; then
+                RES=`echo $RESULT | tr -d '\r'`
+                Error "{\"status\":\"failed\", \"message\":\"Failed to assign floating ip error was: $RES\"}"
+        fi
+fi
+
+echo -n "$INPUT"
+RAND=`shuf -i 1-30 -n 1`
+restatemachine_transition_to "get_server_info"
+restatemachine_transition_after_seconds "$RAND"
+restatemachine_status_message "{\"status\":\"pending\", \"message\":\"Getting server info\"}"

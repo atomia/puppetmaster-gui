@@ -1,0 +1,26 @@
+{
+  "name": "MSSQL databases",
+  "role_name": "mssql",
+  "description": "Host databases with MSSQL",
+  "firewall": [
+    {
+      "name": "Active_directory",
+      "rules": [
+        {
+          "port": 3389,
+          "function": "rdp",
+          "protocol": "tcp",
+          "cidr": "0.0.0.0/0"
+        }
+      ]
+    }
+  ],
+  "global_firewall": [],
+  "pretty_variables": {
+    "product_key" :  "Product key",
+    "isopath" : "ISO path",
+    "mssql_username": "MSSQL username",
+    "mssql_password": "MSSQL password",
+    "server_ips": "Server IPS"
+  }
+}

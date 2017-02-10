@@ -1,0 +1,112 @@
+<script>
+
+var environmentModel;
+var existingEnvironments = {{{toJSON platformData}}}
+$(document).ready(function () {
+  environmentModel = ko.mapping.fromJS(existingEnvironments)
+  ko.applyBindings(environmentModel, document.getElementById('mainView'))
+})
+
+</script>
+<section class="Main" id="mainView" >
+  <div class="Margins" style="min-height: 300px;">
+    <div class="Bar Bar--light Bar--header">
+      <h5 class="Bar-title Bar-item">Server pre-flight checks</h5>
+      <div class="Bar-item Bar-item--right ">
+        <a href="/installation"><button type="submit" class="Btn Btn--primary">Next <i class="fa-margin fa fa-angle-right"></i></button></a>
+      </div>
+    </div>
+    <div class="Paper kss-paper" style="margin:0px;" id="mainView">
+      <button type="submit" class="Btn Btn--primary" id="start_pre_flight_button">Start pre flight checks</button>
+      <button type="submit" class="Btn Btn--primary" id="start_pre_flight_button">Retry pre flight checks</button>
+      <div class="Message Message--info">
+        Before proceeding with the pre flight checks make sure that the following requirements are fulfilled: <br/><br/>
+
+        Enable WINRM on ALL Windows servers with the command (Not needed if servers are created by the installer on Amazon): <br/>
+        <pre>start cmd /k "winrm quickconfig & winrm set winrm/config/client/auth @{Basic="true"} & winrm set winrm/config/service/auth @{Basic="true"} & winrm set winrm/config/service @{AllowUnencrypted="true"}"</pre>
+        </br></br>
+        Make sure WINRM (port 5985) is open for the local subnet (or the ip address of the puppet master server)
+        <br><br>
+        Make sure that all available Windows updates have been applied
+        <br><br>
+      </div>
+
+      <div class="Message Message--error" id="pre-flight-failed" style="display:none;">
+        One or more of the pre flight checks failed, the failed checks will automatically retry once every 60 seconds so once you have fixed the errors reported check back for an update
+      </div>
+      <table class="Table ">
+        <thead>
+          <tr class="Table-row">
+            <th style="u-left-text" width="5%">#</th>
+            <th class="u-left-text" width="25%">Service</th>
+            <th class="u-left-text" width="40%">Hostname</th>
+            <th class="u-left-text" width="10%">Type</th>
+            <th class="u-left-text" width="20%">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- ko foreach: environmentModel.servers() -->
+          <!-- ko foreach: members() -->
+          <!-- ko if: node_count() > 0 -->
+          <!-- ko if: operating_system() !== 'openstack' -->
+          <!-- ko if: selected() == true -->
+
+          <tr class="Table-bodyrow">
+            <td data-bind="text: node_count"></td>
+            <td>
+              <!-- ko if: operating_system() === 'windows' -->
+              <i class="fa fa-windows" aria-hidden="true"></i>
+              <!-- /ko -->
+              <!-- ko if: operating_system() === 'ubuntu' -->
+              <i class="fa fa-linux" aria-hidden="true"></i>
+              <!-- /ko -->
+              <span data-bind="text: name"></span></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+
+            <!-- ko foreach: nodes() -->
+            <tr style="background-color:#EDEDE8 !important;">
+              <td></td>
+              <td></td>
+              <td data-bind="text: hostname"></td>
+              <td data-bind="text: ec2_type"></td>
+              <td>
+                <!-- ko if: preflight_status().status === 'failed' -->
+                <div style="float:right;">
+                  <i class="fa fa-exclamation-circle fa-lg" aria-hidden="true" style="color:#d11717;"></i><br/>
+                  <span class="Icon Icon--loading Icon--small" style="color: #373333"><span class="Icon-label"></span></span>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: preflight_status().status === 'pending' -->
+                <div style="float:right;">
+                  <span class="Icon Icon--loading Icon--small" style="color: #373333"><span class="Icon-label"></span></span>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: preflight_status().status === 'done' -->
+                <div style="float:right;">
+                  <i class="fa fa-check-circle fa-lg" aria-hidden="true" style="color:#2daa29;"></i>
+                </div>
+                <!-- /ko -->
+                <span data-bind="text:preflight_status().message"></span> </td>
+              </td>
+            </tr>
+            <!-- /ko -->
+
+            <!-- /ko -->
+            <!-- /ko -->
+            <!-- /ko -->
+            <!-- /ko -->
+            <!-- /ko -->
+          </tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+      </table>
+
+    </div>
+
+  </div>
+</section>

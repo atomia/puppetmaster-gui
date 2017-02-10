@@ -1,0 +1,101 @@
+{
+  "name" : "Test Environment",
+  "priority": "1",
+  "description": "Minmal test environment",
+  "amazon": false,
+  "server_key": "",
+  "servers": [
+    {
+      "category": "System",
+      "category_id": "system",
+      "selected": false,
+      "members": [
+        {
+          "name": "Base configuration",
+          "description": "",
+          "required": true,
+          "selected": true,
+          "node_count": 0,
+          "roles": [
+            {
+              "class": "windows_base",
+              "overrides": [
+                {
+                  "variable": "appdomain",
+                  "value": "atomiatest.com"
+                }
+              ]
+            },
+            {
+              "class": "atomia_database",
+              "overrides": [
+                {
+                  "variable": "server_address",
+                  "value": "127.0.0.1"
+                }
+              ]
+            },
+            {
+              "class": "active_directory",
+              "overrides": [
+                {
+                  "variable": "domain_name",
+                  "value": "atomia.local"
+                },
+                {
+                  "variable": "netbios_domain_name",
+                  "value": "ATOMIA"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Window server",
+          "description": "",
+          "required": false,
+          "selected": true,
+          "cluster": false,
+          "multiple": false,
+          "node_count": 1,
+          "operating_system": "windows",
+          "ami": "ami-771b4504",
+          "ec2_type": "t2.large",
+          "vlan": 1,
+          "graph_position": 0,
+          "provisioning_order": 0,
+          "hostname": "",
+          "provisioning_status": {"status":"","message":""},
+          "preflight_status": "",
+          "installation_status": "",
+          "username": "Administrator",
+          "password": "",
+          "requirements": [
+            {
+              "check": "ram",
+              "value": "8",
+              "name": "%v GB RAM"
+            },
+            {
+              "check": "cpu",
+              "value": "2",
+              "name": "%v CPUs"
+            },
+            {
+              "check": "disk",
+              "value": "50",
+              "name": "%v GB disk space"
+            }
+          ],
+          "roles": [
+            {
+              "class": "test_environment",
+              "overrides": [
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

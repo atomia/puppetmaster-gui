@@ -1,0 +1,11 @@
+--- /usr/lib/ruby/vendor_ruby/hiera/scope.rb	2016-11-23 12:24:56.159882671 +0000
++++ scope.rb.patched	2016-11-23 12:25:40.987516297 +0000
+@@ -30,7 +30,7 @@
+       if key == CALLING_CLASS or key == CALLING_MODULE
+         true
+       else
+-        @real.lookupvar(key) != ""
++        @real.exist?(key)
+       end
+     end
+ 

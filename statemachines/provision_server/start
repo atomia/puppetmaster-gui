@@ -1,0 +1,34 @@
+#!/bin/sh
+
+. /etc/restatemachine/shell_helpers.inc
+
+if [ x"$1" = x"--help" ]; then
+        cat <<ENDOFUSAGE
+This statemachine will provision a server by using Puppet and the Atomia puppet module
+
+Requirments:
+apt-get -y install python-pip
+pip install --upgrade awscli
+apt-get install jq
+~/.ec2/configure
+
+Expected input:
+{
+        "key": "my_key",
+	"username": "user",
+	"password": "pass",
+	"hostname": "hostname.com"
+        "os": "windows"
+}
+
+It is assumed that the server has one or more role(s) assigned already on the puppet master
+ENDOFUSAGE
+
+        exit 0
+fi
+
+cat
+RAND=`shuf -i 1-20 -n 1`
+restatemachine_transition_to "setup_puppet"
+restatemachine_transition_after_seconds "$RAND" 
+restatemachine_status_message "pending|Installing puppet|"

@@ -1,0 +1,51 @@
+#!/bin/bash
+DIR=`dirname $0`
+. /etc/restatemachine/shell_helpers.inc
+
+INPUT=`cat`
+
+Error () {
+        echo -n "$INPUT"
+        restatemachine_transition_to "test_operating_system"
+        restatemachine_transition_after_seconds "60"
+        restatemachine_status_message "$1"
+        exit 0
+}
+
+OS=`echo "$INPUT" | jq -r '.os'`
+HOSTNAME=`echo "$INPUT" | jq -r '.hostname'`
+KEY=`echo "$INPUT" | jq -r '.key'`
+USERNAME=`echo "$INPUT" | jq -r '.username'`
+PASSWORD=`echo "$INPUT" | jq -r '.password'`
+
+if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
+	if [ -n "$KEY" ]; then
+		OS_VERSION=`ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i $KEY $USERNAME@$HOSTNAME 2> /dev/null 'cat /etc/lsb-release 2>&1 | grep DISTRIB_RELEASE | sed s/DISTRIB_RELEASE=//'`
+		if [ "$?" != "0" ]; then
+			Error "{\"status\":\"failed\", \"message\":\"Operating system is not supported, expecting Ubuntu\"}"
+		fi
+  else
+    OS_VERSION=`sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$USERNAME"@"$HOSTNAME" 2> /dev/null -q 'cat /etc/lsb-release 2>&1 | grep DISTRIB_RELEASE | sed s/DISTRIB_RELEASE=//'`
+    if [ "$?" != "0" ]; then
+      Error "{\"status\":\"failed\", \"message\":\"Operating system is not supported, expecting Ubuntu\"}"
+    fi
+  fi
+
+	if [ "$OS_VERSION" == "16.04" ] || [ "$OS_VERSION" == "14.04" ] ; then
+		OS="ok"
+	else
+		Error "{\"status\":\"failed\", \"message\":\"Operating system version is not supported, expecting Ubuntu 14.04 or 16.04 but found $OS_VERSION \"}"
+	fi
+elif [ "$OS" == "windows" ]; then
+        OS_VERSION=`./opt/puppetmaster-gui/statemachines/pre_flight_checks/winrm/test_os.py --host="$HOSTNAME" --username="$USERNAME" --password="$PASSWORD"`
+        if [ "$?" != "0" ]; then
+                Error "$OS_VERSION"
+        fi
+else
+        Error "{\"status\":\"failed\", \"message\":\"Unknown operating system $OS \"}"
+fi
+
+echo -n "$INPUT"
+restatemachine_transition_to "test_system_requirements"
+restatemachine_transition_after_seconds "0"
+restatemachine_status_message "{\"status\":\"pending\", \"message\":\"Testing system requirements\"}"

@@ -1,0 +1,15 @@
+#!/bin/bash
+DIR=`dirname $0`
+. /etc/restatemachine/shell_helpers.inc
+
+INPUT=`cat`
+
+INSTANCE_ID=`echo "$INPUT" | jq -r '.instance_id'`
+
+PUBLIC_DNS=`aws ec2 describe-instances --filters "Name=instance-id,Values=$INSTANCE_ID" | jq -r '.Reservations[].Instances[].PublicDnsName'`
+
+INPUT=`echo -n "$INPUT" | jq '.public_dns = "'"$PUBLIC_DNS"'"'`
+echo -n "$INPUT"
+restatemachine_transition_to "stop"
+restatemachine_transition_after_seconds "0"
+restatemachine_status_message "{\"status\":\"done\", \"message\":\"Provisioning complete\"}"

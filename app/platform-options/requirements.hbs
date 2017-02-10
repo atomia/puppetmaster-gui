@@ -1,0 +1,109 @@
+<script>
+
+</script>
+<section class="Main"  >
+  <div class="Margins" style="min-height: 300px;">
+    <div class="Bar Bar--light Bar--header">
+      <h5 class="Bar-title Bar-item">Requirements</h5>
+      <div class="Bar-item Bar-item--right ">
+        <a href="/platform-options"><button type="submit" class="Btn Btn--primary"><i class="fa-margin fa fa-angle-left"></i> Back</button></a>
+      </div>
+    </div>
+    <div class="Paper kss-paper" style="margin:0px;">
+      <div class="Grid">
+        {{#each platformTree}}
+        <div class="Grid-column-6 Box Box--child" style="padding-top: 60px">
+
+            <h2 class="Box-title">VLAN {{@index}}</h2>
+            {{#each this}}
+            <div class="Flex-container" >
+              {{#each this}}
+                <a class="Flex-item" href="#{{name}}">{{name}}</a>
+
+                <!-- href = name is an ugly hack that should be fixed, since name contains spaces and therefore makes an illegal href (but it works in most browsers) -->
+
+              {{/each}}
+            </div>
+            {{/each}}
+
+        </div>
+        {{/each}}
+      </div>
+
+      <br>
+      <p class="u-large-text">Total machines: <strong>25</strong></p>
+      <hr>
+
+      {{#each platformTree}}
+      {{#each this}}
+      {{#each this}}
+
+      <div class="Grid" id="{{name}}">
+        <!-- id = name is an ugly hack that should be fixed, since name contains spaces and therefore makes an illegal html-id (but it works in most browsers) -->
+
+        <div class="Grid-column-2">
+          <section class="Machine-index">1</section>
+
+          <section class="Machine-info">
+            <p>
+              Server OS:<br/>
+              <i class="fa fa-windows"></i> {{operating_system}}
+            </p>
+            <p>
+              Services:<br/>
+              <strong>{{name}}</strong>
+            </p>
+          </section>
+        </div>
+        <div class="Grid-column-4">
+          <p>
+            <span class="Machine-title">Name:</span>
+            {{name}}
+          </p>
+          <p>
+            <span class="Machine-title">Description:</span>
+            {{description}}
+          </p>
+          <p class="u-no-margin-bottom">
+            <span class="Machine-title">Recommended hardware:</span>
+          </p>
+          <ul>
+            <li>2 CPUs</li>
+            <li>8GB RAM</li>
+            <li>50GB Disk space</li>
+          </ul>
+          <br>
+
+          <section class="Machine-firewall">
+            <span class="Machine-title">Firewall rules:</span>
+
+            <table>
+              <tr>
+                <th>Port</th>
+                <th>Function</th>
+                <th>Protocol</th>
+                <th>Source</th>
+              </tr>
+              {{#each roles}}
+                {{#with (lookup @root.roleData this.class)}}
+                  {{#each firewall}}
+                    <tr>
+                      <td>{{port}}</td>
+                      <td>{{function}}</td>
+                      <td>{{protocol}}</td>
+                      <td>{{source}}</td>
+                    </tr>
+                  {{/each}}
+                {{/with}}
+              {{/each}}
+            </table>
+          </section>
+        </div>
+      </div>
+      <hr>
+      {{/each}}
+      {{/each}}
+      {{/each}}
+    </div>
+  </div>
+</section>
