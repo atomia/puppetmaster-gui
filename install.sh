@@ -25,7 +25,7 @@ pip install --upgrade awscli
 cd /opt
 git clone https://github.com/atomia/puppetmaster-gui.git
 cd puppetmaster-gui
-git checkout develop
+git checkout master 
 cd app
 npm install
 
@@ -63,7 +63,7 @@ bash -c 'echo "{
 
 cp /opt/puppetmaster-gui/puppetmaster-gui.service /lib/systemd/system
 
-wget https://raw.githubusercontent.com/atomia/puppet-atomia/develop/setup-puppet-atomia
+wget https://raw.githubusercontent.com/atomia/puppet-atomia/master/setup-puppet-atomia
 chmod +x setup-puppet-atomia
 ./setup-puppet-atomia
 LSBDISTCODENAME=`facter lsbdistcodename`
