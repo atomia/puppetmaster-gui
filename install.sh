@@ -1,4 +1,14 @@
 #!/bin/bash
+
+echo -n "FQDN: "
+hostname -f
+read -p "Do you see valid FQDN (e.g. puppet.atomia.local)? y/n: " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Nn]$ ]]; then
+        echo "Exiting without any action. Please correct FQDN in /etc/hosts file."
+        exit
+fi
+
 read -p "This script will remove any previous Atomia installations on this server. Is this ok? y/n:  " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -39,7 +49,7 @@ if [ "$USER_EXISTS" = "1" ]; then
 fi
 
 sudo mysql --defaults-file=/etc/mysql/debian.cnf -e "GRANT USAGE ON *.* TO 'puppetgui'@'localhost'; DROP USER 'puppetgui'@'localhost';"
-sudo mysql --defaults-file=/etc/mysql/debian.cnf -e "CREATE USER 'puppetgui'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD';GRANT ALL PRIVILEGES ON hiera.* TO 'puppetgui'@'localhost';FLUSH PRIVILEGES;"
+sudo mysql --defaults-file=/etc/mysql/debian.cnf -e "CREATE USER 'puppetgui'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD';GRANT ALL PRIVILEGES ON puppet_atomia.* TO 'puppetgui'@'localhost';FLUSH PRIVILEGES;"
 
 cd /opt/puppetmaster-gui/app
 mysql --defaults-file=/etc/mysql/debian.cnf < schema.sql
