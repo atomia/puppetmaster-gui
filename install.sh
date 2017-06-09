@@ -72,7 +72,12 @@ bash -c 'echo "{
   }
 }" > /opt/puppetmaster-gui/app/config/config.json'
 
-cp /opt/puppetmaster-gui/puppetmaster-gui.service /lib/systemd/system
+if [ `lsb_release -r | awk '{print $2}'` == '14.04' ]
+then
+	cp /opt/puppetmaster-gui/puppetmaster-gui-sysv.service /etc/init.d/puppetmaster-gui.service
+else
+	cp /opt/puppetmaster-gui/puppetmaster-gui-sysd.service /lib/systemd/system/puppetmaster-gui.service
+fi
 
 wget https://raw.githubusercontent.com/atomia/puppet-atomia/master/setup-puppet-atomia
 chmod +x setup-puppet-atomia
