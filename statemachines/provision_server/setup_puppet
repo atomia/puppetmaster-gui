@@ -45,7 +45,8 @@ if [ "$OS" == "linux" ] || [ "$OS" == "ubuntu" ];  then
         fi
 	RUN_PUPPET=`$SSH_COMMAND 2>&1 -q sudo puppet agent --test`
 	# Puppet exit codes
-	if [ "$?" == "0" ] || [ "$?" == "2" ]; then
+    CODE="$?"
+    if [ "$CODE" == "0" ] || [ "$CODE" == "2" ]; then
 		# Provisioning is ok
 		OK=1
 	else
