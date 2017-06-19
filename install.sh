@@ -74,9 +74,11 @@ bash -c 'echo "{
 
 if [ `lsb_release -r | awk '{print $2}'` == '14.04' ]
 then
-	cp /opt/puppetmaster-gui/puppetmaster-gui-sysv.service /etc/init.d/puppetmaster-gui.service
+	cp /opt/puppetmaster-gui/puppetmaster-gui-sysv.service /etc/init.d/puppetmaster-gui
+	update-rc.d puppetmaster-gui defaults
 else
 	cp /opt/puppetmaster-gui/puppetmaster-gui-sysd.service /lib/systemd/system/puppetmaster-gui.service
+	systemctl enable puppetmaster-gui.service
 fi
 
 wget https://raw.githubusercontent.com/atomia/puppet-atomia/master/setup-puppet-atomia
