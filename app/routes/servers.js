@@ -511,7 +511,7 @@ router.post('/new', function (req, res) {
 });
 /* Setup puppet on a server with given ssh session */
 function setupPuppet(ssh, puppet, res, callback) {
-	ssh.exec('wget --no-check-certificate https://raw.github.com/atomia/puppet-atomia/master/files/bootstrap_linux.sh && chmod +x bootstrap_linux.sh && sudo ./bootstrap_linux.sh ' + puppet + '', {
+	ssh.exec('wget --no-check-certificate https://raw.github.com/atomia/puppet-atomia/old/files/bootstrap_linux.sh && chmod +x bootstrap_linux.sh && sudo ./bootstrap_linux.sh ' + puppet + '', {
 		out: function (stdout) {
 			io.emit('server', { consoleData: stdout });
 		},
