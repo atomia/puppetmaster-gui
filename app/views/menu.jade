@@ -14,9 +14,9 @@ nav.navbar.navbar-inverse.navbar-fixed-top
             li.menu-item(typeof='sioc:Page', about='https://github.com/atomia/puppetmaster-gui/wiki')
               a(href='https://github.com/atomia/puppetmaster-gui/wiki', property='dc:title')
                 | Documentation
-            li.menu-item(typeof='sioc:Page', about='/pages/vps')
-              a(href='http://#{nagios}', property='dc:title') 
-                | Monitoring
+            li.menu-item(typeof='sioc:Page', about='/wizard/all_task')
+              a(href='/wizard/all_tasks', property='dc:title')
+                | Tasks
 .container
    .row
      .col-sm-2.col-md-2.sidebar
@@ -29,8 +29,6 @@ nav.navbar.navbar-inverse.navbar-fixed-top
          | Installation tasks
         a.list-group-item(href='#{currentStep.route}')
           |  Current task: #{currentStep.name}
-        a.list-group-item(href='/wizard/all_tasks')
-          |  List all tasks
 
         span.list-group-item.active(href='#')
          | Installed roles
