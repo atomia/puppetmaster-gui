@@ -3,7 +3,9 @@ sudo apt-get install -y git nodejs nodejs-legacy npm mysql-server python-pip
 sudo pip install pywinrm
 cd /opt
 sudo git clone https://github.com/atomia/puppetmaster-gui.git
-cd puppetmaster-gui/app
+cd puppetmaster-gui
+git checkout old 
+cd app
 sudo npm install
 
 MYSQL_PASSWORD=`openssl rand -base64 16`

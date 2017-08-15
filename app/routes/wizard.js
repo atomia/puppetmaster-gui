@@ -165,7 +165,7 @@ router.get('/output/:role', function (req, res, next) {
 });
 router.post('/puppet', function (req, res, next) {
 	var hasError = false;
-	var child = exec('puppet="$(wget -q -O - https://raw.githubusercontent.com/atomia/puppet-atomia/master/setup-puppet-atomia)"; echo "$puppet" |  sh');
+	var child = exec('puppet="$(wget -q -O - https://raw.githubusercontent.com/atomia/puppet-atomia/old/setup-puppet-atomia)"; echo "$puppet" |  sh');
 	child.stdout.on('data', function (data) {
 		io.emit('server', { consoleData: data });
 	});
