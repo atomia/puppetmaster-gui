@@ -442,7 +442,7 @@ router.post('/new', function (req, res) {
 			sshSession.on('error', function (err) {
 				returnError(res, 'Error communicating with the server: ' + err);
 			});
-			setupPuppet(sshSession, puppet, res, function (result) {
+			setupPuppet(sshSession, puppet, serverH, res, function (result) {
 				if (result === 0) {
 					// Puppet is installed and connected lets add the server to local database and assign a role
 					io.emit('server', { consoleData: 'Adding server to local database' });
@@ -510,19 +510,28 @@ router.post('/new', function (req, res) {
 	}
 });
 /* Setup puppet on a server with given ssh session */
-function setupPuppet(ssh, puppet, res, callback) {
-	ssh.exec('wget --no-check-certificate https://raw.github.com/atomia/puppet-atomia/old/files/bootstrap_linux.sh && chmod +x bootstrap_linux.sh && sudo ./bootstrap_linux.sh ' + puppet + '', {
-		out: function (stdout) {
-			io.emit('server', { consoleData: stdout });
-		},
-		err: function (stderr) {
-			io.emit('server', { consoleData: stderr });
-		},
-		exit: function (code) {
-			io.emit('server', { consoleData: 'Command exited with status: ' + code + '\n' });
-			callback(code);
-		}
-	}).start();
+function setupPuppet(ssh, puppet, hostname, res, callback) {
+	io.emit('server', { consoleData: "\nResolving " + JSON.stringify(hostname) + "... " });
+	dns.lookup(hostname, function (hostErr, hostnameIp) {
+		io.emit('server', { consoleData: (hostErr ? hostErr.message : hostnameIp) + "\n" });
+		io.emit('server', { consoleData: "Resolving " + JSON.stringify(puppet) + "... " });
+		dns.lookup(puppet, function (puppetErr, puppetIp) {
+			io.emit('server', { consoleData: (puppetErr ? puppetErr.message : puppetIp)+ "\n"});
+			ssh.exec('wget --no-check-certificate https://raw.github.com/atomia/puppet-atomia/old/files/bootstrap_linux.sh && chmod +x bootstrap_linux.sh && sudo ./bootstrap_linux.sh ' 
+			+ puppet + ' ' + puppetIp + ' ' + hostname + ' ' + hostnameIp + '', {
+				out: function (stdout) {
+					io.emit('server', { consoleData: stdout });
+				},
+				err: function (stderr) {
+					io.emit('server', { consoleData: stderr });
+				},
+				exit: function (code) {
+					io.emit('server', { consoleData: 'Command exited with status: ' + code + '\n' });
+					callback(code);
+				}
+			}).start();
+		});
+	});
 }
 function ensurePuppetRunning(ssh, callback) {
 	ssh.exec('if [[ $(sudo service puppet status | /bin/grep not | /bin/grep -vc grep)  > 0 ]] ; then sudo service puppet start; else echo Puppet is running; fi', {
