@@ -174,7 +174,7 @@ router.post('/puppet', function (req, res, next) {
 	});
 	child.on('close', function (code) {
 		if (!hasError) {
-			var hostname = execSync.exec('facter fqdn | tr -d '\n' 2> /dev/null').stdout;
+			var hostname = execSync.exec('facter fqdn | tr -d \'\n\' 2> /dev/null').stdout;
 			database.query('INSERT INTO servers VALUES(null,\'' + hostname + '\',\'\',\'\',\'\')', function (err, rows, field) {
 				if (typeof rows != 'undefined') {
 					serverId = rows.insertId;
