@@ -136,6 +136,9 @@ router.get('/mail_slave', function (req, res, next) {
 router.get('/webmail', function (req, res, next) {
 	setVariablesAndRender('webmail', res, null, req);
 });
+router.get('/ssh', function (req, res, next) {
+	setVariablesAndRender('sshserver', res, null, req);
+});
 router.get('/mysql', function (req, res, next) {
 	setVariablesAndRender('mysql', res, null, req);
 });

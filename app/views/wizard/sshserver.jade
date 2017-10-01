@@ -1,0 +1,48 @@
+extends ../layout
+block content
+	.col-lg-1.col-centered
+		-myRole = 'sshserver'
+		include status_modal.jade
+		h1.page-header SSH servers
+			if allRolesSimple[myRole]  && reportStatus == "successful"
+				img(src="/img/icon_success_pink.png",style="float:right;width:64px;",alt="Installed!")
+
+		if currentStep.route == path && allRolesSimple[myRole]  && reportStatus == "successful"
+			include installation_complete.jade
+		else if currentStep.route == path
+			include skip_step.jade
+		if reportStatus
+			include latest_puppet_run.jade
+
+		.panel.panel-primary
+			.panel-heading
+				h3.panel-title Information
+			.panel-body
+				| The SSH Server will provide SCP access to your website content.
+				| <br><br>
+				| In addition, SSH server can give you access to your data by console.
+
+
+		include firewall/header.jade
+			include firewall/global.jade
+			include firewall/sshserver.jade
+
+
+		if ( allRolesSimple[myRole] != "installed" )
+			.panel.panel-primary
+						.panel-heading
+							h3.panel-title More than 1 SSH server?
+						.panel-body
+							| You can deploy as many SSH servers as you want, we recommend at least 2. In order to deploy more than 1 server simply specify all the server hostnames separated by comma in the "server hostname" box below.
+			include ../servers/add_server.jade
+			-displayConfigure = "none"
+			include ../servers/configure_server.jade
+		else
+			-configureOnly = true
+			-displayConfigure = "block"
+			include ../servers/configure_server.jade
+			include ../servers/add_server.jade
+
+
+		input(type="hidden", id="serverRole", value="#{myRole}")
+
