@@ -21,6 +21,7 @@ module.exports = {
 		rolesPretty.iis = { 'prettyName': 'IIS cluster' };
 		rolesPretty.mailserver = { 'prettyName': 'Mail cluster master' };
 		rolesPretty.mailserver_slave = { 'prettyName': 'Mail cluster slave' };
+		rolesPretty.sshserver = { 'prettyName': 'SSH server cluster' };
 		rolesPretty.webmail = { 'prettyName': 'Roundcube webmail' };
 		rolesPretty.mssql = { 'prettyName': 'Customer MSSQL' };
 		rolesPretty.mysql = { 'prettyName': 'Customer MySQL' };
