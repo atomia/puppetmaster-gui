@@ -168,7 +168,11 @@ router.get('/output/:role', function (req, res, next) {
 });
 router.post('/puppet', function (req, res, next) {
 	var hasError = false;
-	var child = exec('puppet="$(wget -q -O - https://raw.githubusercontent.com/atomia/puppet-atomia/old/setup-puppet-atomia)"; echo "$puppet" |  sh');
+	req.setTimeout(1000000, function () {
+		req.abort();
+		io.emit('server', { consoleData: 'Timeout occured' });
+	});
+	var child = exec('puppet="$(wget -q -O - https://raw.githubusercontent.com/atomia/puppet-atomia/old/setup-puppet-atomia)"; echo "$puppet" |  bash');
 	child.stdout.on('data', function (data) {
 		io.emit('server', { consoleData: data });
 	});
