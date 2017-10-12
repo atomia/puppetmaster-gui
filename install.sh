@@ -64,6 +64,7 @@ else
 fi
 
 cd /opt/puppetmaster-gui/app
+sudo mysqldump --defaults-file=/etc/mysql/debian.cnf -A > mysql_backup_`date +%F_%H%M`.sql
 sudo mysql --defaults-file=/etc/mysql/debian.cnf < schema.sql
 if [ $? -eq 0 ]; then
   echo -e "${GREEN}DB schema imported successfully${NC}"
