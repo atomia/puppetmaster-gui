@@ -172,7 +172,7 @@ router.post('/puppet', function (req, res, next) {
 		req.abort();
 		io.emit('server', { consoleData: 'Timeout occured' });
 	});
-	var child = exec('puppet="$(wget -q -O - https://raw.githubusercontent.com/atomia/puppet-atomia/old/setup-puppet-atomia)"; echo "$puppet" |  bash');
+	var child = exec('puppet="$(wget -q -O - https://raw.githubusercontent.com/atomia/puppet-atomia/master/setup-puppet-atomia)"; echo "$puppet" |  bash');
 	child.stdout.on('data', function (data) {
 		io.emit('server', { consoleData: data });
 	});

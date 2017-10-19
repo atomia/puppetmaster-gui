@@ -39,11 +39,11 @@ else
   echo -e "${RED}puppetmaster-gui repo cloning failed!!!${NC}"
 fi
 cd puppetmaster-gui
-git checkout old
+git checkout master
 if [ $? -eq 0 ]; then
-  echo -e "${GREEN}Successfully switched to old branch${NC}"
+  echo -e "${GREEN}Successfully switched to master branch${NC}"
 else
-  echo -e "${RED}Switching to old branch failed!!!${NC}"
+  echo -e "${RED}Switching to master branch failed!!!${NC}"
 fi
 cd app
 sudo npm install
