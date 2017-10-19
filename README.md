@@ -13,4 +13,4 @@ Detailed instructions can be found on [our wiki](https://github.com/atomia/puppe
 All contributions are welcome and are preferably done via Issue reports and or Pull requests.
 
 ## Maintainers
-* Stefan Mortensen, stefan.mortensen@atomia.com, github: stefanmortensen
+* Branislav Vukelic, branislav@atomia.com, github: branislavvukelic
