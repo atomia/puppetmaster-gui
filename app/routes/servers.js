@@ -517,8 +517,7 @@ function setupPuppet(ssh, puppet, hostname, res, callback) {
 		io.emit('server', { consoleData: "Resolving " + JSON.stringify(puppet) + "... " });
 		dns.lookup(puppet, function (puppetErr, puppetIp) {
 			io.emit('server', { consoleData: (puppetErr ? puppetErr.message : puppetIp)+ "\n"});
-			ssh.exec('wget --no-check-certificate https://raw.github.com/atomia/puppet-atomia/master/files/bootstrap_linux.sh && chmod +x bootstrap_linux.sh && sudo ./bootstrap_linux.sh ' 
-			+ puppet + ' ' + puppetIp + ' ' + hostname + ' ' + hostnameIp + '', {
+			ssh.exec('wget --no-check-certificate https://raw.github.com/atomia/puppet-atomia/master/files/bootstrap_linux.sh && chmod +x bootstrap_linux.sh && sudo ./bootstrap_linux.sh ' + puppet + ' ' + puppetIp + ' ' + hostname + ' ' + hostnameIp + '', {
 				out: function (stdout) {
 					io.emit('server', { consoleData: stdout });
 				},
