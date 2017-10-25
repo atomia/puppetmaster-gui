@@ -100,6 +100,9 @@ router.get('/public_apps', function (req, res, next) {
 router.get('/fsagent', function (req, res, next) {
 	setVariablesAndRender('fsagent', res, null, req);
 });
+router.get('/storage', function (req, res, next) {
+	setVariablesAndRender('storage', res, null, req);
+});
 router.get('/installatron', function (req, res, next) {
 	setVariablesAndRender('installatron', res, null, req);
 });

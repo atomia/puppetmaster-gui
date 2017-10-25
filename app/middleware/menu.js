@@ -6,6 +6,7 @@ module.exports = {
 		rolesPretty.puppet = { 'prettyName': 'Puppet Master' };
 		rolesPretty.internaldns = { 'prettyName': 'Internal DNS server' };
 		rolesPretty.domainreg = { 'prettyName': 'Domainreg' };
+		rolesPretty.storage = { 'prettyName': 'Storage server' };
 		rolesPretty.glusterfs = { 'prettyName': 'GlusterFS' };
 		rolesPretty.glusterfs_replica = { 'prettyName': 'GlusterFS replica' };
 		rolesPretty.nagios_server = { 'prettyName': 'Nagios' };
