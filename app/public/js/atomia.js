@@ -310,7 +310,7 @@ function configureServer() {
 	});
 }
 function deleteServer(hostname) {
-	if (confirm('Removing a server will only remove it\'s configuration from the installation appliation. It will not delete any actual configuration on the server')) {
+	if (confirm('Removing a server will only remove it\'s configuration from the installation application. It will not delete any actual configuration on the server')) {
 		$.ajax({
 			url: '/servers/' + hostname,
 			type: 'DELETE',
