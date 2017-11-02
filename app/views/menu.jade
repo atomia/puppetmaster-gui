@@ -17,21 +17,3 @@ nav.navbar.navbar-inverse.navbar-fixed-top
             li.menu-item(typeof='sioc:Page', about='/wizard/all_task')
               a(href='/wizard/all_tasks', property='dc:title')
                 | Tasks
-.container
-   .row
-     .col-sm-2.col-md-2.sidebar
-       .mini-submenu
-         span.icon-bar
-         span.icon-bar
-         span.icon-bar
-       .list-group
-        span.list-group-item.active(href='#')
-         | Installation tasks
-        a.list-group-item(href='#{currentStep.route}')
-          |  Current task: #{currentStep.name}
-
-        span.list-group-item.active(href='#')
-         | Installed roles
-        each m in menuStatus
-          a.list-group-item(href='/wizard/'+m.url)
-           !=m.prettyName
