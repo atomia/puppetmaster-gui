@@ -121,6 +121,9 @@ router.get('/haproxy', function (req, res, next) {
 router.get('/apache', function (req, res, next) {
 	setVariablesAndRender('apache_agent', res, null, req);
 });
+router.get('/apachecl', function (req, res, next) {
+	setVariablesAndRender('apache_agent_cl', res, null, req);
+});
 router.get('/iis', function (req, res, next) {
 	setVariablesAndRender('iis', res, null, req);
 });

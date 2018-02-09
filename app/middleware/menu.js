@@ -19,6 +19,7 @@ module.exports = {
 		rolesPretty.cronagent = { 'prettyName': 'Cronjobs' };
 		rolesPretty.haproxy = { 'prettyName': 'Haproxy load balancers' };
 		rolesPretty.apache_agent = { 'prettyName': 'Apache cluster' };
+		rolesPretty.apache_agent_cl = { 'prettyName': 'Apache CloudLinux cluster' };
 		rolesPretty.iis = { 'prettyName': 'IIS cluster' };
 		rolesPretty.mailserver = { 'prettyName': 'Mail cluster master' };
 		rolesPretty.mailserver_slave = { 'prettyName': 'Mail cluster slave' };
