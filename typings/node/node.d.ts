@@ -897,7 +897,7 @@ declare module "child_process" {
         signal: string;
         error: Error;
     };
-    export function execSync(command: string, options?: {
+    export function shelljs(command: string, options?: {
         cwd?: string;
         input?: string|Buffer;
         stdio?: any;
@@ -1770,7 +1770,6 @@ declare module "util" {
     }
 
     export function format(format: any, ...param: any[]): string;
-    export function debug(string: string): void;
     export function error(...param: any[]): void;
     export function puts(...param: any[]): void;
     export function print(...param: any[]): void;

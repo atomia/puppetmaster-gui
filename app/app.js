@@ -33,15 +33,14 @@ var db_config = {
 
 function handleDisconnect() {
   database = mysql.createConnection(db_config); // Recreate the connection, since the old one cannot be reused.
-                                                  
 
   database.connect(function(err) {              // The server is either down or restarting.
-    if(err) {                                     
+    if(err) {
       console.log('error when connecting to db:', err);
       setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect to avoid a loop
-    }                                     
-  });                                    
-                                        
+    }
+  });
+
   database.on('error', function(err) {
     console.log('db error', err);
     if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
