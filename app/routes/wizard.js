@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var sys = require('sys');
 var exec = require('child_process').exec;
-var execSync = require('execSync');
+var shelljs = require('shelljs');
 var fs = require('fs');
 var yaml = require('yamljs');
 var puppetDB = require('../lib/puppetdb.js');
@@ -187,7 +187,7 @@ router.post('/puppet', function (req, res, next) {
 	});
 	child.on('close', function (code) {
 		if (!hasError) {
-			var hostname = execSync.exec('facter fqdn | tr -d \'\n\' 2> /dev/null').stdout;
+			var hostname = shelljs.exec('facter fqdn | tr -d \'\n\' 2> /dev/null').stdout;
 			database.query('INSERT INTO servers VALUES(null,\'' + hostname + '\',\'\',\'\',\'\')', function (err, rows, field) {
 				if (typeof rows != 'undefined') {
 					serverId = rows.insertId;
@@ -309,11 +309,11 @@ function getConfiguration(namespace, callback) {
 								data.required = 'required';
 							}
 							command = 'sh ' + __dirname + '/../scripts/get_variable_documentation.sh ' + namespace + ' ' + inputData[0];
-							doc = execSync.exec(command);
+							doc = shelljs.exec(command);
 							command2 = 'sh ' + __dirname + '/../scripts/get_variable_validation.sh ' + namespace + ' ' + inputData[0];
-							validation = execSync.exec(command2);
+							validation = shelljs.exec(command2);
 							command3 = 'sh ' + __dirname + '/../scripts/get_variable_options.sh ' + namespace + ' ' + inputData[0];
-							options = execSync.exec(command3).stdout.split(',');
+							options = shelljs.exec(command3).stdout.split(',');
 							if (options.length > 0) {
 								data.options = [];
 								for (var b = 0; b <= options.length; b++) {

@@ -1,10 +1,9 @@
 var express = require('express');
 var router = express.Router();
-var ping = require('net-ping');
 var dns = require('dns');
 var ssh = require('simple-ssh');
 var fs = require('fs');
-var execSync = require('execSync');
+var shelljs = require('shelljs');
 var exec = require('child_process').exec;
 var puppetDB = require('../lib/puppetdb.js');
 var Convert = require('ansi-to-html');
@@ -113,7 +112,7 @@ router.post('/generate_certificates', function (req, res) {
 	var order = req.body.order;
 	var billing = req.body.billing;
 	var hcp = req.body.hcp;
-	execSync.exec('rm -f /etc/puppet/atomiacerts/certificates/* 2> /dev/null');
+	shelljs.exec('rm -f /etc/puppet/atomiacerts/certificates/* 2> /dev/null');
 	var spawn = require('child_process').spawn, child = spawn('ruby', [
 		'generate_certificates.rb',
 		appDomain,
@@ -129,7 +128,7 @@ router.post('/generate_certificates', function (req, res) {
 		io.emit('server', { consoleData: '' + data });
 	});
 	child.on('close', function (code) {
-		var numCerts = execSync.exec('ls /etc/puppet/atomiacerts/certificates/ | wc -l').stdout;
+		var numCerts = shelljs.exec('ls /etc/puppet/atomiacerts/certificates/ | wc -l').stdout;
 		if (parseInt(numCerts.trim()) < 1) {
 			io.emit('server', {
 				error: 'The certificates was not generated!',
@@ -140,10 +139,10 @@ router.post('/generate_certificates', function (req, res) {
 		} else {
 			// Get the certificate thumbprints
 			thumbprints = {};
-			thumbprints.automation_encryption = execSync.exec('/etc/puppet/modules/atomia/files/certificates/get_cert_fingerprint.sh | grep -A 1 \'Automation Server Encryption:\' | tail -n 1').stdout;
-			thumbprints.billing_encryption = execSync.exec('/etc/puppet/modules/atomia/files/certificates/get_cert_fingerprint.sh | grep -A 1 \'Billing Encryption:\' | tail -n 1').stdout;
-			thumbprints.root = execSync.exec('/etc/puppet/modules/atomia/files/certificates/get_cert_fingerprint.sh | grep -A 1 \'Root cert:\' | tail -n 1').stdout;
-			thumbprints.signing = execSync.exec('/etc/puppet/modules/atomia/files/certificates/get_cert_fingerprint.sh | grep -A 1 \'Signing:\' | tail -n 1').stdout;
+			thumbprints.automation_encryption = shelljs.exec('/etc/puppet/modules/atomia/files/certificates/get_cert_fingerprint.sh | grep -A 1 \'Automation Server Encryption:\' | tail -n 1').stdout;
+			thumbprints.billing_encryption = shelljs.exec('/etc/puppet/modules/atomia/files/certificates/get_cert_fingerprint.sh | grep -A 1 \'Billing Encryption:\' | tail -n 1').stdout;
+			thumbprints.root = shelljs.exec('/etc/puppet/modules/atomia/files/certificates/get_cert_fingerprint.sh | grep -A 1 \'Root cert:\' | tail -n 1').stdout;
+			thumbprints.signing = shelljs.exec('/etc/puppet/modules/atomia/files/certificates/get_cert_fingerprint.sh | grep -A 1 \'Signing:\' | tail -n 1').stdout;
 			io.emit('server', {
 				ok: 'Certificates generated sucessfully!',
 				done: 'ok'
