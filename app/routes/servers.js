@@ -337,7 +337,7 @@ router.post('/new', function (req, res) {
 					}
 				}
 				//c:\\windows\\system32\\Dism /online /Enable-Feature /FeatureName:NetFx3 /All;
-                var child_puppet_install = exec(__dirname + '/../scripts/winrm -hostname ' + serverHostname + ' -username "' + serverUsername + '" -password \'' + serverPassword + '\' "%SystemRoot%\\system32\\WindowsPowerShell\\v1.0\\powershell.exe /C (new-object System.Net.WebClient).Downloadfile(\'https://downloads.puppetlabs.com/windows/puppet-x64-latest.msi\', \'puppet-latest.msi\');c:\\windows\\system32\\msiexec /qn /i puppet-latest.msi PUPPET_MASTER_SERVER=\'' + puppetMaster + '\'" ');
+                var child_puppet_install = exec(__dirname + '/../scripts/winrm -hostname ' + serverHostname + ' -username "' + serverUsername + '" -password \'' + serverPassword + '\' "%SystemRoot%\\system32\\WindowsPowerShell\\v1.0\\powershell.exe /C (new-object System.Net.WebClient).Downloadfile(\'http://downloads.puppetlabs.com/windows/puppet-3.8.7-x64.msi\', \'puppet-latest.msi\');c:\\windows\\system32\\msiexec /qn /i puppet-latest.msi PUPPET_MASTER_SERVER=\'' + puppetMaster + '\'" ');
 				child_puppet_install.stdout.on('data', function (data) {
 					io.emit('server', { consoleData: '' + convert.toHtml(data) });
 				});
