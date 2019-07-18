@@ -21,7 +21,7 @@ var wizard = require('./routes/wizard');
 var config = require('./routes/config');
 var roles = require('./routes/roles');
 var middleWareMenu = require('./middleware/menu');
-nconf.file({ file: 'config.json' });
+nconf.file({ file: '/opt/puppetmaster-gui/app/config.json' });
 dbConf = nconf.get('database');
 
 var db_config = {
