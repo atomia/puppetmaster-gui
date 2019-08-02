@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var sys = require('sys');
 var exec = require('child_process').exec;
 var shelljs = require('shelljs');
 var fs = require('fs');
