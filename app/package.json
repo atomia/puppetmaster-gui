@@ -7,20 +7,20 @@
     "test": "jshint app.js */*.js"
   },
   "dependencies": {
+    "ansi-to-html": "~0.6.9",
     "body-parser": "^1.13.3",
     "cookie-parser": "~1.4.3",
-    "shelljs": "^0.8.3",
     "express": "~4.13.3",
     "jade": "~1.11.0",
-    "morgan": "~1.6.1",
+    "morgan": "^1.9.1",
     "mysql": "^2.9.0",
     "nconf": "^0.8.2",
+    "q": "~1.4.1",
     "serve-favicon": "~2.3.0",
+    "shelljs": "^0.8.3",
     "simple-ssh": "^0.8.6",
     "socket.io": "^1.3.7",
-    "yamljs": "^0.2.4",
-    "q": "~1.4.1",
-    "ansi-to-html": "~0.6.9"
+    "yamljs": "^0.2.4"
   },
   "devDependencies": {
     "jshint": "~2.9.2"
