@@ -19,7 +19,7 @@
     "serve-favicon": "~2.3.0",
     "shelljs": "^0.8.3",
     "simple-ssh": "^0.8.6",
-    "socket.io": "^1.3.7",
+    "socket.io": "^2.4.0",
     "yamljs": "^0.2.4"
   },
   "devDependencies": {
